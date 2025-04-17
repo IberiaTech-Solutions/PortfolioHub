@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --hub-primary: #2d3250; /* Deep navy blue */
+  --hub-secondary: #424769; /* Muted blue */
+  --hub-accent: #676f9d; /* Soft purple-blue */
+  --hub-highlight: #7c81ad; /* Light purple-blue */
+  --hub-light: #ffffff; /* Pure white for better contrast */
+  --hub-dark: #1a1c2c; /* Dark blue-black */
+  --hub-text-primary: #1a1c2c; /* Dark text for light backgrounds */
+  --hub-text-secondary: #424769; /* Secondary text for light backgrounds */
+  --hub-text-light: #ffffff; /* Light text for dark backgrounds */
+  --hub-text-accent: #4a5578; /* Darker accent for better contrast */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--hub-light);
+  --color-foreground: var(--hub-dark);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-background: var(--hub-dark);
+    --color-foreground: var(--hub-light);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Custom utility classes */
+.bg-hub-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--hub-primary) 0%,
+    var(--hub-secondary) 100%
+  );
+}
+
+.bg-hub-gradient-accent {
+  background: linear-gradient(
+    135deg,
+    var(--hub-secondary) 0%,
+    var(--hub-accent) 100%
+  );
+}
+
+.text-hub-primary {
+  color: var(--hub-text-primary);
+}
+
+.text-hub-secondary {
+  color: var(--hub-text-secondary);
+}
+
+.text-hub-accent {
+  color: var(--hub-text-accent);
+}
+
+.text-hub-light {
+  color: var(--hub-text-light);
+}
+
+.border-hub {
+  border-color: var(--hub-accent);
+}
+
+.hover-hub {
+  transition: all 0.3s ease;
+}
+
+.hover-hub:hover {
+  background: var(--hub-accent);
+  color: var(--hub-light);
+}
+
+/* Additional contrast helpers */
+.bg-hub-card {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.bg-hub-card-dark {
+  background: rgba(26, 28, 44, 0.98);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-md {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

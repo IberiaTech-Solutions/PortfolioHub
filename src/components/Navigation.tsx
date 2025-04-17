@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase";
@@ -34,13 +35,19 @@ export default function Navigation() {
   }, []);
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between py-4">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold">
-                PortfolioHub
+              <Link href="/" className="relative h-20 w-60">
+                <Image
+                  src="/images/PortFolioHub3.png"
+                  alt="PortfolioHub Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </Link>
             </div>
           </div>
@@ -51,10 +58,10 @@ export default function Navigation() {
                 <>
                   <Link
                     href="/create-portfolio"
-                    className={`px-3 py-2 rounded-md ${
+                    className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                       pathname === "/create-portfolio"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-white text-gray-900"
+                        : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
                     }`}
                   >
                     {pathname === "/create-portfolio"
@@ -63,10 +70,10 @@ export default function Navigation() {
                   </Link>
                   <Link
                     href="/profile"
-                    className={`px-3 py-2 rounded-md ${
+                    className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                       pathname === "/profile"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-white text-gray-900"
+                        : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
                     }`}
                   >
                     Profile
@@ -77,8 +84,8 @@ export default function Navigation() {
                   href="/auth"
                   className={`px-3 py-2 rounded-md ${
                     pathname === "/auth"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-white text-brand-900"
+                      : "text-white hover:bg-white/10"
                   }`}
                 >
                   Sign In / Sign Up

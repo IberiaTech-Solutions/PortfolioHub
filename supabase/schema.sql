@@ -1,3 +1,7 @@
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS portfolios CASCADE;
+DROP TABLE IF EXISTS predefined_skills CASCADE;
+
 -- Create portfolios table
 CREATE TABLE portfolios (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -12,10 +16,101 @@ CREATE TABLE portfolios (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create predefined skills table
+CREATE TABLE predefined_skills (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL UNIQUE,
+  category TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert initial predefined skills
+INSERT INTO predefined_skills (name, category) VALUES
+  -- Programming Languages
+  ('JavaScript', 'Programming Languages'),
+  ('TypeScript', 'Programming Languages'),
+  ('Python', 'Programming Languages'),
+  ('Java', 'Programming Languages'),
+  ('C++', 'Programming Languages'),
+  ('Ruby', 'Programming Languages'),
+  ('PHP', 'Programming Languages'),
+  ('Swift', 'Programming Languages'),
+  ('Kotlin', 'Programming Languages'),
+  ('Go', 'Programming Languages'),
+  
+  -- Frontend
+  ('React', 'Frontend'),
+  ('Vue.js', 'Frontend'),
+  ('Angular', 'Frontend'),
+  ('Next.js', 'Frontend'),
+  ('HTML5', 'Frontend'),
+  ('CSS3', 'Frontend'),
+  ('Sass/SCSS', 'Frontend'),
+  ('Tailwind CSS', 'Frontend'),
+  ('Bootstrap', 'Frontend'),
+  ('Material UI', 'Frontend'),
+  
+  -- Backend
+  ('Node.js', 'Backend'),
+  ('Express.js', 'Backend'),
+  ('Django', 'Backend'),
+  ('Ruby on Rails', 'Backend'),
+  ('Spring Boot', 'Backend'),
+  ('Laravel', 'Backend'),
+  ('GraphQL', 'Backend'),
+  ('REST API', 'Backend'),
+  
+  -- Database
+  ('PostgreSQL', 'Database'),
+  ('MySQL', 'Database'),
+  ('MongoDB', 'Database'),
+  ('Redis', 'Database'),
+  ('Firebase', 'Database'),
+  ('Supabase', 'Database'),
+  
+  -- DevOps
+  ('Docker', 'DevOps'),
+  ('Kubernetes', 'DevOps'),
+  ('AWS', 'DevOps'),
+  ('Azure', 'DevOps'),
+  ('Google Cloud', 'DevOps'),
+  ('CI/CD', 'DevOps'),
+  ('Git', 'DevOps'),
+  
+  -- Design
+  ('UI Design', 'Design'),
+  ('UX Design', 'Design'),
+  ('Figma', 'Design'),
+  ('Adobe XD', 'Design'),
+  ('Sketch', 'Design'),
+  ('Photoshop', 'Design'),
+  ('Illustrator', 'Design'),
+  
+  -- Mobile
+  ('React Native', 'Mobile'),
+  ('Flutter', 'Mobile'),
+  ('iOS Development', 'Mobile'),
+  ('Android Development', 'Mobile'),
+  
+  -- Other
+  ('Agile', 'Other'),
+  ('Scrum', 'Other'),
+  ('Project Management', 'Other'),
+  ('Technical Writing', 'Other'),
+  ('SEO', 'Other'),
+  ('Analytics', 'Other');
+
 -- Set up Row Level Security (RLS)
 ALTER TABLE portfolios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE predefined_skills ENABLE ROW LEVEL SECURITY;
 
--- Create RLS policies
+-- Create RLS policies for predefined_skills
+CREATE POLICY "Anyone can view predefined skills" 
+  ON predefined_skills 
+  FOR SELECT 
+  USING (true);
+
+-- Create RLS policies for portfolios
 -- Policy for users to select any portfolio
 CREATE POLICY "Anyone can view portfolios" 
   ON portfolios 

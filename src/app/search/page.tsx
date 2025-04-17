@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
 import Link from "next/link";
+import { useDebounce } from "use-debounce";
 
 type Portfolio = {
   id: string;
@@ -11,6 +12,8 @@ type Portfolio = {
   title: string;
   description: string;
   website_url: string;
+  github_url: string;
+  linkedin_url: string;
   skills: string[];
   job_title: string;
   created_at: string;
@@ -22,43 +25,28 @@ export default function SearchPage() {
   const query = searchParams.get("q") || "";
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   useEffect(() => {
     const fetchPortfolios = async () => {
-      setLoading(true);
+      try {
+        const { data: portfoliosData, error } = await supabase
+          .from("portfolios")
+          .select("*")
+          .textSearch("title", query)
+          .order("created_at", { ascending: false });
 
-      let { data: portfoliosData, error } = await supabase
-        .from("portfolios")
-        .select("*");
-
-      if (error) {
+        if (error) throw error;
+        setPortfolios(portfoliosData as Portfolio[]);
+      } catch (error) {
         console.error("Error fetching portfolios:", error);
-        setLoading(false);
-        return;
       }
-
-      // Filter portfolios based on the search query
-      // This is client-side filtering, but ideally would be done in the database
-      let filteredPortfolios = portfoliosData as Portfolio[];
-
-      if (query) {
-        const lowerQuery = query.toLowerCase();
-        filteredPortfolios = filteredPortfolios.filter(
-          (portfolio) =>
-            portfolio.title?.toLowerCase().includes(lowerQuery) ||
-            portfolio.description?.toLowerCase().includes(lowerQuery) ||
-            portfolio.job_title?.toLowerCase().includes(lowerQuery) ||
-            portfolio.skills?.some((skill) =>
-              skill.toLowerCase().includes(lowerQuery)
-            )
-        );
-      }
-
-      setPortfolios(filteredPortfolios || []);
-      setLoading(false);
     };
 
-    fetchPortfolios();
+    if (query) {
+      fetchPortfolios();
+    }
   }, [query]);
 
   return (

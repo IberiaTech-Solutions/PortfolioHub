@@ -150,7 +150,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 to-gray-800">
       <div className="w-full max-w-6xl mx-auto px-4 py-16 flex flex-col items-center">
         <div className="text-center mb-12">
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -495,7 +495,7 @@ export default function Home() {
                   </p>
                   <Link
                     href="/create-portfolio"
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium"
                   >
                     Create Your Portfolio
                   </Link>

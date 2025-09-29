@@ -78,7 +78,7 @@ export default function PortfolioDetailPage() {
         </h2>
         <Link
           href="/"
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+          className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
         >
           Return to Home
         </Link>

@@ -305,7 +305,7 @@ export default function CreatePortfolioPage() {
               type="button"
               onClick={handleAddNewSkill}
               disabled={loading || !newSkill.name || !newSkill.category}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 disabled:opacity-50"
             >
               {loading ? "Adding..." : "Add Skill"}
             </button>

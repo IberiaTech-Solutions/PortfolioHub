@@ -11,6 +11,8 @@ CREATE TABLE portfolios (
   job_title TEXT NOT NULL,
   description TEXT,
   website_url TEXT,
+  github_url TEXT,
+  linkedin_url TEXT,
   skills TEXT[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -148,4 +150,49 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_portfolios_updated_at
 BEFORE UPDATE ON portfolios
 FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column(); 
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Create admin users table
+CREATE TABLE admin_users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for admin_users
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+
+-- Create policy for admin users (only admins can view)
+CREATE POLICY "Only admins can view admin_users" 
+  ON admin_users 
+  FOR SELECT 
+  USING (
+    EXISTS (
+      SELECT 1 FROM admin_users 
+      WHERE user_id = auth.uid()
+    )
+  );
+
+-- Create policy for inserting admin users (only existing admins can add new admins)
+CREATE POLICY "Only admins can insert admin_users" 
+  ON admin_users 
+  FOR INSERT 
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM admin_users 
+      WHERE user_id = auth.uid()
+    )
+  );
+
+-- Function to check if user is admin
+CREATE OR REPLACE FUNCTION is_admin(user_uuid UUID DEFAULT auth.uid())
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM admin_users 
+    WHERE user_id = user_uuid
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER; 

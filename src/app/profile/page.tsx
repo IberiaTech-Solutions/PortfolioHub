@@ -275,7 +275,7 @@ export default function ProfilePage() {
                 </p>
                 <Link
                   href="/create-portfolio"
-                  className="inline-flex items-center px-6 py-3.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl font-medium space-x-2"
+                  className="inline-flex items-center px-6 py-3.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl font-medium space-x-2"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -45,6 +45,7 @@ export default function Navigation() {
                   src="/images/PortFolioHub3.png"
                   alt="PortfolioHub Logo"
                   fill
+                  sizes="240px"
                   className="object-contain"
                   priority
                 />
@@ -82,10 +83,10 @@ export default function Navigation() {
               ) : (
                 <Link
                   href="/auth"
-                  className={`px-3 py-2 rounded-md ${
+                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                     pathname === "/auth"
-                      ? "bg-white text-brand-900"
-                      : "text-white hover:bg-white/10"
+                      ? "bg-white text-gray-900"
+                      : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
                   }`}
                 >
                   Sign In / Sign Up

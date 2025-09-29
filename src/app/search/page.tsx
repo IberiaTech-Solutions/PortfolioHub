@@ -68,7 +68,7 @@ export default function SearchPage() {
           </p>
           <Link
             href="/create-portfolio"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium"
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium"
           >
             Create Your Portfolio
           </Link>

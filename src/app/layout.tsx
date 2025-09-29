@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   title: "PortfolioHub - Showcase Your Work",
   description: "Connect with talented professionals and showcase your skills to the world. Find developers, designers, and creators.",
   icons: {
-    icon: '/images/PortFolioHub5.png',
-    shortcut: '/images/PortFolioHub5.png',
-    apple: '/images/PortFolioHub5.png',
+    icon: '/images/PortfolioHub6.png',
+    shortcut: '/images/PortfolioHub6.png',
+    apple: '/images/PortfolioHub6.png',
   },
 };
 

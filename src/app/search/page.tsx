@@ -23,7 +23,7 @@ export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(true);
 
   useEffect(() => {
     const fetchPortfolios = async () => {

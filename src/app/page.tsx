@@ -77,6 +77,7 @@ export default function Home() {
       // If no query param, show default portfolios
       performSearch("");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleSearch = (e: React.FormEvent) => {

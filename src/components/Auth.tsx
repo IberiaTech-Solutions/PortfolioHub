@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -182,10 +183,12 @@ export default function Auth() {
       {/* Left side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-transparent"></div>
-        <img
+        <Image
           src="/Portfolio.jpg"
           alt="Portfolio Hub"
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
         <div className="absolute bottom-0 left-0 p-8 text-white">
           <h2 className="text-4xl font-bold mb-4">Welcome to PortfolioHub</h2>

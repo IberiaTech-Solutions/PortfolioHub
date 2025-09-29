@@ -77,7 +77,7 @@ export default function Home() {
       // If no query param, show default portfolios
       performSearch("");
     }
-  }, [searchParams]);
+  }, [searchParams, performSearch]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

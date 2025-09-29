@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
 import Link from "next/link";
-import { useDebounce } from "use-debounce";
 
 type Portfolio = {
   id: string;
@@ -25,8 +24,6 @@ export default function SearchPage() {
   const query = searchParams.get("q") || "";
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearch = useDebounce(searchQuery, 300);
 
   useEffect(() => {
     const fetchPortfolios = async () => {

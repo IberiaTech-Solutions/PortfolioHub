@@ -148,7 +148,13 @@ export default function PortfolioDetailPage() {
                   </div>
                   <h2 className="text-xl font-medium text-gray-900">About</h2>
                 </div>
-                <p className="text-gray-700 leading-relaxed">{portfolio.description}</p>
+                <div className="text-gray-700 leading-relaxed space-y-4">
+                  {portfolio.description.split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="mb-4 last:mb-0">
+                      {paragraph.trim()}
+                    </p>
+                  ))}
+                </div>
               </div>
             )}
 

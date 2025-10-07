@@ -612,16 +612,16 @@ export default function CreatePortfolioPage() {
             
             {/* AI Suggestions for Title */}
             {(aiSuggestions.title?.length > 0 || analyzingField === 'title') && (
-              <div className="mt-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <SparklesIcon className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm font-medium text-blue-300">AI Suggestions</span>
+                  <SparklesIcon className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">AI Suggestions</span>
                   {analyzingField === 'title' && (
-                    <div className="h-3 w-3 border border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   )}
                 </div>
                 {aiSuggestions.title?.map((suggestion, index) => (
-                  <p key={index} className="text-sm text-blue-200 mb-1">
+                  <p key={index} className="text-sm text-blue-600 mb-1">
                     • {suggestion}
                   </p>
                 ))}
@@ -712,10 +712,10 @@ export default function CreatePortfolioPage() {
                       key={index}
                       onClick={() => addExtractedSkill(skill)}
                       disabled={selectedSkills.includes(skill)}
-                      className={`px-3 py-1 rounded text-sm font-medium transition-all duration-200 ${
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm ${
                         selectedSkills.includes(skill)
-                          ? 'bg-green-600 text-white cursor-not-allowed'
-                          : 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-200 hover:border-green-300'
+                          ? 'bg-green-600 text-white cursor-not-allowed shadow-md'
+                          : 'bg-green-100 text-green-800 hover:bg-green-200 border border-green-300 hover:border-green-400 shadow-md hover:shadow-lg'
                       }`}
                     >
                       {selectedSkills.includes(skill) ? '✓ ' : '+ '}{skill}

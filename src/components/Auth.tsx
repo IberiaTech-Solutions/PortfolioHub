@@ -187,8 +187,8 @@ export default function Auth() {
           src="/Portfolio.jpg"
           alt="Portfolio Hub"
           fill
+          sizes="50vw"
           className="object-cover"
-          priority
         />
         <div className="absolute bottom-0 left-0 p-8 text-white">
           <h2 className="text-3xl font-light mb-4">Welcome to PortfolioHub</h2>
@@ -259,6 +259,7 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  autoComplete="email"
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   placeholder="Enter your email"
                 />
@@ -280,6 +281,7 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete={authMode === "reset_password" ? "new-password" : "current-password"}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="Enter your password"
                   />

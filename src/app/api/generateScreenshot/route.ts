@@ -118,7 +118,8 @@ async function generateScreenshotFallback(url: string): Promise<string | null> {
 }
 
 // Alternative implementation using Puppeteer (if Vercel API is not available)
-async function generateScreenshotWithPuppeteer(url: string): Promise<string | null> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function generateScreenshotWithPuppeteer(_url: string): Promise<string | null> {
   try {
     // This would require puppeteer-core and @vercel/og
     // For now, we'll use the API approach above

@@ -63,37 +63,28 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="flex items-center space-x-3">
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"></div>
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }}></div>
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto py-12 px-4 space-y-12">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto py-12 px-6 space-y-12">
         {/* Profile Header */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 overflow-hidden transform transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="relative">
-            <div className="h-48 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            <div className="h-32 bg-gray-50"></div>
             <div className="absolute -bottom-8 left-8">
-              <div className="w-32 h-32 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl flex items-center justify-center border border-white/20">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg shadow-sm flex items-center justify-center border border-gray-200">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 text-white"
+                  className="h-12 w-12 text-gray-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -109,17 +100,17 @@ export default function ProfilePage() {
           <div className="p-8 pt-16">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8">
               <div className="mb-6 md:mb-0">
-                <h1 className="text-4xl font-bold text-white mb-2">
+                <h1 className="text-3xl font-light text-gray-900 mb-2">
                   {user?.email?.split("@")[0] || "User"}
                 </h1>
-                <p className="text-xl text-gray-300">
+                <p className="text-lg text-gray-600">
                   {portfolio ? portfolio.job_title : "Portfolio Creator"}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/create-portfolio"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +128,7 @@ export default function ProfilePage() {
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-semibold transition-all duration-300 border border-white/20 hover:border-white/40"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors duration-200 border border-gray-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -156,12 +147,12 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="grid gap-6">
-              <div className="flex items-center space-x-6 p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300">
-                <span className="p-4 bg-blue-500/20 rounded-2xl">
+            <div className="grid gap-4">
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                <span className="p-3 bg-gray-200 rounded-lg">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-blue-400"
+                    className="h-6 w-6 text-gray-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -170,16 +161,16 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Email</p>
-                  <p className="text-white font-bold text-lg">{user!.email}</p>
+                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">Email</p>
+                  <p className="text-gray-900 font-medium">{user!.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                <span className="p-3 bg-white/10 rounded-xl">
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                <span className="p-3 bg-gray-200 rounded-lg">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-white"
+                    className="h-6 w-6 text-gray-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -191,37 +182,19 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-gray-400">Status</p>
-                  <p className="text-white font-semibold">
+                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">Status</p>
+                  <p className="text-gray-900 font-medium">
                     {user!.email_confirmed_at ? (
-                      <span className="inline-flex items-center space-x-1 text-green-400">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
+                      <span className="inline-flex items-center space-x-2 text-green-600">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         <span>Verified Account</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center space-x-1 text-yellow-400">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          />
+                      <span className="inline-flex items-center space-x-2 text-yellow-600">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                         </svg>
                         <span>Pending Verification</span>
                       </span>
@@ -235,150 +208,97 @@ export default function ProfilePage() {
 
         {/* Portfolio Section */}
         {portfolio ? (
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden transform transition-all duration-300 hover:shadow-lg">
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    Your Portfolio
-                  </h2>
-                  <p className="text-gray-400">
-                    Showcase your professional journey
-                  </p>
-                </div>
-                <Link
-                  href="/create-portfolio"
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl font-medium inline-flex items-center space-x-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                  <span>Edit Portfolio</span>
-                </Link>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-light text-gray-900 mb-2">
+                  Your Portfolio
+                </h2>
+                <p className="text-gray-600">
+                  Showcase your professional journey
+                </p>
+              </div>
+              <Link
+                href={`/portfolio/${portfolio.id}`}
+                className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors duration-200 font-medium"
+              >
+                View Live Portfolio
+              </Link>
+            </div>
+
+            <div className="space-y-6">
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <h3 className="text-xl font-medium text-gray-900 mb-3">
+                  {portfolio.title}
+                </h3>
+                <p className="text-lg text-gray-700 font-medium">
+                  {portfolio.job_title}
+                </p>
+                <p className="mt-4 text-gray-600 leading-relaxed">
+                  {portfolio.description}
+                </p>
               </div>
 
-              <div className="space-y-6">
-                <div className="p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/[0.07] transition-all duration-300">
-                  <h3 className="text-2xl font-bold text-white mb-3">
-                    {portfolio.title}
-                  </h3>
-                  <p className="text-lg text-gray-200 font-medium">
-                    {portfolio.job_title}
-                  </p>
-                  <p className="mt-4 text-gray-300 leading-relaxed">
-                    {portfolio.description}
-                  </p>
+              <div className="p-6 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Skills & Expertise
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {portfolio.skills &&
+                    portfolio.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm"
+                      >
+                        {skill}
+                      </span>
+                    ))}
                 </div>
-
-                <div className="p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/[0.07] transition-all duration-300">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Skills & Expertise
-                  </h3>
-                  <div className="flex flex-wrap gap-2.5">
-                    {portfolio.skills &&
-                      portfolio.skills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 bg-white/10 text-gray-200 rounded-xl text-sm font-medium border border-white/10 hover:bg-white/[0.15] hover:border-white/20 transition-all duration-200"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-
-                <Link
-                  href={`/portfolio/${portfolio.id}`}
-                  className="inline-flex items-center px-6 py-3.5 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl font-medium group"
-                >
-                  View Public Profile
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 ml-2 transform transition-transform group-hover:translate-x-1"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </Link>
               </div>
             </div>
           </div>
         ) : (
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden transform transition-all duration-300 hover:bg-white/[0.07]">
-            <div className="p-8">
-              <div className="text-center max-w-lg mx-auto">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/10">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12 text-white/80"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-white mb-4">
-                  Create Your Portfolio
-                </h2>
-                <p className="text-gray-300 mb-8 leading-relaxed">
-                  Showcase your skills and experience to potential clients and
-                  employers. Stand out from the crowd with a professional
-                  portfolio.
-                </p>
-                <Link
-                  href="/create-portfolio"
-                  className="inline-flex items-center px-6 py-3.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl font-medium space-x-2"
+          <div className="bg-white border border-gray-200 rounded-lg p-8">
+            <div className="text-center max-w-lg mx-auto">
+              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-gray-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span>Create Portfolio</span>
-                </Link>
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                </svg>
               </div>
+              <h2 className="text-xl font-medium text-gray-900 mb-4">
+                Create Your Portfolio
+              </h2>
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                Showcase your skills and experience to potential clients and
+                employers. Stand out from the crowd with a professional
+                portfolio.
+              </p>
+              <Link
+                href="/create-portfolio"
+                className="inline-flex items-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors duration-200 font-medium"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Create Portfolio
+              </Link>
             </div>
           </div>
         )}
-
-        {/* Sign Out Button */}
-        <div className="mt-8 flex justify-end">
-          <button
-            onClick={handleSignOut}
-            className="px-6 py-3.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl font-medium inline-flex items-center space-x-2"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Sign Out</span>
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -35,71 +35,73 @@ export default function Navigation() {
   }, []);
 
   return (
-    <nav className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg relative z-50">
-      <div className="max-w-6xl mx-auto px-4">
+    <nav className="bg-white border-b border-gray-200 relative z-50">
+      <div className="max-w-6xl mx-auto px-6">
         <div className="flex justify-between py-4">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="relative h-20 w-60">
-                <Image
-                  src="/images/PortFolioHub3.png"
-                  alt="PortfolioHub Logo"
-                  fill
-                  sizes="240px"
-                  className="object-contain"
-                  priority
-                />
-              </Link>
-            </div>
+            {pathname !== "/collaborations" && (
+              <div className="flex-shrink-0 flex items-center">
+                <Link href="/" className="relative h-12 w-48">
+                  <Image
+                    src="/images/PortFolioHub3.png"
+                    alt="PortfolioHub Logo"
+                    fill
+                    sizes="192px"
+                    className="object-contain"
+                    priority
+                  />
+                </Link>
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             {!loading &&
               (user ? (
                 <>
                   <Link
                     href="/create-portfolio"
-                    className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                       pathname === "/create-portfolio"
-                        ? "bg-white text-gray-900"
-                        : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                     }`}
                   >
                     {pathname === "/create-portfolio"
                       ? "Edit Portfolio"
                       : "Create Portfolio"}
                   </Link>
-                    <Link
-                      href="/profile"
-                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                        pathname === "/profile"
-                          ? "bg-white text-gray-900"
-                          : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
-                      }`}
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      href="/collaborations"
-                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                        pathname === "/collaborations"
-                          ? "bg-white text-gray-900"
-                          : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
-                      }`}
-                    >
-                      Collaborations
-                    </Link>
+                  <Link
+                    href="/profile"
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      pathname === "/profile"
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/collaborations"
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      pathname === "/collaborations"
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    Collaborations
+                  </Link>
                 </>
               ) : (
                 <Link
                   href="/auth"
-                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                     pathname === "/auth"
-                      ? "bg-white text-gray-900"
-                      : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   }`}
                 >
-                  Sign In / Sign Up
+                  Sign In
                 </Link>
               ))}
           </div>

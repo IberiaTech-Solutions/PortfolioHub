@@ -34,36 +34,36 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <CodeBracketIcon className="h-5 w-5 text-blue-400" />
-        <h3 className="text-lg font-semibold text-white">Featured Projects</h3>
-        <span className="text-sm text-gray-400">({projects.length})</span>
+        <CodeBracketIcon className="h-5 w-5 text-gray-600" />
+        <h3 className="text-lg font-medium text-gray-900">Featured Projects</h3>
+        <span className="text-sm text-gray-500">({projects.length})</span>
       </div>
       
       <div className="grid gap-4 md:grid-cols-2">
         {projects.map((project, index) => (
           <div
             key={index}
-            className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-200 group"
+            className="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:bg-gray-100 transition-all duration-200 group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
-                <h4 className="text-lg font-semibold text-white group-hover:text-blue-300 transition-colors">
+                <h4 className="text-lg font-medium text-gray-900 group-hover:text-gray-700 transition-colors">
                   {project.title}
                 </h4>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 mt-1">
                   Updated {formatDate(project.lastUpdated)}
                 </p>
               </div>
               
               <div className="flex items-center gap-2">
                 {project.stars !== undefined && (
-                  <div className="flex items-center gap-1 text-yellow-400">
+                    <div className="flex items-center gap-1 text-yellow-600">
                     <StarIcon className="h-4 w-4" />
                     <span className="text-sm">{project.stars}</span>
                   </div>
                 )}
                 {project.forks !== undefined && (
-                  <div className="flex items-center gap-1 text-gray-400">
+                    <div className="flex items-center gap-1 text-gray-500">
                     <CodeBracketIcon className="h-4 w-4" />
                     <span className="text-sm">{project.forks}</span>
                   </div>
@@ -71,7 +71,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                 {editable && onRemoveProject && (
                   <button
                     onClick={() => onRemoveProject(index)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
+                    className="text-red-600 hover:text-red-500 transition-colors"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -81,7 +81,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
               </div>
             </div>
 
-            <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
               {project.description}
             </p>
 
@@ -90,7 +90,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                 {project.techStack.map((tech, techIndex) => (
                   <span
                     key={techIndex}
-                    className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full border border-blue-500/30"
+                    className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded border border-gray-200"
                   >
                     {tech}
                   </span>
@@ -101,7 +101,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {project.language && (
-                  <span className="px-2 py-1 bg-gray-600/30 text-gray-300 text-xs rounded-full">
+                  <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">
                     {project.language}
                   </span>
                 )}
@@ -111,7 +111,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium"
+                className="inline-flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium"
               >
                 View Project
                 <ArrowTopRightOnSquareIcon className="h-4 w-4" />

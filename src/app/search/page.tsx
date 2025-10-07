@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
 import Link from "next/link";
@@ -19,7 +19,7 @@ type Portfolio = {
   name: string;
 };
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -122,5 +122,13 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-8 px-4">Loading...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

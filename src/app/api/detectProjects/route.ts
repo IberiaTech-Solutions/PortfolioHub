@@ -104,7 +104,7 @@ async function fetchGitHubProjects(githubUrl: string): Promise<Project[]> {
       techStack: repo.language ? [repo.language] : [],
       stars: repo.stargazers_count,
       forks: repo.forks_count,
-      language: repo.language,
+      language: repo.language || undefined,
       lastUpdated: repo.updated_at,
     }));
 

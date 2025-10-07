@@ -179,10 +179,10 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-r from-gray-900 to-gray-800">
+    <div className="min-h-screen flex bg-white">
       {/* Left side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gray-50"></div>
         <Image
           src="/Portfolio.jpg"
           alt="Portfolio Hub"
@@ -191,8 +191,8 @@ export default function Auth() {
           priority
         />
         <div className="absolute bottom-0 left-0 p-8 text-white">
-          <h2 className="text-4xl font-bold mb-4">Welcome to PortfolioHub</h2>
-          <p className="text-gray-300 text-lg">
+          <h2 className="text-3xl font-light mb-4">Welcome to PortfolioHub</h2>
+          <p className="text-gray-200 text-lg">
             Showcase your work, connect with professionals, and grow your
             career.
           </p>
@@ -202,9 +202,9 @@ export default function Auth() {
       {/* Right side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-8 shadow-xl">
+          <div className="bg-white border border-gray-200 rounded-lg p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2">
+              <h1 className="text-2xl font-light text-gray-900 mb-2">
                 {authMode === "signin"
                   ? "Welcome Back"
                   : authMode === "signup"
@@ -213,7 +213,7 @@ export default function Auth() {
                   ? "Set New Password"
                   : "Reset Password"}
               </h1>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 {authMode === "signin"
                   ? "Sign in to your account"
                   : authMode === "signup"
@@ -225,13 +225,13 @@ export default function Auth() {
             </div>
 
             {errorMessage && (
-              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                 {errorMessage}
               </div>
             )}
 
             {successMessage && (
-              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-sm">
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
                 {successMessage}
               </div>
             )}
@@ -249,7 +249,7 @@ export default function Auth() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-300 mb-2"
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Email
                 </label>
@@ -259,7 +259,7 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   placeholder="Enter your email"
                 />
               </div>
@@ -270,7 +270,7 @@ export default function Auth() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-gray-700 mb-2"
                   >
                     Password
                   </label>
@@ -280,7 +280,7 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="Enter your password"
                   />
                 </div>
@@ -289,7 +289,7 @@ export default function Auth() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors duration-200"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">

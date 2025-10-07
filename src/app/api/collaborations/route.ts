@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const updateData: any = { status };
+    const updateData: { status: string; verified_at?: string } = { status };
     if (status === 'accepted') {
       updateData.verified_at = new Date().toISOString();
     }

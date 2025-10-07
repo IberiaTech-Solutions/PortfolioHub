@@ -57,9 +57,9 @@ export default function CollaborationManager({
         project_title: newCollaboration.projectTitle,
         project_description: newCollaboration.projectDescription,
         role: newCollaboration.role,
-        status: 'pending',
+        status: 'pending' as const,
         created_at: new Date().toISOString(),
-        verified_at: null
+        verified_at: undefined
       };
       
       onCollaborationsChange([...collaborations, tempCollaboration]);
@@ -159,9 +159,9 @@ export default function CollaborationManager({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <UserGroupIcon className="h-5 w-5 text-purple-400" />
-          <h3 className="text-lg font-semibold text-white">Collaborated With</h3>
-          <span className="text-sm text-gray-400">({collaborations.length})</span>
+          <UserGroupIcon className="h-5 w-5 text-gray-600" />
+          <h3 className="text-lg font-medium text-gray-900">Collaborated With</h3>
+          <span className="text-sm text-gray-500">({collaborations.length})</span>
         </div>
         <button
           type="button"
@@ -171,7 +171,7 @@ export default function CollaborationManager({
             console.log('Add Collaboration button clicked');
             setIsAdding(true);
           }}
-          className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-lg hover:bg-purple-500/30 transition-colors text-sm"
+          className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm border border-gray-200"
         >
           <PlusIcon className="h-4 w-4" />
           Add Collaboration
@@ -180,21 +180,21 @@ export default function CollaborationManager({
 
       {/* Add Collaboration Form */}
       {isAdding && (
-        <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 space-y-3">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
               type="text"
               placeholder="Collaborator Name"
               value={newCollaboration.collaboratorName}
               onChange={(e) => setNewCollaboration(prev => ({ ...prev, collaboratorName: e.target.value }))}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
             <input
               type="email"
               placeholder="Collaborator Email"
               value={newCollaboration.collaboratorEmail}
               onChange={(e) => setNewCollaboration(prev => ({ ...prev, collaboratorEmail: e.target.value }))}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
           <input
@@ -223,14 +223,14 @@ export default function CollaborationManager({
               type="button"
               onClick={handleAddCollaboration}
               disabled={loading}
-              className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               {loading ? 'Adding...' : 'Add Collaboration'}
             </button>
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
             >
               Cancel
             </button>
@@ -244,26 +244,26 @@ export default function CollaborationManager({
           {collaborations.map((collaboration) => (
             <div
               key={collaboration.id}
-              className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors"
+              className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-semibold text-white">{collaboration.collaborator_name}</h4>
+                    <h4 className="font-medium text-gray-900">{collaboration.collaborator_name}</h4>
                     <div className="flex items-center gap-1">
                       {getStatusIcon(collaboration.status)}
-                      <span className="text-sm text-gray-400">{getStatusText(collaboration.status)}</span>
+                      <span className="text-sm text-gray-500">{getStatusText(collaboration.status)}</span>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-300 mb-1">{collaboration.project_title}</p>
-                  <p className="text-sm text-gray-400 mb-2">Role: {collaboration.role}</p>
+                  <p className="text-sm text-gray-600 mb-1">{collaboration.project_title}</p>
+                  <p className="text-sm text-gray-500 mb-2">Role: {collaboration.role}</p>
                   {collaboration.project_description && (
-                    <p className="text-sm text-gray-400">{collaboration.project_description}</p>
+                    <p className="text-sm text-gray-500">{collaboration.project_description}</p>
                   )}
                 </div>
                 <button
                   onClick={() => handleRemoveCollaboration(collaboration.id)}
-                  className="text-red-400 hover:text-red-300 transition-colors"
+                  className="text-red-600 hover:text-red-500 transition-colors"
                 >
                   <XMarkIcon className="h-4 w-4" />
                 </button>
@@ -274,7 +274,7 @@ export default function CollaborationManager({
       )}
 
       {collaborations.length === 0 && !isAdding && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-gray-500">
           <UserGroupIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
           <p>No collaborations yet</p>
           <p className="text-sm">Add collaborators to build your professional network</p>

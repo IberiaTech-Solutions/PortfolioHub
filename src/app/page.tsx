@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
-import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import {
   ChevronDownIcon,
@@ -26,7 +25,7 @@ type Portfolio = {
   name: string;
 };
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -151,48 +150,36 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundSize: '60px 60px'
-          }}></div>
-        </div>
-        
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 py-20">
+      <div className="relative">
+        <div className="max-w-4xl mx-auto px-6 py-24">
           <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent leading-tight">
+            <h1 className="text-6xl font-light text-gray-900 mb-6 tracking-tight">
               Find Your Next
               <br />
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Collaboration
-              </span>
+              <span className="font-normal text-gray-700">Collaboration</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-light">
               Connect with talented developers, designers, and creators. 
-              Discover amazing portfolios and build your next project together.
+              Discover portfolios and build your next project together.
             </p>
           </div>
 
           {/* Search Section */}
-          <div className="w-full max-w-3xl mx-auto mb-12">
-            <form onSubmit={handleSearch} className="relative group">
+          <div className="w-full max-w-2xl mx-auto mb-12">
+            <form onSubmit={handleSearch} className="relative">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search by skill, expertise, or job title..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-8 py-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 text-lg shadow-2xl"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 text-lg"
                 />
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 <button
                   type="submit"
-                  className="absolute right-3 top-3 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                  className="absolute right-2 top-2 px-6 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-md font-medium transition-colors duration-200"
                 >
                   Search
                 </button>
@@ -203,11 +190,11 @@ export default function Home() {
             <div className="flex items-center justify-center mt-6">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-gray-300 hover:text-white hover:bg-white/20 transition-all duration-300 group"
+                className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 group-hover:rotate-180 transition-transform duration-300"
+                  className="h-4 w-4"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -217,9 +204,9 @@ export default function Home() {
                     clipRule="evenodd"
                   />
                 </svg>
-                Advanced Filters
+                Filters
                 {(selectedSkills.length > 0 || selectedJobTitles.length > 0) && (
-                  <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm px-3 py-1 rounded-full font-medium">
+                  <span className="bg-gray-900 text-white text-xs px-2 py-1 rounded-full">
                     {selectedSkills.length + selectedJobTitles.length}
                   </span>
                 )}
@@ -227,20 +214,20 @@ export default function Home() {
               {(selectedSkills.length > 0 || selectedJobTitles.length > 0) && (
                 <button
                   onClick={clearFilters}
-                  className="ml-4 text-gray-400 hover:text-gray-300 text-sm font-medium transition-colors duration-200"
+                  className="ml-4 text-gray-400 hover:text-gray-600 text-sm transition-colors duration-200"
                 >
-                  Clear all filters
+                  Clear all
                 </button>
               )}
             </div>
 
             {/* Filters Panel */}
             {showFilters && (
-              <div className="mt-8 p-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl space-y-6 relative z-50 shadow-2xl">
+              <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-6">
                 {/* Skills Filter */}
                 <div className="relative">
-                  <label className="block text-lg font-semibold text-white mb-4">
-                    Filter by Skills
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Skills
                   </label>
                   <Listbox
                     value={selectedSkills}
@@ -251,29 +238,29 @@ export default function Home() {
                     multiple
                   >
                     <div className="relative">
-                      <Listbox.Button className="relative w-full py-4 pl-6 pr-12 text-left bg-white/10 border border-white/20 rounded-xl cursor-default focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/30 focus-visible:border-blue-400 transition-all duration-300">
-                        <span className="block truncate text-gray-200 text-lg">
+                      <Listbox.Button className="relative w-full py-3 pl-4 pr-10 text-left bg-white border border-gray-200 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+                        <span className="block truncate text-gray-900">
                           {selectedSkills.length === 0
-                            ? "Select skills to filter by"
-                            : `${selectedSkills.length} skill${selectedSkills.length > 1 ? 's' : ''} selected`}
+                            ? "Select skills"
+                            : `${selectedSkills.length} selected`}
                         </span>
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-3">
                           <ChevronDownIcon
-                            className="h-6 w-6 text-gray-400"
+                            className="h-5 w-5 text-gray-400"
                             aria-hidden="true"
                           />
                         </span>
                       </Listbox.Button>
                       <Transition
                         as={Fragment}
-                        leave="transition ease-in duration-200"
+                        leave="transition ease-in duration-100"
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                       >
-                        <Listbox.Options className="absolute z-[60] mt-2 max-h-60 w-full overflow-auto rounded-xl bg-gray-800/95 backdrop-blur-xl border border-white/20 py-2 text-base shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                           {availableSkills.length === 0 ? (
-                            <div className="px-6 py-4 text-gray-400 text-sm">
-                              No skills found in the database yet.
+                            <div className="px-4 py-3 text-gray-500 text-sm">
+                              No skills found yet.
                             </div>
                           ) : (
                             availableSkills.map((skill) => (
@@ -281,24 +268,24 @@ export default function Home() {
                                 key={skill}
                                 value={skill}
                                 className={({ active }) =>
-                                  `relative cursor-default select-none py-3 pl-10 pr-4 ${
+                                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                     active
-                                      ? "bg-blue-500/20 text-blue-300"
-                                      : "text-gray-300"
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-900"
                                   }`
                                 }
                               >
                                 {({ selected }) => (
                                   <>
                                     <span
-                                      className={`block truncate text-lg ${
-                                        selected ? "font-semibold" : "font-normal"
+                                      className={`block truncate ${
+                                        selected ? "font-medium" : "font-normal"
                                       }`}
                                     >
                                       {skill}
                                     </span>
                                     {selected ? (
-                                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-blue-400">
+                                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-900">
                                         <svg
                                           className="h-5 w-5"
                                           viewBox="0 0 20 20"
@@ -317,19 +304,6 @@ export default function Home() {
                               </Listbox.Option>
                             ))
                           )}
-                          <div className="px-6 py-4 border-t border-white/10">
-                            <p className="text-gray-400 text-sm mb-3">
-                              Can&apos;t find a skill? Skills are added to our
-                              database when portfolios are created.
-                            </p>
-                            <Link
-                              href="/create-portfolio"
-                              className="inline-flex items-center text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
-                            >
-                              <PlusIcon className="h-4 w-4 mr-2" />
-                              Create Portfolio
-                            </Link>
-                          </div>
                         </Listbox.Options>
                       </Transition>
                     </div>
@@ -338,8 +312,8 @@ export default function Home() {
 
                 {/* Job Titles Filter */}
                 <div className="relative">
-                  <label className="block text-lg font-semibold text-white mb-4">
-                    Filter by Job Title
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Job Titles
                   </label>
                   <Listbox
                     value={selectedJobTitles}
@@ -350,29 +324,29 @@ export default function Home() {
                     multiple
                   >
                     <div className="relative">
-                      <Listbox.Button className="relative w-full py-4 pl-6 pr-12 text-left bg-white/10 border border-white/20 rounded-xl cursor-default focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-500/30 focus-visible:border-purple-400 transition-all duration-300">
-                        <span className="block truncate text-gray-200 text-lg">
+                      <Listbox.Button className="relative w-full py-3 pl-4 pr-10 text-left bg-white border border-gray-200 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+                        <span className="block truncate text-gray-900">
                           {selectedJobTitles.length === 0
-                            ? "Select job titles to filter by"
-                            : `${selectedJobTitles.length} job title${selectedJobTitles.length > 1 ? 's' : ''} selected`}
+                            ? "Select job titles"
+                            : `${selectedJobTitles.length} selected`}
                         </span>
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-3">
                           <ChevronDownIcon
-                            className="h-6 w-6 text-gray-400"
+                            className="h-5 w-5 text-gray-400"
                             aria-hidden="true"
                           />
                         </span>
                       </Listbox.Button>
                       <Transition
                         as={Fragment}
-                        leave="transition ease-in duration-200"
+                        leave="transition ease-in duration-100"
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                       >
-                        <Listbox.Options className="absolute z-[60] mt-2 max-h-60 w-full overflow-auto rounded-xl bg-gray-800/95 backdrop-blur-xl border border-white/20 py-2 text-base shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                           {availableJobTitles.length === 0 ? (
-                            <div className="px-6 py-4 text-gray-400 text-sm">
-                              No job titles found in the database yet.
+                            <div className="px-4 py-3 text-gray-500 text-sm">
+                              No job titles found yet.
                             </div>
                           ) : (
                             availableJobTitles.map((title) => (
@@ -380,24 +354,24 @@ export default function Home() {
                                 key={title}
                                 value={title}
                                 className={({ active }) =>
-                                  `relative cursor-default select-none py-3 pl-10 pr-4 ${
+                                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                     active
-                                      ? "bg-purple-500/20 text-purple-300"
-                                      : "text-gray-300"
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-900"
                                   }`
                                 }
                               >
                                 {({ selected }) => (
                                   <>
                                     <span
-                                      className={`block truncate text-lg ${
-                                        selected ? "font-semibold" : "font-normal"
+                                      className={`block truncate ${
+                                        selected ? "font-medium" : "font-normal"
                                       }`}
                                     >
                                       {title}
                                     </span>
                                     {selected ? (
-                                      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-purple-400">
+                                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-900">
                                         <svg
                                           className="h-5 w-5"
                                           viewBox="0 0 20 20"
@@ -416,19 +390,6 @@ export default function Home() {
                               </Listbox.Option>
                             ))
                           )}
-                          <div className="px-6 py-4 border-t border-white/10">
-                            <p className="text-gray-400 text-sm mb-3">
-                              Can&apos;t find a job title? Job titles are added
-                              when portfolios are created.
-                            </p>
-                            <Link
-                              href="/create-portfolio"
-                              className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors duration-200"
-                            >
-                              <PlusIcon className="h-4 w-4 mr-2" />
-                              Create Portfolio
-                            </Link>
-                          </div>
                         </Listbox.Options>
                       </Transition>
                     </div>
@@ -437,13 +398,13 @@ export default function Home() {
 
                 {/* Selected Filters Display */}
                 {(selectedSkills.length > 0 || selectedJobTitles.length > 0) && (
-                  <div className="pt-6 border-t border-white/20">
-                    <h3 className="text-lg font-semibold text-white mb-4">Active Filters</h3>
-                    <div className="flex flex-wrap gap-3">
+                  <div className="pt-4 border-t border-gray-200">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Active Filters</h3>
+                    <div className="flex flex-wrap gap-2">
                       {selectedSkills.map((skill) => (
                         <span
                           key={skill}
-                          className="inline-flex items-center px-4 py-2 rounded-xl bg-blue-500/20 text-blue-300 text-sm border border-blue-500/30 backdrop-blur-sm"
+                          className="inline-flex items-center px-3 py-1 rounded-full bg-gray-900 text-white text-sm"
                         >
                           {skill}
                           <button
@@ -453,7 +414,7 @@ export default function Home() {
                               );
                               performSearch(searchQuery);
                             }}
-                            className="ml-2 hover:text-blue-200 transition-colors duration-200"
+                            className="ml-2 hover:text-gray-300 transition-colors duration-200"
                           >
                             <XMarkIcon className="h-4 w-4" />
                           </button>
@@ -462,7 +423,7 @@ export default function Home() {
                       {selectedJobTitles.map((title) => (
                         <span
                           key={title}
-                          className="inline-flex items-center px-4 py-2 rounded-xl bg-purple-500/20 text-purple-300 text-sm border border-purple-500/30 backdrop-blur-sm"
+                          className="inline-flex items-center px-3 py-1 rounded-full bg-gray-700 text-white text-sm"
                         >
                           {title}
                           <button
@@ -472,7 +433,7 @@ export default function Home() {
                               );
                               performSearch(searchQuery);
                             }}
-                            className="ml-2 hover:text-purple-200 transition-colors duration-200"
+                            className="ml-2 hover:text-gray-300 transition-colors duration-200"
                           >
                             <XMarkIcon className="h-4 w-4" />
                           </button>
@@ -488,48 +449,43 @@ export default function Home() {
       </div>
 
       {/* Results Section */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pb-20">
+      <div className="max-w-6xl mx-auto px-6 pb-24">
         {loading ? (
           <div className="text-center py-20">
-            <div className="flex items-center justify-center space-x-3 mb-6">
-              <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-4 h-4 bg-pink-500 rounded-full animate-bounce"></div>
+            <div className="flex items-center justify-center space-x-2 mb-6">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
             </div>
-            <p className="text-xl text-gray-300 font-medium">Discovering amazing portfolios...</p>
+            <p className="text-gray-600">Loading portfolios...</p>
           </div>
         ) : hasSearched ? (
           <div className="w-full">
             <div className="mb-12 text-center">
-              <h2 className="text-4xl font-bold text-white mb-4">
+              <h2 className="text-3xl font-light text-gray-900 mb-2">
                 {searchQuery
                   ? `Results for "${searchQuery}"`
                   : "Featured Portfolios"}
               </h2>
-              <p className="text-xl text-gray-400">
-                Found {portfolios.length} amazing {portfolios.length === 1 ? 'portfolio' : 'portfolios'}
+              <p className="text-gray-600">
+                {portfolios.length} {portfolios.length === 1 ? 'portfolio' : 'portfolios'} found
               </p>
             </div>
 
             {portfolios.length === 0 ? (
-              <div className="text-center py-20 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl">
-                <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">
+              <div className="text-center py-20 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
                   No portfolios found
                 </h3>
-                <p className="text-gray-400 mb-8 text-lg max-w-md mx-auto">
-                  Try a different search term or browse all portfolios to discover amazing talent
+                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                  Try a different search term or browse all portfolios to discover talent
                 </p>
                 <Link
                   href="/create-portfolio"
-                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200"
                 >
-                  <PlusIcon className="h-5 w-5 mr-2" />
-                  Create Your Portfolio
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Create Portfolio
                 </Link>
               </div>
             ) : (
@@ -537,30 +493,30 @@ export default function Home() {
                 {portfolios.map((portfolio) => (
                   <div
                     key={portfolio.id}
-                    className="group bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden hover:border-white/40 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+                    className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
                   >
-                    <div className="p-8">
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300">
+                    <div className="p-6">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-gray-700 transition-colors duration-200">
                         {portfolio.title}
                       </h3>
-                      <p className="text-gray-400 text-sm mb-4 font-medium">
+                      <p className="text-gray-600 text-sm mb-3">
                         {portfolio.name} • {portfolio.job_title}
                       </p>
-                      <p className="text-gray-300 mb-6 line-clamp-3 leading-relaxed">
+                      <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed">
                         {portfolio.description}
                       </p>
-                      <div className="mb-6 flex flex-wrap gap-2">
+                      <div className="mb-4 flex flex-wrap gap-2">
                         {portfolio.skills &&
                           portfolio.skills.slice(0, 4).map((skill, index) => (
                             <span
                               key={index}
-                              className="bg-white/10 text-gray-300 text-sm px-3 py-1 rounded-lg hover:bg-white/20 transition-colors duration-200"
+                              className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
                             >
                               {skill}
                             </span>
                           ))}
                         {portfolio.skills && portfolio.skills.length > 4 && (
-                          <span className="bg-white/10 text-gray-400 text-sm px-3 py-1 rounded-lg">
+                          <span className="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded">
                             +{portfolio.skills.length - 4} more
                           </span>
                         )}
@@ -568,12 +524,12 @@ export default function Home() {
                       <div className="flex justify-between items-center">
                         <Link
                           href={`/portfolio/${portfolio.id}`}
-                          className="text-blue-400 hover:text-blue-300 font-semibold flex items-center group/link transition-colors duration-200"
+                          className="text-gray-900 hover:text-gray-700 font-medium flex items-center transition-colors duration-200"
                         >
                           View Profile
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 ml-2 transform transition-transform group-hover/link:translate-x-1"
+                            className="h-4 w-4 ml-1 transform transition-transform group-hover:translate-x-1"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                           >
@@ -589,9 +545,9 @@ export default function Home() {
                             href={portfolio.website_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-gray-300 flex items-center transition-colors duration-200"
+                            className="text-gray-500 hover:text-gray-700 flex items-center transition-colors duration-200"
                           >
-                            Visit Website
+                            Website
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="h-4 w-4 ml-1"
@@ -616,5 +572,13 @@ export default function Home() {
         ) : null}
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

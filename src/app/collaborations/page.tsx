@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import { User } from '@supabase/supabase-js';
-import { CheckIcon, XMarkIcon, ClockIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, XMarkIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 interface Collaboration {
   id: string;
@@ -83,11 +83,11 @@ export default function CollaborationVerification() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'accepted':
-        return <CheckIcon className="h-5 w-5 text-green-400" />;
+        return <CheckIcon className="h-5 w-5 text-green-600" />;
       case 'declined':
-        return <XMarkIcon className="h-5 w-5 text-red-400" />;
+        return <XMarkIcon className="h-5 w-5 text-red-600" />;
       default:
-        return <ClockIcon className="h-5 w-5 text-yellow-400" />;
+        return <ClockIcon className="h-5 w-5 text-yellow-600" />;
     }
   };
 
@@ -104,14 +104,11 @@ export default function CollaborationVerification() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="w-4 h-4 bg-pink-500 rounded-full animate-bounce"></div>
-          </div>
-          <p className="text-xl text-gray-300 font-medium">Loading collaboration requests...</p>
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
         </div>
       </div>
     );
@@ -119,55 +116,36 @@ export default function CollaborationVerification() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">Please Sign In</h1>
-          <p className="text-xl text-gray-300">You need to be signed in to view collaboration requests.</p>
+          <h1 className="text-3xl font-light text-gray-900 mb-4">Please Sign In</h1>
+          <p className="text-lg text-gray-600">You need to be signed in to view collaboration requests.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }}></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto max-w-6xl py-12 px-4">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto py-12 px-6">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="p-4 bg-purple-500/20 rounded-2xl">
-              <UserGroupIcon className="h-12 w-12 text-purple-400" />
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent leading-tight">
-              Collaboration
-              <br />
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Requests
-              </span>
-            </h1>
-          </div>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <h1 className="text-4xl font-light text-gray-900 mb-6">
+            Collaboration
+            <br />
+            <span className="font-normal text-gray-700">Requests</span>
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Manage collaboration requests from other professionals who want to showcase their work with you
           </p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+        <div className="bg-white border border-gray-200 rounded-lg p-8">
           {collaborations.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full flex items-center justify-center">
-                <UserGroupIcon className="h-12 w-12 text-gray-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">No Collaboration Requests</h3>
-              <p className="text-gray-400 mb-8 text-lg max-w-md mx-auto">
-                You haven't been tagged in any collaborations yet. When someone includes you in their portfolio, you'll see the request here.
+              <h3 className="text-2xl font-light text-gray-900 mb-4">No Collaboration Requests</h3>
+              <p className="text-gray-600 mb-8 text-lg max-w-md mx-auto">
+                You haven&apos;t been tagged in any collaborations yet. When someone includes you in their portfolio, you&apos;ll see the request here.
               </p>
             </div>
           ) : (
@@ -175,31 +153,31 @@ export default function CollaborationVerification() {
               {collaborations.map((collaboration) => (
                 <div
                   key={collaboration.id}
-                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:border-white/40 transition-all duration-300 hover:shadow-xl"
+                  className="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:bg-gray-100 transition-all duration-200"
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-2xl font-bold text-white">
+                        <h3 className="text-xl font-medium text-gray-900">
                           {collaboration.portfolios.name}
                         </h3>
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10">
+                        <div className="flex items-center gap-2 px-3 py-1 rounded bg-gray-100 border border-gray-200">
                           {getStatusIcon(collaboration.status)}
-                          <span className="text-sm font-semibold text-gray-300">{getStatusText(collaboration.status)}</span>
+                          <span className="text-sm font-medium text-gray-600">{getStatusText(collaboration.status)}</span>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-lg text-gray-300">
-                          <span className="font-semibold text-white">Portfolio:</span> {collaboration.portfolios.title}
+                        <p className="text-gray-700">
+                          <span className="font-medium text-gray-900">Portfolio:</span> {collaboration.portfolios.title}
                         </p>
-                        <p className="text-lg text-gray-300">
-                          <span className="font-semibold text-white">Project:</span> {collaboration.project_title}
+                        <p className="text-gray-700">
+                          <span className="font-medium text-gray-900">Project:</span> {collaboration.project_title}
                         </p>
-                        <p className="text-lg text-gray-300">
-                          <span className="font-semibold text-white">Your Role:</span> {collaboration.role}
+                        <p className="text-gray-700">
+                          <span className="font-medium text-gray-900">Your Role:</span> {collaboration.role}
                         </p>
                         {collaboration.project_description && (
-                          <p className="text-gray-400 mt-3 leading-relaxed">
+                          <p className="text-gray-600 mt-3 leading-relaxed">
                             {collaboration.project_description}
                           </p>
                         )}
@@ -211,14 +189,14 @@ export default function CollaborationVerification() {
                     <div className="flex gap-4">
                       <button
                         onClick={() => updateCollaborationStatus(collaboration.id, 'accepted')}
-                        className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                        className="flex items-center gap-3 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200"
                       >
                         <CheckIcon className="h-5 w-5" />
                         Accept & Verify
                       </button>
                       <button
                         onClick={() => updateCollaborationStatus(collaboration.id, 'declined')}
-                        className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                        className="flex items-center gap-3 px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors duration-200 border border-gray-200"
                       >
                         <XMarkIcon className="h-5 w-5" />
                         Decline
@@ -227,7 +205,7 @@ export default function CollaborationVerification() {
                   )}
 
                   {collaboration.status === 'accepted' && collaboration.verified_at && (
-                    <div className="flex items-center gap-2 text-green-400 text-lg font-semibold">
+                    <div className="flex items-center gap-2 text-green-600 text-lg font-medium">
                       <CheckIcon className="h-6 w-6" />
                       Verified on {new Date(collaboration.verified_at).toLocaleDateString()}
                     </div>

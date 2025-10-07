@@ -9,11 +9,9 @@ import {
   CheckIcon,
   ChevronUpDownIcon,
   XMarkIcon,
-  PlusIcon,
   SparklesIcon,
 } from "@heroicons/react/20/solid";
 import ProjectCards from "@/components/ProjectCards";
-import ScreenshotPreview from "@/components/ScreenshotPreview";
 import CollaborationManager from "@/components/CollaborationManager";
 
 type Project = {
@@ -77,7 +75,6 @@ export default function CreatePortfolioPage() {
   const [detectedProjects, setDetectedProjects] = useState<Project[]>([]);
   const [detectingProjects, setDetectingProjects] = useState(false);
   const [websiteScreenshot, setWebsiteScreenshot] = useState<string>("");
-  const [generatingScreenshot, setGeneratingScreenshot] = useState(false);
   const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -210,7 +207,6 @@ export default function CreatePortfolioPage() {
         return;
       }
 
-      setGeneratingScreenshot(true);
       try {
         const response = await fetch('/api/generateScreenshot', {
           method: 'POST',
@@ -226,51 +222,45 @@ export default function CreatePortfolioPage() {
         }
       } catch (error) {
         console.error('Error generating screenshot:', error);
-      } finally {
-        setGeneratingScreenshot(false);
       }
     },
     []
   );
 
-  // Debounce function
-  const debounce = (func: Function, wait: number) => {
-    let timeout: NodeJS.Timeout;
-    return function executedFunction(...args: any[]) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
 
   const debouncedAnalyze = useCallback(
-    debounce((field: string, content: string, fieldType: string) => {
-      analyzeField(field, content, fieldType);
-    }, 1500),
+    (field: string, content: string, fieldType: string) => {
+      setTimeout(() => {
+        analyzeField(field, content, fieldType);
+      }, 1500);
+    },
     [analyzeField]
   );
 
   const debouncedExtractSkills = useCallback(
-    debounce((content: string) => {
-      extractSkillsFromDescription(content);
-    }, 2000),
+    (content: string) => {
+      setTimeout(() => {
+        extractSkillsFromDescription(content);
+      }, 2000);
+    },
     [extractSkillsFromDescription]
   );
 
   const debouncedDetectProjects = useCallback(
-    debounce((githubUrl: string, websiteUrl: string) => {
-      detectProjects(githubUrl, websiteUrl);
-    }, 3000),
+    (githubUrl: string, websiteUrl: string) => {
+      setTimeout(() => {
+        detectProjects(githubUrl, websiteUrl);
+      }, 3000);
+    },
     [detectProjects]
   );
 
   const debouncedGenerateScreenshot = useCallback(
-    debounce((url: string) => {
-      generateScreenshot(url);
-    }, 2000),
+    (url: string) => {
+      setTimeout(() => {
+        generateScreenshot(url);
+      }, 2000);
+    },
     [generateScreenshot]
   );
 
@@ -489,7 +479,7 @@ export default function CreatePortfolioPage() {
               onChange={(e) =>
                 setNewSkill({ ...newSkill, name: e.target.value })
               }
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="Enter skill name"
               required
             />
@@ -503,7 +493,7 @@ export default function CreatePortfolioPage() {
               onChange={(e) =>
                 setNewSkill({ ...newSkill, category: e.target.value })
               }
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               required
             >
               <option value="">Select a category</option>
@@ -541,49 +531,38 @@ export default function CreatePortfolioPage() {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="flex items-center space-x-3">
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"></div>
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }}></div>
-      </div>
-
-      <div className="relative z-10 container mx-auto max-w-4xl py-12 px-4">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto py-12 px-6">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent leading-tight">
+          <h1 className="text-4xl font-light text-gray-900 mb-4">
             {existingPortfolio ? "Edit Your" : "Create Your"}
             <br />
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Portfolio
-            </span>
+            <span className="font-normal text-gray-700">Portfolio</span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Showcase your skills, projects, and collaborations in a beautiful, professional portfolio
           </p>
         </div>
 
         {/* AI Features Banner */}
-        <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-xl border border-blue-500/20 rounded-2xl shadow-2xl">
+        <div className="mb-8 p-6 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="flex items-center gap-3 mb-3">
-            <SparklesIcon className="h-6 w-6 text-blue-400" />
-            <h3 className="text-xl font-bold text-white">AI-Powered Portfolio Builder</h3>
+            <SparklesIcon className="h-5 w-5 text-gray-600" />
+            <h3 className="text-lg font-medium text-gray-900">AI-Powered Portfolio Builder</h3>
           </div>
-          <p className="text-gray-300 leading-relaxed">
+          <p className="text-gray-600 leading-relaxed">
             Our AI assistant analyzes your content in real-time and provides suggestions to improve clarity, impact, and professional presentation. 
             It also automatically detects skills from your description and fetches project information to save you time.
           </p>
@@ -591,10 +570,10 @@ export default function CreatePortfolioPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 space-y-8 shadow-2xl"
+          className="bg-white border border-gray-200 rounded-lg p-8 space-y-8"
         >
           <div className="space-y-3">
-            <label htmlFor="name" className="block text-lg font-semibold text-white">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Your Full Name
             </label>
             <input
@@ -604,16 +583,16 @@ export default function CreatePortfolioPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 text-lg shadow-lg"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="John Doe"
             />
           </div>
 
           <div className="space-y-3">
-            <label htmlFor="title" className="block text-lg font-semibold text-white">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
               Portfolio Title
-              <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                <SparklesIcon className="h-4 w-4 mr-1" />
+              <span className="ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                <SparklesIcon className="h-3 w-3 mr-1" />
                 AI Analysis
               </span>
             </label>
@@ -627,7 +606,7 @@ export default function CreatePortfolioPage() {
                 debouncedAnalyze('title', e.target.value, 'title');
               }}
               required
-              className="w-full px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 text-lg shadow-lg"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="Front-end Developer with 5 years experience"
             />
             
@@ -653,7 +632,7 @@ export default function CreatePortfolioPage() {
           <div className="space-y-3">
             <label
               htmlFor="job_title"
-              className="block text-lg font-semibold text-white"
+              className="block text-sm font-medium text-gray-700"
             >
               Job Title
             </label>
@@ -664,7 +643,7 @@ export default function CreatePortfolioPage() {
               value={formData.job_title}
               onChange={handleChange}
               required
-              className="w-full px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 text-lg shadow-lg"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="Senior Front-end Developer"
             />
           </div>
@@ -672,11 +651,11 @@ export default function CreatePortfolioPage() {
           <div className="space-y-3">
             <label
               htmlFor="description"
-              className="block text-lg font-semibold text-white"
+              className="block text-sm font-medium text-gray-700"
             >
               About You / Description
-              <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                <SparklesIcon className="h-4 w-4 mr-1" />
+              <span className="ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                <SparklesIcon className="h-3 w-3 mr-1" />
                 AI Analysis
               </span>
               <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-300 border border-green-500/30">
@@ -695,22 +674,22 @@ export default function CreatePortfolioPage() {
               }}
               required
               rows={5}
-              className="w-full px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 text-lg shadow-lg resize-none"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
               placeholder="A brief description about yourself, your experience, and what you're looking for"
             ></textarea>
             
             {/* AI Suggestions for Description */}
             {(aiSuggestions.description?.length > 0 || analyzingField === 'description') && (
-              <div className="mt-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <SparklesIcon className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm font-medium text-blue-300">AI Suggestions</span>
+                  <SparklesIcon className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">AI Suggestions</span>
                   {analyzingField === 'description' && (
-                    <div className="h-3 w-3 border border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   )}
                 </div>
                 {aiSuggestions.description?.map((suggestion, index) => (
-                  <p key={index} className="text-sm text-blue-200 mb-1">
+                  <p key={index} className="text-sm text-blue-600 mb-1">
                     • {suggestion}
                   </p>
                 ))}
@@ -719,12 +698,12 @@ export default function CreatePortfolioPage() {
 
             {/* Extracted Skills */}
             {(extractedSkills.length > 0 || extractingSkills) && (
-              <div className="mt-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-center gap-2 mb-3">
-                  <SparklesIcon className="h-4 w-4 text-green-400" />
-                  <span className="text-sm font-medium text-green-300">Auto-detected Skills</span>
+                  <SparklesIcon className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-700">Auto-detected Skills</span>
                   {extractingSkills && (
-                    <div className="h-3 w-3 border border-green-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border border-green-600 border-t-transparent rounded-full animate-spin"></div>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -733,17 +712,17 @@ export default function CreatePortfolioPage() {
                       key={index}
                       onClick={() => addExtractedSkill(skill)}
                       disabled={selectedSkills.includes(skill)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
+                      className={`px-3 py-1 rounded text-sm font-medium transition-all duration-200 ${
                         selectedSkills.includes(skill)
                           ? 'bg-green-600 text-white cursor-not-allowed'
-                          : 'bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/30 hover:border-green-500/50'
+                          : 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-200 hover:border-green-300'
                       }`}
                     >
                       {selectedSkills.includes(skill) ? '✓ ' : '+ '}{skill}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-green-400 mt-2">
+                <p className="text-xs text-green-600 mt-2">
                   Click to add skills to your portfolio
                 </p>
               </div>
@@ -751,7 +730,7 @@ export default function CreatePortfolioPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-gray-300 font-medium">Skills</label>
+            <label className="block text-sm font-medium text-gray-700">Skills</label>
             <div className="relative">
               <Combobox
                 value={selectedSkills}
@@ -759,12 +738,12 @@ export default function CreatePortfolioPage() {
                 multiple
               >
                 <div className="relative">
-                  <div className="relative w-full cursor-default overflow-hidden rounded-xl bg-white/5 border border-white/10 text-left focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 transition-all duration-200">
+                  <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white border border-gray-200 text-left focus-within:border-gray-900 focus-within:ring-2 focus-within:ring-gray-900 transition-all duration-200">
                     <div className="flex flex-wrap gap-2 p-3">
                       {selectedSkills.map((skill) => (
                         <span
                           key={skill}
-                          className="inline-flex items-center px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 text-sm font-medium border border-blue-500/20 hover:bg-blue-500/30 transition-colors duration-200"
+                          className="inline-flex items-center px-3 py-1.5 rounded bg-gray-100 text-gray-700 text-sm font-medium border border-gray-200 hover:bg-gray-200 transition-colors duration-200"
                         >
                           {skill}
                           <button
@@ -774,14 +753,14 @@ export default function CreatePortfolioPage() {
                                 selectedSkills.filter((s) => s !== skill)
                               );
                             }}
-                            className="ml-2 hover:text-blue-200 focus:outline-none"
+                            className="ml-2 hover:text-gray-500 focus:outline-none"
                           >
                             <XMarkIcon className="h-4 w-4" />
                           </button>
                         </span>
                       ))}
                       <Combobox.Input
-                        className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-200 bg-transparent focus:ring-0 focus:outline-none"
+                        className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 bg-transparent focus:ring-0 focus:outline-none placeholder-gray-500"
                         displayValue={(skill: string) => skill}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder="Search or add skills..."
@@ -800,18 +779,18 @@ export default function CreatePortfolioPage() {
                       leaveTo="opacity-0"
                       afterLeave={() => setQuery("")}
                     >
-                      <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-gray-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                         {filteredSkills.length === 0 && query !== "" ? (
-                          <div className="px-4 py-3 border-b border-white/5">
-                            <p className="text-gray-400 mb-2">
+                          <div className="px-4 py-3 border-b border-gray-200">
+                            <p className="text-gray-600 mb-2">
                               No matching skills found.
                             </p>
                             <button
                               type="button"
                               onClick={() => setIsAddingSkill(true)}
-                              className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                              className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
                             >
-                              Add "{query}" as new skill
+                              Add &quot;{query}&quot; as new skill
                             </button>
                           </div>
                         ) : (
@@ -834,8 +813,8 @@ export default function CreatePortfolioPage() {
                                   className={({ active }) =>
                                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                       active
-                                        ? "bg-blue-500/20 text-blue-300"
-                                        : "text-gray-300"
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-900"
                                     }`
                                   }
                                   value={skill.name}
@@ -876,7 +855,7 @@ export default function CreatePortfolioPage() {
                 </div>
               </Combobox>
             </div>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Select multiple skills from the predefined list or add your own.
             </p>
           </div>
@@ -887,10 +866,10 @@ export default function CreatePortfolioPage() {
           <div className="space-y-2">
             <label
               htmlFor="website_url"
-              className="block text-gray-300 font-medium"
+              className="block text-sm font-medium text-gray-700"
             >
               Website URL
-              <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              <span className="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
                 <SparklesIcon className="h-3 w-3 mr-1" />
                 Auto Projects
               </span>
@@ -905,7 +884,7 @@ export default function CreatePortfolioPage() {
                 debouncedDetectProjects(formData.github_url, e.target.value);
                 debouncedGenerateScreenshot(e.target.value);
               }}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="https://yourwebsite.com"
             />
           </div>
@@ -913,10 +892,10 @@ export default function CreatePortfolioPage() {
           <div className="space-y-2">
             <label
               htmlFor="github_url"
-              className="block text-gray-300 font-medium"
+              className="block text-sm font-medium text-gray-700"
             >
               GitHub URL
-              <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              <span className="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
                 <SparklesIcon className="h-3 w-3 mr-1" />
                 Auto Projects
               </span>
@@ -930,7 +909,7 @@ export default function CreatePortfolioPage() {
                 handleChange(e);
                 debouncedDetectProjects(e.target.value, formData.website_url);
               }}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="https://github.com/yourusername"
             />
           </div>
@@ -938,7 +917,7 @@ export default function CreatePortfolioPage() {
           <div className="space-y-2">
             <label
               htmlFor="linkedin_url"
-              className="block text-gray-300 font-medium"
+              className="block text-sm font-medium text-gray-700"
             >
               LinkedIn URL
             </label>
@@ -948,7 +927,7 @@ export default function CreatePortfolioPage() {
               name="linkedin_url"
               value={formData.linkedin_url}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="https://linkedin.com/in/yourprofile"
             />
           </div>
@@ -958,10 +937,10 @@ export default function CreatePortfolioPage() {
           {(detectedProjects.length > 0 || detectingProjects) && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <SparklesIcon className="h-5 w-5 text-purple-400" />
-                <h3 className="text-lg font-semibold text-white">Auto-Detected Projects</h3>
+                <SparklesIcon className="h-5 w-5 text-gray-600" />
+                <h3 className="text-lg font-medium text-gray-900">Auto-Detected Projects</h3>
                 {detectingProjects && (
-                  <div className="h-4 w-4 border border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="h-4 w-4 border border-gray-600 border-t-transparent rounded-full animate-spin"></div>
                 )}
               </div>
               <ProjectCards 
@@ -983,7 +962,7 @@ export default function CreatePortfolioPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-2xl font-bold text-lg transition-all duration-300 disabled:opacity-50 shadow-2xl hover:shadow-3xl hover:scale-105 transform"
+              className="px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
             >
               {loading
                 ? "Saving..."

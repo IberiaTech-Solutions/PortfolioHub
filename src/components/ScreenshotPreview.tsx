@@ -5,7 +5,6 @@ import { ArrowTopRightOnSquareIcon, PhotoIcon, XMarkIcon } from '@heroicons/reac
 interface ScreenshotPreviewProps {
   websiteUrl: string;
   screenshotUrl?: string;
-  onScreenshotGenerated?: (screenshotUrl: string) => void;
   onRemoveScreenshot?: () => void;
   generating?: boolean;
   editable?: boolean;
@@ -14,7 +13,6 @@ interface ScreenshotPreviewProps {
 export default function ScreenshotPreview({ 
   websiteUrl, 
   screenshotUrl, 
-  onScreenshotGenerated, 
   onRemoveScreenshot,
   generating = false,
   editable = false 

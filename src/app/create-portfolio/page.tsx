@@ -44,8 +44,11 @@ type Portfolio = {
   description: string;
   website_url: string;
   website_screenshot: string;
+  profile_image?: string;
+  hero_image?: string;
   github_url: string;
   linkedin_url: string;
+  additional_links: Array<{label: string, url: string}>;
   skills: string[];
   projects: Project[];
   job_title: string;
@@ -75,6 +78,8 @@ export default function CreatePortfolioPage() {
   const [detectedProjects, setDetectedProjects] = useState<Project[]>([]);
   const [detectingProjects, setDetectingProjects] = useState(false);
   const [websiteScreenshot, setWebsiteScreenshot] = useState<string>("");
+  const [profileImagePreview, setProfileImagePreview] = useState<string>("");
+  const [heroImagePreview, setHeroImagePreview] = useState<string>("");
   const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -82,8 +87,11 @@ export default function CreatePortfolioPage() {
     job_title: "",
     description: "",
     website_url: "",
+    profile_image: "",
+    hero_image: "",
     github_url: "",
     linkedin_url: "",
+    additional_links: [] as Array<{label: string, url: string}>,
   });
   const [existingPortfolio, setExistingPortfolio] = useState<Portfolio | null>(
     null
@@ -317,12 +325,21 @@ export default function CreatePortfolioPage() {
           job_title: portfolio.job_title || "",
           description: portfolio.description || "",
           website_url: portfolio.website_url || "",
+          profile_image: portfolio.profile_image || "",
+          hero_image: portfolio.hero_image || "",
           github_url: portfolio.github_url || "",
           linkedin_url: portfolio.linkedin_url || "",
+          additional_links: portfolio.additional_links || [],
         });
         setSelectedSkills(portfolio.skills || []);
         setWebsiteScreenshot(portfolio.website_screenshot || "");
         setDetectedProjects(portfolio.projects || []);
+        if (portfolio.profile_image) {
+          setProfileImagePreview(portfolio.profile_image);
+        }
+        if (portfolio.hero_image) {
+          setHeroImagePreview(portfolio.hero_image);
+        }
       }
     };
 
@@ -335,6 +352,32 @@ export default function CreatePortfolioPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfileImagePreview(result);
+        setFormData((prev) => ({ ...prev, profile_image: result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setHeroImagePreview(result);
+        setFormData((prev) => ({ ...prev, hero_image: result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const filteredSkills =
@@ -362,27 +405,39 @@ export default function CreatePortfolioPage() {
         user_id: user.id,
       };
 
+      console.log("Submitting portfolio data:", portfolioData);
+
       if (existingPortfolio) {
         // Update existing portfolio
+        console.log("Updating existing portfolio:", existingPortfolio.id);
         const { error } = await supabase
           .from("portfolios")
           .update(portfolioData)
           .eq("id", existingPortfolio.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase update error:", error);
+          throw error;
+        }
       } else {
         // Create new portfolio
+        console.log("Creating new portfolio");
         const { error } = await supabase
           .from("portfolios")
           .insert([portfolioData]);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase insert error:", error);
+          throw error;
+        }
       }
 
+      console.log("Portfolio saved successfully");
+      setLoading(false); // Reset loading state on success
       router.push("/profile");
     } catch (error) {
       console.error("Error saving portfolio:", error);
-      alert("Error saving portfolio. Please try again.");
+      alert(`Error saving portfolio: ${error instanceof Error ? error.message : 'Please try again.'}`);
       setLoading(false); // Make sure to reset loading state on error
       return; // Prevent navigation on error
     }
@@ -542,92 +597,233 @@ export default function CreatePortfolioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto py-12 px-6">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-light text-gray-900 mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Gradient Waves */}
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-brand-400/20 to-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-brand-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        
+        {/* Floating Dots */}
+        <div className="absolute top-20 left-20 w-2 h-2 bg-brand-400/30 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+        <div className="absolute top-40 right-32 w-1.5 h-1.5 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-32 left-32 w-2.5 h-2.5 bg-purple-400/30 rounded-full animate-bounce" style={{animationDelay: '3s'}}></div>
+        
+        {/* Network Lines */}
+        <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <pattern id="network" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 10 20 M 0 10 L 20 10" stroke="currentColor" strokeWidth="0.5" fill="none"/>
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#network)" className="text-brand-400"/>
+        </svg>
+      </div>
+
+      <div className="relative max-w-6xl mx-auto py-16 px-6">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm border border-brand-200/50 rounded-full text-brand-700 text-sm font-medium mb-6 shadow-lg">
+            <SparklesIcon className="h-4 w-4 mr-2" />
+            AI-Powered Portfolio Builder
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl font-display font-bold text-gray-900 mb-6 leading-tight">
             {existingPortfolio ? "Edit Your" : "Create Your"}
             <br />
-            <span className="font-normal text-gray-700">Portfolio</span>
+            <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">
+              Portfolio
+            </span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Showcase your skills, projects, and collaborations in a beautiful, professional portfolio
+          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+            Showcase your skills, projects, and collaborations in a beautiful, professional portfolio that stands out
           </p>
+          
+          {/* Feature Highlights */}
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full text-sm text-gray-900 shadow-md">
+              <SparklesIcon className="h-4 w-4 mr-2 text-brand-600" />
+              AI-Powered Analysis
+            </div>
+            <div className="flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full text-sm text-gray-900 shadow-md">
+              <svg className="h-4 w-4 mr-2 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              Auto Skill Detection
+            </div>
+            <div className="flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full text-sm text-gray-900 shadow-md">
+              <svg className="h-4 w-4 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              Project Integration
+            </div>
+          </div>
         </div>
 
-        {/* AI Features Banner */}
-        <div className="mb-8 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-          <div className="flex items-center gap-3 mb-3">
-            <SparklesIcon className="h-5 w-5 text-gray-600" />
-            <h3 className="text-lg font-medium text-gray-900">AI-Powered Portfolio Builder</h3>
-          </div>
-          <p className="text-gray-600 leading-relaxed">
-            Our AI assistant analyzes your content in real-time and provides suggestions to improve clarity, impact, and professional presentation. 
-            It also automatically detects skills from your description and fetches project information to save you time.
-          </p>
-        </div>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form Section */}
+          <div className="lg:col-span-2">
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="space-y-4">
+                  <label htmlFor="name" className="block text-sm font-semibold text-gray-900">
+                    Your Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    placeholder="John Doe"
+                  />
+                </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white border border-gray-200 rounded-lg p-8 space-y-8"
-        >
-          <div className="space-y-3">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Your Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-              placeholder="John Doe"
-            />
-          </div>
+                {/* Profile Image Upload */}
+                <div className="space-y-4">
+                  <label htmlFor="profile_image" className="block text-sm font-semibold text-gray-900">
+                    Profile Image
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    {/* Image Preview */}
+                    <div className="flex-shrink-0">
+                      {profileImagePreview ? (
+                        <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
+                          <img
+                            src={profileImagePreview}
+                            alt="Profile preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-20 h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl border-2 border-gray-200 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Upload Button */}
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        id="profile_image"
+                        accept="image/*"
+                        onChange={handleProfileImageChange}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="profile_image"
+                        className="inline-flex items-center px-4 py-2 bg-white/60 hover:bg-white/80 border border-gray-200/50 rounded-xl text-gray-900 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        {profileImagePreview ? 'Change Image' : 'Upload Image'}
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Recommended: Square image, max 2MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="space-y-3">
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-              Portfolio Title
-              <span className="ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                <SparklesIcon className="h-3 w-3 mr-1" />
-                AI Analysis
-              </span>
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={(e) => {
-                handleChange(e);
-                debouncedAnalyze('title', e.target.value, 'title');
-              }}
-              required
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-              placeholder="Front-end Developer with 5 years experience"
-            />
+                {/* Hero Image Upload */}
+                <div className="space-y-4">
+                  <label htmlFor="hero_image" className="block text-sm font-semibold text-gray-900">
+                    Portfolio Hero Image
+                    <span className="ml-2 text-xs text-gray-500 font-normal">(Banner image for portfolio cards)</span>
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    {/* Image Preview */}
+                    <div className="flex-shrink-0">
+                      {heroImagePreview ? (
+                        <div className="w-32 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
+                          <img
+                            src={heroImagePreview}
+                            alt="Hero image preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-32 h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl border-2 border-gray-200 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Upload Button */}
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        id="hero_image"
+                        accept="image/*"
+                        onChange={handleHeroImageChange}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="hero_image"
+                        className="inline-flex items-center px-4 py-2 bg-white/60 hover:bg-white/80 border border-gray-200/50 rounded-xl text-gray-900 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        {heroImagePreview ? 'Change Hero Image' : 'Upload Hero Image'}
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Recommended: 16:9 aspect ratio, max 5MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label htmlFor="title" className="block text-sm font-semibold text-gray-900">
+                    Portfolio Title
+                    <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-700 border border-brand-200">
+                      <SparklesIcon className="h-3 w-3 mr-1" />
+                      AI Analysis
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={(e) => {
+                      handleChange(e);
+                      debouncedAnalyze('title', e.target.value, 'title');
+                    }}
+                    required
+                    className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    placeholder="Front-end Developer with 5 years experience"
+                  />
             
-            {/* AI Suggestions for Title */}
-            {(aiSuggestions.title?.length > 0 || analyzingField === 'title') && (
-              <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <SparklesIcon className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">AI Suggestions</span>
-                  {analyzingField === 'title' && (
-                    <div className="h-3 w-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  {/* AI Suggestions for Title */}
+                  {(aiSuggestions.title?.length > 0 || analyzingField === 'title') && (
+                    <div className="mt-4 p-4 bg-gradient-to-r from-brand-50 to-blue-50 border border-brand-200/50 rounded-xl backdrop-blur-sm">
+                      <div className="flex items-center gap-2 mb-3">
+                        <SparklesIcon className="h-4 w-4 text-brand-600" />
+                        <span className="text-sm font-semibold text-brand-700">AI Suggestions</span>
+                        {analyzingField === 'title' && (
+                          <div className="h-3 w-3 border border-brand-600 border-t-transparent rounded-full animate-spin"></div>
+                        )}
+                      </div>
+                      {aiSuggestions.title?.map((suggestion, index) => (
+                        <p key={index} className="text-sm text-gray-800 mb-1 font-medium">
+                          • {suggestion}
+                        </p>
+                      ))}
+                    </div>
                   )}
                 </div>
-                {aiSuggestions.title?.map((suggestion, index) => (
-                  <p key={index} className="text-sm text-blue-600 mb-1">
-                    • {suggestion}
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
 
           <div className="space-y-3">
             <label
@@ -689,7 +885,7 @@ export default function CreatePortfolioPage() {
                   )}
                 </div>
                 {aiSuggestions.description?.map((suggestion, index) => (
-                  <p key={index} className="text-sm text-blue-600 mb-1">
+                  <p key={index} className="text-sm text-gray-800 mb-1 font-medium">
                     • {suggestion}
                   </p>
                 ))}
@@ -914,23 +1110,88 @@ export default function CreatePortfolioPage() {
             />
           </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="linkedin_url"
-              className="block text-sm font-medium text-gray-700"
-            >
-              LinkedIn URL
-            </label>
-            <input
-              type="url"
-              id="linkedin_url"
-              name="linkedin_url"
-              value={formData.linkedin_url}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-              placeholder="https://linkedin.com/in/yourprofile"
-            />
-          </div>
+                <div className="space-y-4">
+                  <label
+                    htmlFor="linkedin_url"
+                    className="block text-sm font-semibold text-gray-900"
+                  >
+                    LinkedIn URL
+                  </label>
+                  <input
+                    type="url"
+                    id="linkedin_url"
+                    name="linkedin_url"
+                    value={formData.linkedin_url}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    placeholder="https://linkedin.com/in/yourprofile"
+                  />
+                </div>
+
+                {/* Additional Links Section */}
+                <div className="space-y-4">
+                  <label className="block text-sm font-semibold text-gray-900">
+                    Additional Links
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      (Dribbble, Behance, Bestfolios, etc.)
+                    </span>
+                  </label>
+                  
+                  <div className="space-y-3">
+                    {formData.additional_links.map((link, index) => (
+                      <div key={index} className="flex gap-3">
+                        <input
+                          type="text"
+                          placeholder="Label (e.g., Dribbble)"
+                          value={link.label}
+                          onChange={(e) => {
+                            const newLinks = [...formData.additional_links];
+                            newLinks[index].label = e.target.value;
+                            setFormData({ ...formData, additional_links: newLinks });
+                          }}
+                          className="flex-1 px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                        />
+                        <input
+                          type="url"
+                          placeholder="https://..."
+                          value={link.url}
+                          onChange={(e) => {
+                            const newLinks = [...formData.additional_links];
+                            newLinks[index].url = e.target.value;
+                            setFormData({ ...formData, additional_links: newLinks });
+                          }}
+                          className="flex-2 px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newLinks = formData.additional_links.filter((_, i) => i !== index);
+                            setFormData({ ...formData, additional_links: newLinks });
+                          }}
+                          className="px-3 py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-colors duration-200"
+                        >
+                          <XMarkIcon className="h-5 w-5" />
+                        </button>
+                      </div>
+                    ))}
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          additional_links: [...formData.additional_links, { label: "", url: "" }]
+                        });
+                      }}
+                      className="flex items-center gap-2 px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-white/80 transition-all duration-200 shadow-sm hover:shadow-md"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Add Link
+                    </button>
+                  </div>
+                </div>
 
 
           {/* Project Auto-Detection */}
@@ -958,20 +1219,92 @@ export default function CreatePortfolioPage() {
             onCollaborationsChange={setCollaborations}
           />
 
-          <div className="flex justify-center pt-8">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50"
-            >
-              {loading
-                ? "Saving..."
-                : existingPortfolio
-                ? "Update Portfolio"
-                : "Create Portfolio"}
-            </button>
+                <div className="flex justify-center pt-8">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    {loading
+                      ? "Saving..."
+                      : existingPortfolio
+                      ? "Update Portfolio"
+                      : "Create Portfolio"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </form>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {/* AI Features Card */}
+              <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
+                    <SparklesIcon className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">AI Features</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-brand-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Smart Analysis</p>
+                      <p className="text-xs text-gray-600">Real-time content suggestions</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Auto Skills</p>
+                      <p className="text-xs text-gray-600">Detect skills from description</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Project Detection</p>
+                      <p className="text-xs text-gray-600">Fetch GitHub projects</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Card */}
+              <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-6 shadow-xl">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Basic Info</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {formData.name && formData.title && formData.job_title ? '✓' : '○'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Description</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {formData.description ? '✓' : '○'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Skills</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {selectedSkills.length > 0 ? '✓' : '○'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Links</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {formData.website_url || formData.github_url || formData.linkedin_url ? '✓' : '○'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

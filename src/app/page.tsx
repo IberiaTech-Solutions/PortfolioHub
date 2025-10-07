@@ -17,6 +17,9 @@ type Portfolio = {
   title: string;
   description: string;
   website_url: string;
+  website_screenshot?: string;
+  profile_image?: string;
+  hero_image?: string;
   github_url: string;
   linkedin_url: string;
   skills: string[];
@@ -288,7 +291,7 @@ function HomeContent() {
                       setSearchQuery('React developers');
                       performSearch('React developers');
                     }}
-                    className="px-3 py-1 bg-white/10 rounded-full text-xs font-medium hover:bg-white/20 transition-colors cursor-pointer"
+                    className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium hover:bg-white text-gray-900 transition-colors cursor-pointer shadow-sm"
                   >
                     React developers
                   </button>
@@ -297,7 +300,7 @@ function HomeContent() {
                       setSearchQuery('UI/UX designers');
                       performSearch('UI/UX designers');
                     }}
-                    className="px-3 py-1 bg-white/10 rounded-full text-xs font-medium hover:bg-white/20 transition-colors cursor-pointer"
+                    className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium hover:bg-white text-gray-900 transition-colors cursor-pointer shadow-sm"
                   >
                     UI/UX designers
                   </button>
@@ -306,7 +309,7 @@ function HomeContent() {
                       setSearchQuery('Full-stack engineers');
                       performSearch('Full-stack engineers');
                     }}
-                    className="px-3 py-1 bg-white/10 rounded-full text-xs font-medium hover:bg-white/20 transition-colors cursor-pointer"
+                    className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium hover:bg-white text-gray-900 transition-colors cursor-pointer shadow-sm"
                   >
                     Full-stack engineers
                   </button>
@@ -688,83 +691,258 @@ function HomeContent() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {portfolios.map((portfolio) => (
                   <div
                     key={portfolio.id}
-                    className="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.02]"
+                    className="group relative bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:scale-[1.02] hover:border-brand-200/50"
                   >
+                    {/* Portfolio Hero Image */}
+                    {portfolio.hero_image ? (
+                      <div className="relative h-48 overflow-hidden">
+                        <a
+                          href={portfolio.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full h-full"
+                        >
+                          <img
+                            src={portfolio.hero_image}
+                            alt={`${portfolio.title} portfolio hero`}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                        </a>
+                        {/* Fallback gradient */}
+                        <div className="hidden absolute inset-0 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700"></div>
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                        {/* Portfolio Badge */}
+                        <div className="absolute top-4 right-4">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-900 backdrop-blur-sm shadow-md">
+                            Portfolio
+                          </span>
+                        </div>
+                        {/* Visit Website Button */}
+                        {portfolio.website_url && (
+                          <div className="absolute bottom-4 left-4">
+                            <a
+                              href={portfolio.website_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-900 rounded-lg text-xs font-bold backdrop-blur-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                            >
+                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                              Visit Site
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    ) : portfolio.website_screenshot ? (
+                      <div className="relative h-48 overflow-hidden">
+                        <a
+                          href={portfolio.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full h-full"
+                        >
+                          <img
+                            src={portfolio.website_screenshot}
+                            alt={`${portfolio.title} portfolio screenshot`}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                        </a>
+                        {/* Fallback gradient */}
+                        <div className="hidden absolute inset-0 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700"></div>
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                        {/* Portfolio Badge */}
+                        <div className="absolute top-4 right-4">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-900 backdrop-blur-sm shadow-md">
+                            Portfolio
+                          </span>
+                        </div>
+                        {/* Visit Website Button */}
+                        {portfolio.website_url && (
+                          <div className="absolute bottom-4 left-4">
+                            <a
+                              href={portfolio.website_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-900 rounded-lg text-xs font-bold backdrop-blur-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                            >
+                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                              Visit Site
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="relative h-48 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 overflow-hidden">
+                        {/* Pattern overlay */}
+                        <div className="absolute inset-0 opacity-10">
+                          <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
+                            <defs>
+                              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5"/>
+                              </pattern>
+                            </defs>
+                            <rect width="100" height="100" fill="url(#grid)" />
+                          </svg>
+                        </div>
+                        {/* Portfolio Badge */}
+                        <div className="absolute top-4 right-4">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-900 backdrop-blur-sm shadow-md">
+                            Portfolio
+                          </span>
+                        </div>
+                        {/* Center content */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center text-white">
+                            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                            </div>
+                            <p className="text-sm font-medium opacity-90">Portfolio Preview</p>
+                          </div>
+                        </div>
+                        {/* Visit Website Button */}
+                        {portfolio.website_url && (
+                          <div className="absolute bottom-4 left-4">
+                            <a
+                              href={portfolio.website_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-900 rounded-lg text-xs font-bold backdrop-blur-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                            >
+                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                              Visit Site
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-transparent to-emerald-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    
                     {/* Profile Header */}
-                    <div className="p-4 sm:p-6 pb-4">
-                      <div className="flex items-start space-x-3 sm:space-x-4 mb-4">
-                        {/* Avatar */}
-                        <div className="flex-shrink-0">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center shadow-lg">
-                            <span className="text-white font-semibold text-base sm:text-lg">
-                              {portfolio.name?.charAt(0).toUpperCase()}
+                    <div className="relative p-6 pb-4">
+                      <div className="flex items-start space-x-4 mb-5">
+                        {/* Enhanced Avatar */}
+                        <div className="flex-shrink-0 relative">
+                          {portfolio.profile_image ? (
+                            <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
+                              <img
+                                src={portfolio.profile_image}
+                                alt={`${portfolio.name} profile`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              {/* Fallback gradient */}
+                              <div className="hidden w-full h-full bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 flex items-center justify-center">
+                                <span className="text-white font-bold text-lg">
+                                  {portfolio.name?.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="w-14 h-14 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
+                              <span className="text-white font-bold text-lg">
+                                {portfolio.name?.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          {/* Status Indicator */}
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        
+                        {/* Enhanced Profile Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-heading font-bold text-gray-900 mb-1 group-hover:text-brand-600 transition-colors duration-300 line-clamp-1">
+                            {portfolio.title}
+                          </h3>
+                          <p className="text-gray-700 text-sm font-semibold mb-1">
+                            {portfolio.name}
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-800 border border-brand-200">
+                              {portfolio.job_title}
+                            </span>
+                            <span className="text-xs text-gray-500 font-medium">
+                              Available
                             </span>
                           </div>
                         </div>
-                        
-                        {/* Profile Info */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base sm:text-lg font-heading font-semibold text-gray-900 mb-1 group-hover:text-brand-600 transition-colors duration-200">
-                            {portfolio.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm font-medium">
-                            {portfolio.name}
-                          </p>
-                          <p className="text-brand-600 text-sm font-medium">
-                            {portfolio.job_title}
-                          </p>
-                        </div>
                       </div>
                       
-                      {/* Description */}
-                      <p className="text-gray-700 mb-4 line-clamp-3 leading-relaxed text-sm sm:text-base">
-                        {portfolio.description}
-                      </p>
-                      {/* Skills Tags */}
-                      <div className="mb-6 flex flex-wrap gap-2">
-                        {portfolio.skills &&
-                          portfolio.skills.slice(0, 4).map((skill, index) => {
-                            const colors = [
-                              'bg-brand-100 text-brand-700 border-brand-200',
-                              'bg-emerald-100 text-emerald-700 border-emerald-200',
-                              'bg-amber-100 text-amber-700 border-amber-200',
-                              'bg-rose-100 text-rose-700 border-rose-200',
-                              'bg-blue-100 text-blue-700 border-blue-200',
-                              'bg-purple-100 text-purple-700 border-purple-200'
-                            ];
-                            const colorClass = colors[index % colors.length];
-                            return (
-                              <span
-                                key={index}
-                                className={`${colorClass} rounded-full px-3 py-1 text-xs font-medium border`}
-                              >
-                                {skill}
-                              </span>
-                            );
-                          })}
-                        {portfolio.skills && portfolio.skills.length > 4 && (
-                          <span className="bg-gray-100 text-gray-600 border border-gray-200 rounded-full px-3 py-1 text-xs font-medium">
-                            +{portfolio.skills.length - 4} more
-                          </span>
-                        )}
+                      {/* Enhanced Description */}
+                      <div className="mb-5">
+                        <p className="text-gray-800 line-clamp-3 leading-relaxed text-sm font-medium">
+                          {portfolio.description}
+                        </p>
+                      </div>
+                      
+                      {/* Enhanced Skills Tags */}
+                      <div className="mb-6">
+                        <div className="flex flex-wrap gap-2">
+                          {portfolio.skills &&
+                            portfolio.skills.slice(0, 3).map((skill, index) => {
+                              const colors = [
+                                'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-600',
+                                'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-600',
+                                'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600',
+                                'bg-gradient-to-r from-rose-500 to-rose-600 text-white border-rose-600',
+                                'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600',
+                                'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600'
+                              ];
+                              const colorClass = colors[index % colors.length];
+                              return (
+                                <span
+                                  key={index}
+                                  className={`${colorClass} rounded-xl px-3 py-1.5 text-xs font-semibold border shadow-sm group-hover:shadow-md transition-all duration-200`}
+                                >
+                                  {skill}
+                                </span>
+                              );
+                            })}
+                          {portfolio.skills && portfolio.skills.length > 3 && (
+                            <span className="bg-gradient-to-r from-gray-800 to-gray-900 text-white border border-gray-800 rounded-xl px-3 py-1.5 text-xs font-bold shadow-md">
+                              +{portfolio.skills.length - 3} more
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     
-                    {/* Social Links & Actions */}
-                    <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0">
-                        {/* Social Links */}
-                        <div className="flex items-center space-x-3">
+                    {/* Enhanced Social Links & Actions */}
+                    <div className="relative px-6 pb-6">
+                      <div className="flex items-center justify-between">
+                        {/* Enhanced Social Links */}
+                        <div className="flex items-center space-x-2">
                           {portfolio.github_url && (
                             <a
                               href={portfolio.github_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                              className="p-2.5 text-gray-600 hover:text-white hover:bg-gray-800 rounded-xl transition-all duration-200 hover:scale-110 shadow-md hover:shadow-lg"
                               title="GitHub"
                             >
                               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -777,7 +955,7 @@ function HomeContent() {
                               href={portfolio.linkedin_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                              className="p-2.5 text-gray-600 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-200 hover:scale-110 shadow-md hover:shadow-lg"
                               title="LinkedIn"
                             >
                               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -790,7 +968,7 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                              className="p-2.5 text-gray-600 hover:text-white hover:bg-emerald-600 rounded-xl transition-all duration-200 hover:scale-110 shadow-md hover:shadow-lg"
                               title="Website"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -800,10 +978,10 @@ function HomeContent() {
                           )}
                         </div>
                         
-                        {/* View Profile Button */}
+                        {/* Enhanced View Profile Button */}
                         <Link
                           href={`/portfolio/${portfolio.id}`}
-                          className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+                          className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-black rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 text-sm"
                         >
                           View Profile
                           <svg

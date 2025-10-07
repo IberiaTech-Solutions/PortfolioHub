@@ -63,54 +63,67 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-white">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30">
         <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+          <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+          <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto py-12 px-6 space-y-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Gradient Waves */}
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-brand-400/20 to-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-brand-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        
+        {/* Floating Dots */}
+        <div className="absolute top-20 left-20 w-2 h-2 bg-brand-400/30 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+        <div className="absolute top-40 right-32 w-1.5 h-1.5 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-32 left-32 w-2.5 h-2.5 bg-purple-400/30 rounded-full animate-bounce" style={{animationDelay: '3s'}}></div>
+        
+        {/* Network Lines */}
+        <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <pattern id="network" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 10 20 M 0 10 L 20 10" stroke="currentColor" strokeWidth="0.5" fill="none"/>
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#network)" className="text-brand-400"/>
+        </svg>
+      </div>
+
+      <div className="relative max-w-6xl mx-auto py-16 px-6 space-y-12">
         {/* Profile Header */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl overflow-hidden shadow-xl">
           <div className="relative">
-            <div className="h-32 bg-gray-50"></div>
-            <div className="absolute -bottom-8 left-8">
-              <div className="w-24 h-24 bg-gray-100 rounded-lg shadow-sm flex items-center justify-center border border-gray-200">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 text-gray-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+            <div className="h-40 bg-gradient-to-r from-brand-500 via-brand-600 to-emerald-600"></div>
+            <div className="absolute -bottom-12 left-8">
+              <div className="w-24 h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-xl flex items-center justify-center border-4 border-white">
+                <span className="text-white font-bold text-2xl">
+                  {user?.email?.split("@")[0]?.charAt(0).toUpperCase() || "U"}
+                </span>
               </div>
             </div>
           </div>
-          <div className="p-8 pt-16">
+          <div className="p-8 pt-20">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8">
               <div className="mb-6 md:mb-0">
-                <h1 className="text-3xl font-light text-gray-900 mb-2">
+                <h1 className="text-4xl font-display font-bold text-gray-900 mb-2">
                   {user?.email?.split("@")[0] || "User"}
                 </h1>
-                <p className="text-lg text-gray-600">
+                <p className="text-xl text-gray-600">
                   {portfolio ? portfolio.job_title : "Portfolio Creator"}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/create-portfolio"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-black rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +141,7 @@ export default function ProfilePage() {
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors duration-200 border border-gray-200"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white/80 hover:bg-white text-gray-700 rounded-xl font-semibold transition-all duration-300 border border-gray-200/50 shadow-sm hover:shadow-md hover:scale-105"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -148,11 +161,11 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid gap-4">
-              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <span className="p-3 bg-gray-200 rounded-lg">
+              <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
+                <span className="p-3 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-600"
+                    className="h-6 w-6 text-brand-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -161,16 +174,16 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">Email</p>
-                  <p className="text-gray-900 font-medium">{user!.email}</p>
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Email</p>
+                  <p className="text-gray-900 font-semibold">{user!.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <span className="p-3 bg-gray-200 rounded-lg">
+              <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
+                <span className="p-3 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-600"
+                    className="h-6 w-6 text-emerald-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -182,17 +195,17 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">Status</p>
-                  <p className="text-gray-900 font-medium">
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Status</p>
+                  <p className="text-gray-900 font-semibold">
                     {user!.email_confirmed_at ? (
-                      <span className="inline-flex items-center space-x-2 text-green-600">
+                      <span className="inline-flex items-center space-x-2 text-emerald-600">
                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         <span>Verified Account</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center space-x-2 text-yellow-600">
+                      <span className="inline-flex items-center space-x-2 text-amber-600">
                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                         </svg>
@@ -208,79 +221,90 @@ export default function ProfilePage() {
 
         {/* Portfolio Section */}
         {portfolio ? (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex justify-between items-start mb-6">
+          <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+            <div className="flex justify-between items-start mb-8">
               <div>
-                <h2 className="text-2xl font-light text-gray-900 mb-2">
+                <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">
                   Your Portfolio
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-xl text-gray-600">
                   Showcase your professional journey
                 </p>
               </div>
               <Link
                 href={`/portfolio/${portfolio.id}`}
-                className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors duration-200 font-medium"
+                className="px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-black rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
               >
                 View Live Portfolio
               </Link>
             </div>
 
-            <div className="space-y-6">
-              <div className="p-6 bg-gray-50 rounded-lg">
-                <h3 className="text-xl font-medium text-gray-900 mb-3">
+            <div className="space-y-8">
+              <div className="p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm">
+                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-3">
                   {portfolio.title}
                 </h3>
-                <p className="text-lg text-gray-700 font-medium">
+                <p className="text-xl text-gray-700 font-semibold mb-4">
                   {portfolio.job_title}
                 </p>
-                <p className="mt-4 text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed">
                   {portfolio.description}
                 </p>
               </div>
 
-              <div className="p-6 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <div className="p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm">
+                <h3 className="text-xl font-heading font-bold text-gray-900 mb-6">
                   Skills & Expertise
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {portfolio.skills &&
-                    portfolio.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                    portfolio.skills.map((skill, index) => {
+                      const colors = [
+                        'bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-300',
+                        'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border-emerald-300',
+                        'bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800 border-amber-300',
+                        'bg-gradient-to-r from-rose-100 to-rose-200 text-rose-800 border-rose-300',
+                        'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border-blue-300',
+                        'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border-purple-300'
+                      ];
+                      const colorClass = colors[index % colors.length];
+                      return (
+                        <span
+                          key={index}
+                          className={`${colorClass} px-4 py-2 rounded-xl text-sm font-semibold border shadow-sm`}
+                        >
+                          {skill}
+                        </span>
+                      );
+                    })}
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="bg-white border border-gray-200 rounded-lg p-8">
+          <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-12 shadow-xl">
             <div className="text-center max-w-lg mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-gray-400"
+                  className="h-10 w-10 text-brand-600"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
                   <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                 </svg>
               </div>
-              <h2 className="text-xl font-medium text-gray-900 mb-4">
+              <h2 className="text-3xl font-display font-bold text-gray-900 mb-4">
                 Create Your Portfolio
               </h2>
-              <p className="text-gray-600 mb-8 leading-relaxed">
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Showcase your skills and experience to potential clients and
                 employers. Stand out from the crowd with a professional
                 portfolio.
               </p>
               <Link
                 href="/create-portfolio"
-                className="inline-flex items-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors duration-200 font-medium"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

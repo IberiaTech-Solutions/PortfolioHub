@@ -38,6 +38,10 @@ export default function Auth() {
     const mode = searchParams.get("mode");
     if (mode === "reset_password") {
       setAuthMode("reset_password");
+    } else if (mode === "signup") {
+      setAuthMode("signup");
+    } else if (mode === "signin") {
+      setAuthMode("signin");
     }
   }, [searchParams]);
 

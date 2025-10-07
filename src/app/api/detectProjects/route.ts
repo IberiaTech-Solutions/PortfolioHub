@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 interface GitHubRepo {
   name: string;
   description: string | null;
@@ -30,6 +26,15 @@ interface Project {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if OpenAI API key is available
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn('OpenAI API key not configured, returning empty projects');
+      return NextResponse.json({ projects: [] });
+    }
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
     const { githubUrl, websiteUrl } = await request.json();
 
     if (!githubUrl && !websiteUrl) {

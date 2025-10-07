@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/utils/supabase';
+import { supabase, isSupabaseConfigured } from '@/utils/supabase';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      console.warn('Supabase not configured, returning error');
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 503 }
+      );
+    }
     const { portfolioId, collaboratorEmail, collaboratorName, projectTitle, projectDescription, role } = await request.json();
 
     if (!portfolioId || !collaboratorEmail || !collaboratorName || !projectTitle || !role) {
@@ -73,6 +81,14 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      console.warn('Supabase not configured, returning error');
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 503 }
+      );
+    }
     const { collaborationId, status } = await request.json();
 
     if (!collaborationId || !status) {
@@ -105,6 +121,14 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      console.warn('Supabase not configured, returning error');
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 503 }
+      );
+    }
     const { searchParams } = new URL(request.url);
     const collaborationId = searchParams.get('id');
 

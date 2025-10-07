@@ -39,11 +39,15 @@ export default function ProfilePage() {
       setUser(user);
 
       // Fetch user's portfolio
-      const { data: portfolioData } = await supabase
+      const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolios")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (portfolioError) {
+        console.error('Error fetching portfolio:', portfolioError);
+      }
 
       setPortfolio(portfolioData as Portfolio);
       setLoading(false);
@@ -70,17 +74,26 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }}></div>
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto py-12 px-4 space-y-12">
         {/* Profile Header */}
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden transform transition-all duration-300 hover:shadow-lg">
+        <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 overflow-hidden transform transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
           <div className="relative">
-            <div className="h-40 bg-gradient-to-r from-white via-red-400 to-red-500"></div>
-            <div className="absolute -bottom-6 left-8">
-              <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center border border-white/10">
+            <div className="h-48 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            <div className="absolute -bottom-8 left-8">
+              <div className="w-32 h-32 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl flex items-center justify-center border border-white/20">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 text-gray-900"
+                  className="h-16 w-16 text-white"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -93,13 +106,62 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-          <div className="p-8 pt-12">
-            <div className="grid gap-6">
-              <div className="flex items-center space-x-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                <span className="p-3 bg-white/10 rounded-xl">
+          <div className="p-8 pt-16">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8">
+              <div className="mb-6 md:mb-0">
+                <h1 className="text-4xl font-bold text-white mb-2">
+                  {user?.email?.split("@")[0] || "User"}
+                </h1>
+                <p className="text-xl text-gray-300">
+                  {portfolio ? portfolio.job_title : "Portfolio Creator"}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/create-portfolio"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-white"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {portfolio ? "Edit Portfolio" : "Create Portfolio"}
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-semibold transition-all duration-300 border border-white/20 hover:border-white/40"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+
+            <div className="grid gap-6">
+              <div className="flex items-center space-x-6 p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300">
+                <span className="p-4 bg-blue-500/20 rounded-2xl">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-blue-400"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -108,8 +170,8 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-gray-400">Email</p>
-                  <p className="text-white font-semibold">{user!.email}</p>
+                  <p className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Email</p>
+                  <p className="text-white font-bold text-lg">{user!.email}</p>
                 </div>
               </div>
 

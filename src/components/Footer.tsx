@@ -13,6 +13,7 @@ export default function Footer() {
                 src="/images/PortFolioHub3.png"
                 alt="PortfolioHub Logo"
                 fill
+                sizes="240px"
                 className="object-contain"
               />
             </Link>

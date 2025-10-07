@@ -35,7 +35,7 @@ export default function Navigation() {
   }, []);
 
   return (
-    <nav className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg">
+    <nav className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg relative z-50">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between py-4">
           <div className="flex">
@@ -69,16 +69,26 @@ export default function Navigation() {
                       ? "Edit Portfolio"
                       : "Create Portfolio"}
                   </Link>
-                  <Link
-                    href="/profile"
-                    className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                      pathname === "/profile"
-                        ? "bg-white text-gray-900"
-                        : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
-                    }`}
-                  >
-                    Profile
-                  </Link>
+                    <Link
+                      href="/profile"
+                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                        pathname === "/profile"
+                          ? "bg-white text-gray-900"
+                          : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
+                      }`}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      href="/collaborations"
+                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                        pathname === "/collaborations"
+                          ? "bg-white text-gray-900"
+                          : "bg-white/10 text-white hover:bg-white hover:text-gray-900"
+                      }`}
+                    >
+                      Collaborations
+                    </Link>
                 </>
               ) : (
                 <Link

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+// import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+// import { cookies } from "next/headers";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
@@ -31,10 +31,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createServerComponentClient({ cookies });
-  // Get session but don't use it directly in this component
-  // It's required for Supabase to set cookies properly
-  await supabase.auth.getSession();
+  // Temporarily disable Supabase server client to avoid cookies() warning in dev
+  // const supabase = createServerComponentClient({ cookies });
+  // await supabase.auth.getSession();
 
   return (
     <html lang="en">

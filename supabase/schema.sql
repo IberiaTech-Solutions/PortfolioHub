@@ -1,6 +1,8 @@
 -- Drop existing tables if they exist
+DROP TABLE IF EXISTS collaborations CASCADE;
 DROP TABLE IF EXISTS portfolios CASCADE;
 DROP TABLE IF EXISTS predefined_skills CASCADE;
+DROP TABLE IF EXISTS admin_users CASCADE;
 
 -- Create portfolios table
 CREATE TABLE portfolios (
@@ -11,11 +13,30 @@ CREATE TABLE portfolios (
   job_title TEXT NOT NULL,
   description TEXT,
   website_url TEXT,
+  website_screenshot TEXT,
   github_url TEXT,
   linkedin_url TEXT,
   skills TEXT[] DEFAULT '{}',
+  projects JSONB DEFAULT '[]',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create collaborations table
+CREATE TABLE collaborations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  portfolio_id UUID NOT NULL REFERENCES portfolios(id) ON DELETE CASCADE,
+  collaborator_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  collaborator_name TEXT NOT NULL,
+  collaborator_email TEXT NOT NULL,
+  project_title TEXT NOT NULL,
+  project_description TEXT,
+  role TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending', -- pending, accepted, declined
+  verified_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(portfolio_id, collaborator_email)
 );
 
 -- Create predefined skills table
@@ -105,6 +126,7 @@ INSERT INTO predefined_skills (name, category) VALUES
 -- Set up Row Level Security (RLS)
 ALTER TABLE portfolios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE predefined_skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE collaborations ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for predefined_skills
 CREATE POLICY "Anyone can view predefined skills" 
@@ -137,6 +159,29 @@ CREATE POLICY "Users can delete their own portfolio"
   FOR DELETE 
   USING (auth.uid() = user_id);
 
+-- Create RLS policies for collaborations
+CREATE POLICY "Anyone can view collaborations" 
+  ON collaborations 
+  FOR SELECT 
+  USING (true);
+
+CREATE POLICY "Portfolio owners can manage their collaborations" 
+  ON collaborations 
+  FOR ALL 
+  USING (
+    EXISTS (
+      SELECT 1 FROM portfolios 
+      WHERE portfolios.id = collaborations.portfolio_id 
+      AND portfolios.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Collaborators can update their collaboration status" 
+  ON collaborations 
+  FOR UPDATE 
+  USING (collaborator_user_id = auth.uid())
+  WITH CHECK (collaborator_user_id = auth.uid());
+
 -- Create function to update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -149,6 +194,11 @@ $$ LANGUAGE plpgsql;
 -- Create trigger to update the updated_at timestamp
 CREATE TRIGGER update_portfolios_updated_at
 BEFORE UPDATE ON portfolios
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_collaborations_updated_at
+BEFORE UPDATE ON collaborations
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 

@@ -65,7 +65,7 @@ function HomeContent() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [searchExamples.length]);
 
   useEffect(() => {
     const placeholderInterval = setInterval(() => {
@@ -73,7 +73,7 @@ function HomeContent() {
     }, 4000);
 
     return () => clearInterval(placeholderInterval);
-  }, []);
+  }, [placeholderExamples.length]);
 
   useEffect(() => {
     // Fetch available skills and job titles
@@ -181,11 +181,11 @@ function HomeContent() {
     setLoading(false);
   };
 
-  const clearFilters = () => {
-    setSelectedSkills([]);
-    setSelectedJobTitles([]);
-    performSearch(searchQuery);
-  };
+  // const clearFilters = () => {
+  //   setSelectedSkills([]);
+  //   setSelectedJobTitles([]);
+  //   performSearch(searchQuery);
+  // };
 
   const getActiveFilterCount = () => {
     return selectedSkills.length + selectedJobTitles.length;

@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     // Analyze website for projects if website URL provided
     if (websiteUrl) {
       try {
-        const websiteProjects = await analyzeWebsiteForProjects(websiteUrl);
+        const websiteProjects = await analyzeWebsiteForProjects(websiteUrl, openai);
         projects.push(...websiteProjects);
       } catch (error) {
         console.error('Error analyzing website:', error);
@@ -116,7 +116,7 @@ async function fetchGitHubProjects(githubUrl: string): Promise<Project[]> {
   return projects;
 }
 
-async function analyzeWebsiteForProjects(websiteUrl: string): Promise<Project[]> {
+async function analyzeWebsiteForProjects(websiteUrl: string, openai: OpenAI): Promise<Project[]> {
   try {
     // Fetch website content
     const response = await fetch(websiteUrl, {

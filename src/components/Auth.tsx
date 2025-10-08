@@ -20,6 +20,11 @@ export default function Auth() {
   useEffect(() => {
     // Check if user is already signed in
     const checkUser = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        return;
+      }
+      
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -58,6 +63,11 @@ export default function Auth() {
   const handleEmailAuth = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    if (!supabase) {
+      setErrorMessage("Database not configured");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -129,6 +139,11 @@ export default function Auth() {
     setErrorMessage(null);
     setSuccessMessage(null);
 
+    if (!supabase) {
+      setErrorMessage("Database not configured");
+      return;
+    }
+
     try {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -152,6 +167,11 @@ export default function Auth() {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
+
+    if (!supabase) {
+      setErrorMessage("Database not configured");
+      return;
+    }
 
     try {
       setLoading(true);

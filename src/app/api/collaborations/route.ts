@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from '@/utils/supabase';
 export async function POST(request: NextRequest) {
   try {
     // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured() || !supabase) {
       console.warn('Supabase not configured, returning error');
       return NextResponse.json(
         { error: 'Database not configured' },
@@ -51,6 +51,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured() || !supabase) {
+      console.warn('Supabase not configured, returning error');
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 503 }
+      );
+    }
+    
     const { searchParams } = new URL(request.url);
     const portfolioId = searchParams.get('portfolioId');
 
@@ -82,7 +91,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured() || !supabase) {
       console.warn('Supabase not configured, returning error');
       return NextResponse.json(
         { error: 'Database not configured' },
@@ -122,7 +131,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured() || !supabase) {
       console.warn('Supabase not configured, returning error');
       return NextResponse.json(
         { error: 'Database not configured' },

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Fragment, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { Combobox, Transition } from "@headlessui/react";
@@ -285,6 +286,11 @@ export default function CreatePortfolioPage() {
 
   useEffect(() => {
     const fetchSkills = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        return;
+      }
+      
       const { data: skills, error } = await supabase
         .from("predefined_skills")
         .select("*")
@@ -295,10 +301,16 @@ export default function CreatePortfolioPage() {
         return;
       }
 
-      setPredefinedSkills(skills);
+      setPredefinedSkills(skills as Skill[]);
     };
 
     const checkAuth = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        router.push("/auth?redirect=/create-portfolio");
+        return;
+      }
+      
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -318,27 +330,28 @@ export default function CreatePortfolioPage() {
         .single();
 
       if (portfolio) {
-        setExistingPortfolio(portfolio as Portfolio);
+        const portfolioData = portfolio as unknown as Portfolio;
+        setExistingPortfolio(portfolioData);
         setFormData({
-          title: portfolio.title || "",
-          name: portfolio.name || "",
-          job_title: portfolio.job_title || "",
-          description: portfolio.description || "",
-          website_url: portfolio.website_url || "",
-          profile_image: portfolio.profile_image || "",
-          hero_image: portfolio.hero_image || "",
-          github_url: portfolio.github_url || "",
-          linkedin_url: portfolio.linkedin_url || "",
-          additional_links: portfolio.additional_links || [],
+          title: portfolioData.title || "",
+          name: portfolioData.name || "",
+          job_title: portfolioData.job_title || "",
+          description: portfolioData.description || "",
+          website_url: portfolioData.website_url || "",
+          profile_image: portfolioData.profile_image || "",
+          hero_image: portfolioData.hero_image || "",
+          github_url: portfolioData.github_url || "",
+          linkedin_url: portfolioData.linkedin_url || "",
+          additional_links: portfolioData.additional_links || [],
         });
-        setSelectedSkills(portfolio.skills || []);
-        setWebsiteScreenshot(portfolio.website_screenshot || "");
-        setDetectedProjects(portfolio.projects || []);
-        if (portfolio.profile_image) {
-          setProfileImagePreview(portfolio.profile_image);
+        setSelectedSkills(portfolioData.skills || []);
+        setWebsiteScreenshot(portfolioData.website_screenshot || "");
+        setDetectedProjects(portfolioData.projects || []);
+        if (portfolioData.profile_image) {
+          setProfileImagePreview(portfolioData.profile_image);
         }
-        if (portfolio.hero_image) {
-          setHeroImagePreview(portfolio.hero_image);
+        if (portfolioData.hero_image) {
+          setHeroImagePreview(portfolioData.hero_image);
         }
       }
     };
@@ -392,6 +405,10 @@ export default function CreatePortfolioPage() {
 
     try {
       setLoading(true);
+
+      if (!supabase) {
+        throw new Error("Database not configured");
+      }
 
       if (!user) {
         throw new Error("You must be logged in to create a portfolio");
@@ -447,6 +464,11 @@ export default function CreatePortfolioPage() {
     e.preventDefault();
     e.stopPropagation();
 
+    if (!supabase) {
+      alert("Database not configured");
+      return;
+    }
+
     if (!newSkill.name || !newSkill.category) {
       alert("Please fill in both skill name and category");
       return;
@@ -494,8 +516,8 @@ export default function CreatePortfolioPage() {
       }
 
       // Add to local state
-      setPredefinedSkills((prev) => [...prev, data]);
-      setSelectedSkills((prev) => [...prev, data.name]);
+      setPredefinedSkills((prev) => [...prev, data as Skill]);
+      setSelectedSkills((prev) => [...prev, (data as Skill).name]);
 
       // Reset form
       setNewSkill({ name: "", category: "" });
@@ -693,9 +715,11 @@ export default function CreatePortfolioPage() {
                     <div className="flex-shrink-0">
                       {profileImagePreview ? (
                         <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
-                          <img
+                          <Image
                             src={profileImagePreview}
                             alt="Profile preview"
+                            width={80}
+                            height={80}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -744,9 +768,11 @@ export default function CreatePortfolioPage() {
                     <div className="flex-shrink-0">
                       {heroImagePreview ? (
                         <div className="w-32 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
-                          <img
+                          <Image
                             src={heroImagePreview}
                             alt="Hero image preview"
+                            width={128}
+                            height={80}
                             className="w-full h-full object-cover"
                           />
                         </div>

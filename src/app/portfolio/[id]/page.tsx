@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { 
@@ -56,6 +57,18 @@ export default function PortfolioDetailPage() {
     const fetchPortfolio = async () => {
       setLoading(true);
 
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        setLoading(false);
+        return;
+      }
+
+      if (!params.id) {
+        console.error('Portfolio ID is required');
+        setLoading(false);
+        return;
+      }
+
       const { data: currentUser } = await supabase.auth.getUser();
       setUser(currentUser.user);
 
@@ -76,7 +89,7 @@ export default function PortfolioDetailPage() {
         return;
       }
 
-      setPortfolio(portfolioData as Portfolio);
+      setPortfolio(portfolioData as unknown as Portfolio);
       setLoading(false);
     };
 
@@ -160,9 +173,11 @@ export default function PortfolioDetailPage() {
           <div className="flex justify-center mb-8">
             {portfolio.profile_image ? (
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                <img
+                <Image
                   src={portfolio.profile_image}
                   alt={`${portfolio.name} profile`}
+                  width={128}
+                  height={128}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';

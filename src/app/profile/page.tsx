@@ -27,6 +27,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const getUser = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        router.push("/auth");
+        return;
+      }
+      
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -57,6 +63,12 @@ export default function ProfilePage() {
   }, [router]);
 
   const handleSignOut = async () => {
+    if (!supabase) {
+      console.warn('Supabase not configured');
+      router.push("/auth");
+      return;
+    }
+    
     await supabase.auth.signOut();
     router.push("/auth");
   };

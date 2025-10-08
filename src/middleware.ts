@@ -3,13 +3,26 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  try {
+    const res = NextResponse.next();
+    
+    // Check if Supabase environment variables are available
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.warn('Supabase environment variables not configured, skipping auth middleware');
+      return res;
+    }
 
-  // Refresh session if expired
-  await supabase.auth.getSession();
+    const supabase = createMiddlewareClient({ req, res });
 
-  return res;
+    // Refresh session if expired
+    await supabase.auth.getSession();
+
+    return res;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    // Return a basic response if middleware fails
+    return NextResponse.next();
+  }
 }
 
 export const config = {

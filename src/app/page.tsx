@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Fragment, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
 import { Listbox, Transition } from "@headlessui/react";
@@ -81,6 +82,11 @@ function HomeContent() {
   useEffect(() => {
     // Fetch available skills and job titles
     const fetchFilterOptions = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        return;
+      }
+      
       const { data: portfoliosData } = await supabase
         .from("portfolios")
         .select("skills, job_title");
@@ -88,7 +94,8 @@ function HomeContent() {
       if (portfoliosData) {
         // Extract unique skills
         const skills = new Set<string>();
-        portfoliosData.forEach((portfolio) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (portfoliosData as unknown as any[]).forEach((portfolio) => {
           if (portfolio.skills) {
             portfolio.skills.forEach((skill: string) => skills.add(skill));
           }
@@ -97,7 +104,8 @@ function HomeContent() {
 
         // Extract unique job titles
         const jobTitles = new Set<string>();
-        portfoliosData.forEach((portfolio) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (portfoliosData as unknown as any[]).forEach((portfolio) => {
           if (portfolio.job_title) {
             jobTitles.add(portfolio.job_title);
           }
@@ -130,6 +138,12 @@ function HomeContent() {
   const performSearch = async (query: string) => {
     setLoading(true);
     setHasSearched(true);
+
+    if (!supabase) {
+      console.warn('Supabase not configured');
+      setLoading(false);
+      return;
+    }
 
     const { data: portfoliosData, error } = await supabase
       .from("portfolios")
@@ -706,9 +720,11 @@ function HomeContent() {
                           rel="noopener noreferrer"
                           className="block w-full h-full"
                         >
-                          <img
+                          <Image
                             src={portfolio.hero_image}
                             alt={`${portfolio.title} portfolio hero`}
+                            width={400}
+                            height={192}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
@@ -751,9 +767,11 @@ function HomeContent() {
                           rel="noopener noreferrer"
                           className="block w-full h-full"
                         >
-                          <img
+                          <Image
                             src={portfolio.website_screenshot}
                             alt={`${portfolio.title} portfolio screenshot`}
+                            width={400}
+                            height={192}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
@@ -847,9 +865,11 @@ function HomeContent() {
                         <div className="flex-shrink-0 relative">
                           {portfolio.profile_image ? (
                             <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
-                              <img
+                              <Image
                                 src={portfolio.profile_image}
                                 alt={`${portfolio.name} profile`}
+                                width={56}
+                                height={56}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';

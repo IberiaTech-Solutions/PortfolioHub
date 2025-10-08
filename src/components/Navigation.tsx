@@ -22,6 +22,11 @@ export default function Navigation() {
 
   useEffect(() => {
     const getUser = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        return;
+      }
+      
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -43,13 +48,18 @@ export default function Navigation() {
 
     getUser();
 
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       
       // Check portfolio when user changes
-      if (session?.user) {
+      if (session?.user && supabase) {
         const { data: portfolio } = await supabase
           .from("portfolios")
           .select("id")
@@ -68,6 +78,13 @@ export default function Navigation() {
   }, []);
 
   const handleSignOut = async () => {
+    if (!supabase) {
+      console.warn('Supabase not configured');
+      router.push("/");
+      setIsDropdownOpen(false);
+      return;
+    }
+    
     await supabase.auth.signOut();
     router.push("/");
     setIsDropdownOpen(false);

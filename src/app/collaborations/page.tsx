@@ -17,10 +17,6 @@ interface Collaboration {
   status: 'pending' | 'accepted' | 'declined';
   verified_at?: string;
   created_at: string;
-  portfolios: {
-    title: string;
-    name: string;
-  };
 }
 
 export default function CollaborationVerification() {
@@ -30,6 +26,12 @@ export default function CollaborationVerification() {
 
   useEffect(() => {
     const getUser = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        setLoading(false);
+        return;
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       
@@ -43,17 +45,20 @@ export default function CollaborationVerification() {
 
   const fetchCollaborations = async (userId: string) => {
     try {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        setLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('collaborations')
-        .select(`
-          *,
-          portfolios!inner(title, name)
-        `)
+        .select('*')
         .eq('collaborator_user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCollaborations(data || []);
+      setCollaborations((data as unknown as Collaboration[]) || []);
     } catch (error) {
       console.error('Error fetching collaborations:', error);
     } finally {
@@ -203,12 +208,12 @@ export default function CollaborationVerification() {
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg">
                           <span className="text-white font-bold text-lg">
-                            {collaboration.portfolios.name?.charAt(0).toUpperCase()}
+                            {collaboration.collaborator_name?.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-heading font-bold text-gray-900 mb-1">
-                            {collaboration.portfolios.name}
+                            {collaboration.collaborator_name}
                           </h3>
                           <div className="flex items-center gap-3">
                             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold border ${
@@ -233,7 +238,7 @@ export default function CollaborationVerification() {
                           <div className="w-2 h-2 bg-brand-500 rounded-full mt-2"></div>
                           <div>
                             <p className="text-sm font-semibold text-gray-900">Portfolio</p>
-                            <p className="text-gray-700">{collaboration.portfolios.title}</p>
+                            <p className="text-gray-700">Portfolio ID: {collaboration.portfolio_id}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">

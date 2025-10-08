@@ -28,6 +28,11 @@ function SearchContent() {
   useEffect(() => {
     const fetchPortfolios = async () => {
       try {
+        if (!supabase) {
+          console.warn('Supabase not configured');
+          return;
+        }
+        
         const { data: portfoliosData, error } = await supabase
           .from("portfolios")
           .select("*")

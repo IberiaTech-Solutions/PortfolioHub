@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-50 border-t border-gray-200">
+    <footer className="bg-slate-900 border-t border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {/* About Section */}
@@ -11,9 +11,9 @@ export default function Footer() {
               <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-display font-bold text-lg">PH</span>
               </div>
-              <span className="text-2xl font-display font-semibold text-gray-900">PortfolioHub</span>
+              <span className="text-2xl font-display font-semibold text-white">PortfolioHub</span>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+            <p className="text-gray-300 text-sm leading-relaxed mb-6">
               The global community for developers and designers to showcase, connect, and collaborate. 
               Build your professional network and discover amazing opportunities.
             </p>
@@ -24,7 +24,7 @@ export default function Footer() {
                 href="https://linkedin.com/company/portfoliohub"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-400 hover:text-brand-400 transition-colors duration-200"
+                className="text-gray-300 hover:text-brand-300 transition-colors duration-200"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@ export default function Footer() {
                 href="https://twitter.com/portfoliohub"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-400 hover:text-brand-400 transition-colors duration-200"
+                className="text-gray-300 hover:text-brand-300 transition-colors duration-200"
                 aria-label="Twitter"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@ export default function Footer() {
                 href="https://github.com/portfoliohub"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-400 hover:text-brand-400 transition-colors duration-200"
+                className="text-gray-300 hover:text-brand-300 transition-colors duration-200"
                 aria-label="GitHub"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -58,12 +58,12 @@ export default function Footer() {
 
           {/* Explore Section */}
           <div>
-            <h3 className="text-gray-900 font-heading font-semibold mb-6 text-sm uppercase tracking-wide">Explore</h3>
+            <h3 className="text-white font-heading font-semibold mb-6 text-sm uppercase tracking-wide">Explore</h3>
             <ul className="space-y-4">
               <li>
                 <Link
                   href="/"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Home
                 </Link>
@@ -71,7 +71,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/create-portfolio"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Create Portfolio
                 </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/search"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Browse Portfolios
                 </Link>
@@ -87,7 +87,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collaborations"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Collaborations
                 </Link>
@@ -95,7 +95,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/profile"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   My Profile
                 </Link>
@@ -105,12 +105,12 @@ export default function Footer() {
 
           {/* Legal Section */}
           <div>
-            <h3 className="text-gray-900 font-heading font-semibold mb-6 text-sm uppercase tracking-wide">Legal</h3>
+            <h3 className="text-white font-heading font-semibold mb-6 text-sm uppercase tracking-wide">Legal</h3>
             <ul className="space-y-4">
               <li>
                 <Link
                   href="/privacy"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Privacy Policy
                 </Link>
@@ -118,7 +118,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Terms of Service
                 </Link>
@@ -126,7 +126,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/cookies"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Cookie Policy
                 </Link>
@@ -134,7 +134,7 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:luis.lozoya.tech@gmail.com"
-                  className="text-slate-400 hover:text-brand-400 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
                 >
                   Contact Support
                 </a>
@@ -144,16 +144,16 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-12 pt-8 border-t border-slate-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-slate-400 text-xs">
+            <p className="text-gray-300 text-xs">
               © {new Date().getFullYear()} PortfolioHub. All rights reserved.
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <span className="text-slate-400 text-xs">Made with</span>
+              <span className="text-gray-300 text-xs">Made with</span>
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-slate-400 text-xs">for developers</span>
+                <span className="text-gray-300 text-xs">for developers</span>
               </div>
             </div>
           </div>

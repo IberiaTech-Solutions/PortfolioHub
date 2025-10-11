@@ -75,7 +75,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -86,7 +86,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient Waves */}
@@ -111,7 +111,7 @@ export default function ProfilePage() {
 
       <div className="relative max-w-6xl mx-auto py-16 px-6 space-y-12">
         {/* Profile Header */}
-        <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden shadow-xl">
           <div className="relative">
             <div className="h-40 bg-gradient-to-r from-brand-500 via-brand-600 to-emerald-600"></div>
             <div className="absolute -bottom-12 left-8">
@@ -125,17 +125,17 @@ export default function ProfilePage() {
           <div className="p-8 pt-20">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8">
               <div className="mb-6 md:mb-0">
-                <h1 className="text-4xl font-display font-bold text-gray-900 mb-2">
+                <h1 className="text-4xl font-display font-bold text-white mb-2">
                   {user?.email?.split("@")[0] || "User"}
                 </h1>
-                <p className="text-xl text-gray-600">
+                <p className="text-xl text-gray-200">
                   {portfolio ? portfolio.job_title : "Portfolio Creator"}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/create-portfolio"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-black rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white/80 hover:bg-white text-gray-700 rounded-xl font-semibold transition-all duration-300 border border-gray-200/50 shadow-sm hover:shadow-md hover:scale-105"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all duration-300 border border-white/20 shadow-sm hover:shadow-md hover:scale-105"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -173,11 +173,11 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid gap-4">
-              <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-                <span className="p-3 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl">
+              <div className="flex items-center space-x-4 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm">
+                <span className="p-3 bg-gradient-to-br from-brand-500/20 to-brand-600/20 rounded-xl">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-brand-600"
+                    className="h-6 w-6 text-brand-300"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -186,16 +186,16 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Email</p>
-                  <p className="text-gray-900 font-semibold">{user!.email}</p>
+                  <p className="text-sm font-semibold text-gray-300 uppercase tracking-wide">Email</p>
+                  <p className="text-white font-semibold">{user!.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-                <span className="p-3 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl">
+              <div className="flex items-center space-x-4 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm">
+                <span className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-emerald-600"
+                    className="h-6 w-6 text-emerald-300"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -207,8 +207,8 @@ export default function ProfilePage() {
                   </svg>
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Status</p>
-                  <p className="text-gray-900 font-semibold">
+                  <p className="text-sm font-semibold text-gray-300 uppercase tracking-wide">Status</p>
+                  <p className="text-white font-semibold">
                     {user!.email_confirmed_at ? (
                       <span className="inline-flex items-center space-x-2 text-emerald-600">
                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -233,39 +233,39 @@ export default function ProfilePage() {
 
         {/* Portfolio Section */}
         {portfolio ? (
-          <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 shadow-xl">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">
+                <h2 className="text-3xl font-display font-bold text-white mb-2">
                   Your Portfolio
                 </h2>
-                <p className="text-xl text-gray-600">
+                <p className="text-xl text-gray-200">
                   Showcase your professional journey
                 </p>
               </div>
               <Link
                 href={`/portfolio/${portfolio.id}`}
-                className="px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-black rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                className="px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
               >
                 View Live Portfolio
               </Link>
             </div>
 
             <div className="space-y-8">
-              <div className="p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm">
-                <h3 className="text-2xl font-heading font-bold text-gray-900 mb-3">
+              <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 shadow-sm">
+                <h3 className="text-2xl font-heading font-bold text-white mb-3">
                   {portfolio.title}
                 </h3>
-                <p className="text-xl text-gray-700 font-semibold mb-4">
+                <p className="text-xl text-gray-200 font-semibold mb-4">
                   {portfolio.job_title}
                 </p>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed">
                   {portfolio.description}
                 </p>
               </div>
 
-              <div className="p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm">
-                <h3 className="text-xl font-heading font-bold text-gray-900 mb-6">
+              <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 shadow-sm">
+                <h3 className="text-xl font-heading font-bold text-white mb-6">
                   Skills & Expertise
                 </h3>
                 <div className="flex flex-wrap gap-3">
@@ -294,22 +294,22 @@ export default function ProfilePage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-12 shadow-xl">
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-12 shadow-xl">
             <div className="text-center max-w-lg mx-auto">
-              <div className="w-20 h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <div className="w-20 h-20 bg-gradient-to-br from-brand-500/20 to-brand-600/20 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 text-brand-600"
+                  className="h-10 w-10 text-brand-300"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
                   <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                 </svg>
               </div>
-              <h2 className="text-3xl font-display font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-display font-bold text-white mb-4">
                 Create Your Portfolio
               </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-xl text-gray-200 mb-8 leading-relaxed">
                 Showcase your skills and experience to potential clients and
                 employers. Stand out from the crowd with a professional
                 portfolio.

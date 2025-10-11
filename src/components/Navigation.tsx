@@ -108,7 +108,7 @@ export default function Navigation() {
   }, [isDropdownOpen]);
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
+    <nav className="bg-slate-900/95 backdrop-blur-md border-b border-slate-700 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -117,7 +117,7 @@ export default function Navigation() {
               <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-display font-bold text-lg">PH</span>
               </div>
-              <span className="text-2xl font-display font-semibold text-gray-900">PortfolioHub</span>
+              <span className="text-2xl font-display font-semibold text-white">PortfolioHub</span>
             </Link>
           </div>
 
@@ -132,7 +132,7 @@ export default function Navigation() {
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                       pathname === "/create-portfolio"
                         ? "bg-brand-600 text-white shadow-sm"
-                        : "text-gray-600 hover:text-brand-600 hover:bg-brand-50"
+                        : "text-gray-300 hover:text-white hover:bg-slate-800"
                     }`}
                   >
                     {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
@@ -142,7 +142,7 @@ export default function Navigation() {
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                       pathname === "/collaborations"
                         ? "bg-brand-600 text-white shadow-sm"
-                        : "text-gray-600 hover:text-brand-600 hover:bg-brand-50"
+                        : "text-gray-300 hover:text-white hover:bg-slate-800"
                     }`}
                   >
                     Collaborations
@@ -158,31 +158,31 @@ export default function Navigation() {
                   <div className="relative">
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors duration-200"
                     >
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-gray-600 font-medium text-sm">
+                      <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                        <span className="text-white font-medium text-sm">
                           {user.email?.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <ChevronDownIcon className="w-4 h-4 text-gray-400" />
+                      <ChevronDownIcon className="w-4 h-4 text-gray-300" />
                     </button>
 
                     {/* Dropdown Menu */}
                     {isDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[60]">
-                        <div className="px-4 py-2 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">
+                      <div className="absolute right-0 mt-2 w-56 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2 z-[60]">
+                        <div className="px-4 py-2 border-b border-slate-700">
+                          <p className="text-sm font-medium text-white">
                             {user.email?.split('@')[0]}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">
+                          <p className="text-xs text-gray-300 truncate">
                             {user.email}
                           </p>
                         </div>
                         
                         <Link
                           href="/profile"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                          className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           <UserCircleIcon className="w-4 h-4 mr-3" />
@@ -191,14 +191,14 @@ export default function Navigation() {
                         
                         <Link
                           href="/create-portfolio"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                          className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           <Cog6ToothIcon className="w-4 h-4 mr-3" />
                           {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
                         </Link>
                         
-                        <div className="border-t border-gray-100 my-1"></div>
+                        <div className="border-t border-slate-700 my-1"></div>
                         
                         <button
                           onClick={handleSignOut}
@@ -214,7 +214,7 @@ export default function Navigation() {
                   <div className="flex items-center space-x-2">
                     <Link
                       href="/auth?mode=signin"
-                      className="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200"
+                      className="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-slate-800 transition-all duration-200"
                     >
                       <UserCircleIcon className="w-5 h-5" />
                       <span className="hidden sm:inline">Sign In</span>
@@ -236,7 +236,7 @@ export default function Navigation() {
           <div className="md:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-500"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>

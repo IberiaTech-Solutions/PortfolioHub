@@ -1,0 +1,408 @@
+"use client";
+
+import { useState, Fragment, useEffect } from "react";
+import { Listbox, Transition } from "@headlessui/react";
+import {
+  ChevronDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
+
+interface SearchBarProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  onSearch: (query: string) => void;
+  selectedSkills: string[];
+  setSelectedSkills: (skills: string[]) => void;
+  selectedJobTitles: string[];
+  setSelectedJobTitles: (titles: string[]) => void;
+  availableSkills: string[];
+  availableJobTitles: string[];
+  placeholderExamples: string[];
+  currentPlaceholder: number;
+  showFilters: boolean;
+  setShowFilters: (show: boolean) => void;
+  getActiveFilterCount: () => number;
+  isSticky?: boolean;
+  enableStickyBehavior?: boolean;
+}
+
+export default function SearchBar({
+  searchQuery,
+  setSearchQuery,
+  onSearch,
+  selectedSkills,
+  setSelectedSkills,
+  selectedJobTitles,
+  setSelectedJobTitles,
+  availableSkills,
+  availableJobTitles,
+  placeholderExamples,
+  currentPlaceholder,
+  showFilters,
+  setShowFilters,
+  getActiveFilterCount,
+  isSticky = false,
+  enableStickyBehavior = false,
+}: SearchBarProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!enableStickyBehavior) return;
+
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          setIsScrolled(scrollTop > 300); // Reduced threshold for earlier activation
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [enableStickyBehavior]);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(searchQuery);
+  };
+
+  const shouldBeSticky = isSticky || (enableStickyBehavior && isScrolled);
+  
+  const containerClasses = shouldBeSticky 
+    ? "fixed top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-lg transition-all duration-500 ease-out transform animate-in slide-in-from-top-2 fade-in-0"
+    : "bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-2xl transition-all duration-500 ease-out transform";
+
+  const innerClasses = shouldBeSticky 
+    ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 transition-all duration-300 ease-out"
+    : "space-y-4 transition-all duration-300 ease-out";
+
+  return (
+    <div 
+      className={containerClasses}
+      style={{
+        transform: shouldBeSticky ? 'translateY(0)' : 'translateY(0)',
+        opacity: shouldBeSticky ? 1 : 1,
+      }}
+    >
+      <div className={innerClasses}>
+        <form onSubmit={handleSearch} className="space-y-4">
+          {/* Main Search Bar */}
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder={placeholderExamples[currentPlaceholder]}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-32 py-4 sm:py-5 bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-base sm:text-xl shadow-lg"
+            />
+            <button
+              type="submit"
+              className="absolute right-2 top-2 px-6 py-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-lg font-medium transition-all duration-200 text-sm sm:text-base shadow-lg hover:shadow-xl"
+            >
+              Search
+            </button>
+          </div>
+
+          {/* Filter Row */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center">
+            {/* Role Filter */}
+            <div className="flex-1">
+              <select
+                value={selectedJobTitles.length > 0 ? selectedJobTitles[0] : ''}
+                onChange={(e) => setSelectedJobTitles(e.target.value ? [e.target.value] : [])}
+                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
+              >
+                <option value="">All Roles</option>
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="Backend Developer">Backend Developer</option>
+                <option value="Full-Stack Developer">Full-Stack Developer</option>
+                <option value="UI/UX Designer">UI/UX Designer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Data Scientist">Data Scientist</option>
+                <option value="Mobile Developer">Mobile Developer</option>
+                <option value="Product Manager">Product Manager</option>
+              </select>
+            </div>
+
+            {/* Experience Filter */}
+            <div className="flex-1">
+              <select
+                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
+              >
+                <option value="">All Experience</option>
+                <option value="entry">Entry Level (0-2 years)</option>
+                <option value="mid">Mid Level (3-5 years)</option>
+                <option value="senior">Senior Level (6+ years)</option>
+                <option value="lead">Lead/Principal (8+ years)</option>
+              </select>
+            </div>
+
+            {/* Location Filter */}
+            <div className="flex-1">
+              <select
+                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
+              >
+                <option value="">All Locations</option>
+                <option value="remote">Remote</option>
+                <option value="us">United States</option>
+                <option value="europe">Europe</option>
+                <option value="asia">Asia</option>
+                <option value="australia">Australia</option>
+              </select>
+            </div>
+
+            {/* Advanced Filters Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center px-4 py-3 bg-white/70 hover:bg-white/90 border border-gray-200 rounded-lg text-gray-700 transition-all duration-200 text-sm sm:text-base shadow-sm backdrop-blur-sm"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filters
+              {getActiveFilterCount() > 0 && (
+                <span className="ml-2 px-2 py-1 bg-brand-600 text-white text-xs rounded-full">
+                  {getActiveFilterCount()}
+                </span>
+              )}
+            </button>
+          </div>
+        </form>
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-6">
+            {/* Skills Filter */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Skills
+              </label>
+              <Listbox
+                value={selectedSkills}
+                onChange={(value) => {
+                  setSelectedSkills(value);
+                  onSearch(searchQuery);
+                }}
+                multiple
+              >
+                <div className="relative">
+                  <Listbox.Button className="relative w-full py-3 pl-4 pr-10 text-left bg-white border border-gray-200 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+                    <span className="block truncate text-gray-900">
+                      {selectedSkills.length === 0
+                        ? "Select skills"
+                        : `${selectedSkills.length} selected`}
+                    </span>
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <ChevronDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Listbox.Button>
+                  <Transition
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {availableSkills.length === 0 ? (
+                        <div className="px-4 py-3 text-gray-500 text-sm">
+                          No skills found yet.
+                        </div>
+                      ) : (
+                        availableSkills.map((skill) => (
+                          <Listbox.Option
+                            key={skill}
+                            value={skill}
+                            className={({ active }) =>
+                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-900"
+                              }`
+                            }
+                          >
+                            {({ selected }) => (
+                              <>
+                                <span
+                                  className={`block truncate ${
+                                    selected ? "font-medium" : "font-normal"
+                                  }`}
+                                >
+                                  {skill}
+                                </span>
+                                {selected ? (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-900">
+                                    <svg
+                                      className="h-5 w-5"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))
+                      )}
+                    </Listbox.Options>
+                  </Transition>
+                </div>
+              </Listbox>
+            </div>
+
+            {/* Job Titles Filter */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Job Titles
+              </label>
+              <Listbox
+                value={selectedJobTitles}
+                onChange={(value) => {
+                  setSelectedJobTitles(value);
+                  onSearch(searchQuery);
+                }}
+                multiple
+              >
+                <div className="relative">
+                  <Listbox.Button className="relative w-full py-3 pl-4 pr-10 text-left bg-white border border-gray-200 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+                    <span className="block truncate text-gray-900">
+                      {selectedJobTitles.length === 0
+                        ? "Select job titles"
+                        : `${selectedJobTitles.length} selected`}
+                    </span>
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <ChevronDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Listbox.Button>
+                  <Transition
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {availableJobTitles.length === 0 ? (
+                        <div className="px-4 py-3 text-gray-500 text-sm">
+                          No job titles found yet.
+                        </div>
+                      ) : (
+                        availableJobTitles.map((title) => (
+                          <Listbox.Option
+                            key={title}
+                            value={title}
+                            className={({ active }) =>
+                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-900"
+                              }`
+                            }
+                          >
+                            {({ selected }) => (
+                              <>
+                                <span
+                                  className={`block truncate ${
+                                    selected ? "font-medium" : "font-normal"
+                                  }`}
+                                >
+                                  {title}
+                                </span>
+                                {selected ? (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-900">
+                                    <svg
+                                      className="h-5 w-5"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))
+                      )}
+                    </Listbox.Options>
+                  </Transition>
+                </div>
+              </Listbox>
+            </div>
+
+            {/* Selected Filters Display */}
+            {(selectedSkills.length > 0 || selectedJobTitles.length > 0) && (
+              <div className="pt-4 border-t border-gray-200">
+                <h3 className="text-sm font-medium text-gray-700 mb-3">Active Filters</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedSkills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-flex items-center px-3 py-1 rounded-full bg-gray-900 text-white text-sm"
+                    >
+                      {skill}
+                      <button
+                        onClick={() => {
+                          setSelectedSkills(
+                            selectedSkills.filter((s) => s !== skill)
+                          );
+                          onSearch(searchQuery);
+                        }}
+                        className="ml-2 hover:text-gray-300 transition-colors duration-200"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    </span>
+                  ))}
+                  {selectedJobTitles.map((title) => (
+                    <span
+                      key={title}
+                      className="inline-flex items-center px-3 py-1 rounded-full bg-gray-700 text-white text-sm"
+                    >
+                      {title}
+                      <button
+                        onClick={() => {
+                          setSelectedJobTitles(
+                            selectedJobTitles.filter((t) => t !== title)
+                          );
+                          onSearch(searchQuery);
+                        }}
+                        className="ml-2 hover:text-gray-300 transition-colors duration-200"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

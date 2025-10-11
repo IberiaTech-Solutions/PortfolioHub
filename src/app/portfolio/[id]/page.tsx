@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
-import { User } from "@supabase/supabase-js";
 import { 
   CodeBracketIcon, 
   GlobeAltIcon, 
@@ -51,7 +50,6 @@ export default function PortfolioDetailPage() {
   const router = useRouter();
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -69,8 +67,6 @@ export default function PortfolioDetailPage() {
         return;
       }
 
-      const { data: currentUser } = await supabase.auth.getUser();
-      setUser(currentUser.user);
 
       const { data: portfolioData, error } = await supabase
         .from("portfolios")

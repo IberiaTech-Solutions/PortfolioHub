@@ -4,7 +4,7 @@ import { useEffect, useState, Fragment, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
-import { User } from "@supabase/supabase-js";
+import { User, PostgrestResponse } from "@supabase/supabase-js";
 import { Combobox, Transition } from "@headlessui/react";
 import {
   CheckIcon,
@@ -528,7 +528,8 @@ export default function CreatePortfolioPage() {
           setTimeout(() => reject(new Error('Supabase insert timeout after 10 seconds')), 10000)
         );
 
-        const { data, error } = await Promise.race([insertPromise, timeoutPromise]) as any;
+        const result = await Promise.race([insertPromise, timeoutPromise]);
+        const { data, error } = result as PostgrestResponse<Portfolio>;
 
         console.log("Supabase response:", { data, error });
 

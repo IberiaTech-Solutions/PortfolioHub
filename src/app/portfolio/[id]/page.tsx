@@ -22,6 +22,7 @@ type Portfolio = {
   job_title: string;
   description: string;
   website_url: string;
+  website_screenshot: string;
   profile_image?: string;
   hero_image?: string;
   github_url: string;

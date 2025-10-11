@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useState, Fragment, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
-import { Listbox, Transition } from "@headlessui/react";
 import {
-  ChevronDownIcon,
-  XMarkIcon,
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import SearchBar from "@/components/SearchBar";
@@ -129,12 +126,6 @@ function HomeContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newUrl = searchQuery ? `/?q=${encodeURIComponent(searchQuery)}` : "/";
-    window.history.pushState({}, "", newUrl);
-    performSearch(searchQuery);
-  };
 
   const performSearch = async (query: string) => {
     setLoading(true);

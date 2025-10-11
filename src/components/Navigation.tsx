@@ -19,31 +19,49 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hasPortfolio, setHasPortfolio] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     const getUser = async () => {
       if (!supabase) {
         console.warn('Supabase not configured');
+        setLoading(false);
         return;
       }
       
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-      
-      // Check if user has a portfolio
-      if (user) {
-        const { data: portfolio } = await supabase
-          .from("portfolios")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setUser(user);
         
-        setHasPortfolio(!!portfolio);
+        // Check if user has a portfolio
+        if (user) {
+          try {
+            const { data: portfolio, error } = await supabase
+              .from("portfolios")
+              .select("id")
+              .eq("user_id", user.id)
+              .maybeSingle();
+            
+            if (error) {
+              console.error('Error fetching portfolio:', error);
+              setHasPortfolio(false);
+            } else {
+              setHasPortfolio(!!portfolio);
+            }
+          } catch (portfolioError) {
+            console.error('Error checking portfolio:', portfolioError);
+            setHasPortfolio(false);
+          }
+        }
+      } catch (error) {
+        console.error('Error getting user:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     getUser();
@@ -60,13 +78,23 @@ export default function Navigation() {
       
       // Check portfolio when user changes
       if (session?.user && supabase) {
-        const { data: portfolio } = await supabase
-          .from("portfolios")
-          .select("id")
-          .eq("user_id", session.user.id)
-          .maybeSingle();
-        
-        setHasPortfolio(!!portfolio);
+        try {
+          const { data: portfolio, error } = await supabase
+            .from("portfolios")
+            .select("id")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+          
+          if (error) {
+            console.error('Error fetching portfolio in auth state change:', error);
+            setHasPortfolio(false);
+          } else {
+            setHasPortfolio(!!portfolio);
+          }
+        } catch (portfolioError) {
+          console.error('Error checking portfolio in auth state change:', portfolioError);
+          setHasPortfolio(false);
+        }
       } else {
         setHasPortfolio(false);
       }
@@ -125,7 +153,7 @@ export default function Navigation() {
           <div className="flex items-center space-x-4">
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-1">
-              {!loading && user && (
+              {mounted && !loading && user && (
                 <>
                   <Link
                     href="/create-portfolio"
@@ -149,10 +177,18 @@ export default function Navigation() {
                   </Link>
                 </>
               )}
+              {/* Show loading state for navigation links */}
+              {mounted && loading && (
+                <div className="flex items-center space-x-1">
+                  <div className="px-3 py-2 rounded-md text-sm font-medium text-gray-400 animate-pulse">
+                    Loading...
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* User Avatar Dropdown */}
-            {!loading && (
+            {mounted && !loading && (
               <div className="relative user-dropdown">
                 {user ? (
                   <div className="relative">
@@ -202,7 +238,7 @@ export default function Navigation() {
                         
                         <button
                           onClick={handleSignOut}
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
                         >
                           <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
                           Sign Out
@@ -228,6 +264,13 @@ export default function Navigation() {
                     </Link>
                   </div>
                 )}
+              </div>
+            )}
+            
+            {/* Show loading state for user menu */}
+            {mounted && loading && (
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-slate-700 rounded-full animate-pulse"></div>
               </div>
             )}
           </div>

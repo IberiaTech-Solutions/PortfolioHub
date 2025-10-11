@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Fragment, useCallback } from "react";
+import { useEffect, useState, Fragment, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
@@ -93,6 +93,10 @@ export default function CreatePortfolioPage() {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [heroImagePreview, setHeroImagePreview] = useState<string>("");
   const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
+  
+  // AI call tracking
+  const [aiCallCount, setAiCallCount] = useState(0);
+  const MAX_AI_CALLS = 5;
   const [formData, setFormData] = useState({
     title: "",
     name: "",
@@ -117,7 +121,15 @@ export default function CreatePortfolioPage() {
         return;
       }
 
+      // Check call limit
+      if (aiCallCount >= MAX_AI_CALLS) {
+        console.log(`AI call limit reached (${MAX_AI_CALLS}). Skipping analysis for ${field}.`);
+        return;
+      }
+
       setAnalyzingField(field);
+      setAiCallCount(prev => prev + 1);
+      
       try {
         const response = await fetch('/api/analyzePortfolio', {
           method: 'POST',
@@ -137,7 +149,7 @@ export default function CreatePortfolioPage() {
         setAnalyzingField(null);
       }
     },
-    []
+    [aiCallCount, MAX_AI_CALLS]
   );
 
   // Extract skills from description
@@ -148,7 +160,15 @@ export default function CreatePortfolioPage() {
         return;
       }
 
+      // Check call limit
+      if (aiCallCount >= MAX_AI_CALLS) {
+        console.log(`AI call limit reached (${MAX_AI_CALLS}). Skipping skill extraction.`);
+        return;
+      }
+
       setExtractingSkills(true);
+      setAiCallCount(prev => prev + 1);
+      
       try {
         const response = await fetch('/api/analyzePortfolio', {
           method: 'POST',
@@ -173,7 +193,7 @@ export default function CreatePortfolioPage() {
         setExtractingSkills(false);
       }
     },
-    []
+    [aiCallCount, MAX_AI_CALLS]
   );
 
   // Add extracted skill to selected skills
@@ -248,20 +268,49 @@ export default function CreatePortfolioPage() {
   );
 
 
+  // Debounce timers
+  const debounceTimers = useRef<{[key: string]: NodeJS.Timeout}>({});
+
   const debouncedAnalyze = useCallback(
     (field: string, content: string, fieldType: string) => {
-      setTimeout(() => {
+      // Skip AI analysis for very long content to improve performance
+      if (content.length > 2000) {
+        console.log(`Skipping AI analysis for ${field} - content too long (${content.length} chars)`);
+        return;
+      }
+      
+      // Clear existing timer
+      if (debounceTimers.current[field]) {
+        clearTimeout(debounceTimers.current[field]);
+      }
+      
+      // Set new timer with longer delay for better performance
+      debounceTimers.current[field] = setTimeout(() => {
         analyzeField(field, content, fieldType);
-      }, 1500);
+        delete debounceTimers.current[field];
+      }, 3000); // Increased to 3 seconds
     },
     [analyzeField]
   );
 
   const debouncedExtractSkills = useCallback(
     (content: string) => {
-      setTimeout(() => {
+      // Skip AI analysis for very long content to improve performance
+      if (content.length > 2000) {
+        console.log(`Skipping skill extraction - content too long (${content.length} chars)`);
+        return;
+      }
+      
+      // Clear existing timer
+      if (debounceTimers.current['extractSkills']) {
+        clearTimeout(debounceTimers.current['extractSkills']);
+      }
+      
+      // Set new timer with longer delay for better performance
+      debounceTimers.current['extractSkills'] = setTimeout(() => {
         extractSkillsFromDescription(content);
-      }, 2000);
+        delete debounceTimers.current['extractSkills'];
+      }, 3500); // Increased to 3.5 seconds
     },
     [extractSkillsFromDescription]
   );
@@ -327,13 +376,16 @@ export default function CreatePortfolioPage() {
         setUser(user);
 
         // Fetch portfolio data after auth is confirmed
-        const { data: portfolio } = await supabase
+        const { data: portfolio, error: portfolioError } = await supabase
           .from("portfolios")
           .select("*")
           .eq("user_id", user.id)
-          .single();
+          .maybeSingle();
 
-        if (portfolio) {
+        if (portfolioError) {
+          console.error("Error fetching existing portfolio:", portfolioError);
+          // Continue without existing portfolio data
+        } else if (portfolio) {
           const portfolioData = portfolio as unknown as Portfolio;
           setExistingPortfolio(portfolioData);
           setFormData({
@@ -415,6 +467,12 @@ export default function CreatePortfolioPage() {
     try {
       setLoading(true);
 
+      // Clear all pending AI analysis timers to prevent delays
+      Object.values(debounceTimers.current).forEach(timer => {
+        if (timer) clearTimeout(timer);
+      });
+      debounceTimers.current = {};
+
       if (!supabase) {
         throw new Error("Database not configured");
       }
@@ -432,35 +490,72 @@ export default function CreatePortfolioPage() {
       };
 
       console.log("Submitting portfolio data:", portfolioData);
+      
+      // Validate required fields
+      if (!portfolioData.title || !portfolioData.name || !portfolioData.job_title || !portfolioData.description) {
+        throw new Error("Missing required fields: title, name, job_title, or description");
+      }
+      
+      console.log("Validation passed, proceeding with submission...");
 
       if (existingPortfolio) {
         // Update existing portfolio
         console.log("Updating existing portfolio:", existingPortfolio.id);
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("portfolios")
           .update(portfolioData)
-          .eq("id", existingPortfolio.id);
+          .eq("id", existingPortfolio.id)
+          .select();
 
         if (error) {
           console.error("Supabase update error:", error);
           throw error;
         }
+        
+        console.log("Portfolio updated successfully:", data);
       } else {
         // Create new portfolio
         console.log("Creating new portfolio");
-        const { error } = await supabase
+        console.log("Portfolio data being inserted:", JSON.stringify(portfolioData, null, 2));
+        
+        // Add timeout to detect hanging operations
+        const insertPromise = supabase
           .from("portfolios")
-          .insert([portfolioData]);
+          .insert([portfolioData])
+          .select();
+
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Supabase insert timeout after 10 seconds')), 10000)
+        );
+
+        const { data, error } = await Promise.race([insertPromise, timeoutPromise]) as any;
+
+        console.log("Supabase response:", { data, error });
 
         if (error) {
           console.error("Supabase insert error:", error);
+          console.error("Error details:", {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint
+          });
           throw error;
         }
+        
+        console.log("Portfolio created successfully:", data);
       }
 
       console.log("Portfolio saved successfully");
-      setLoading(false); // Reset loading state on success
+      console.log("Navigating to profile page...");
       router.push("/profile");
+      console.log("Navigation initiated");
+      
+      // Fallback: reset loading state after a timeout in case navigation fails
+      setTimeout(() => {
+        console.log("Timeout reached, resetting loading state");
+        setLoading(false);
+      }, 3000);
     } catch (error) {
       console.error("Error saving portfolio:", error);
       alert(`Error saving portfolio: ${error instanceof Error ? error.message : 'Please try again.'}`);
@@ -709,10 +804,18 @@ export default function CreatePortfolioPage() {
           {/* Form Section */}
           <div className="lg:col-span-2">
             <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
+              <div className="mb-6 p-4 bg-blue-500/10 border border-blue-400/30 rounded-lg">
+                <p className="text-sm text-blue-200">
+                  <span className="text-red-400 font-semibold">*</span> Required fields must be filled out to create your portfolio.
+                </p>
+                <p className="text-xs text-blue-300 mt-1">
+                  AI Analysis: {MAX_AI_CALLS - aiCallCount} calls remaining
+                </p>
+              </div>
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="space-y-4">
                   <label htmlFor="name" className="block text-sm font-semibold text-white">
-                    Your Full Name
+                    Your Full Name <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -721,9 +824,14 @@ export default function CreatePortfolioPage() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    className={`w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md ${
+                      !formData.name ? 'border-red-400/50' : 'border-white/20'
+                    }`}
                     placeholder="John Doe"
                   />
+                  {!formData.name && (
+                    <p className="text-red-400 text-xs mt-1">This field is required</p>
+                  )}
                 </div>
 
                 {/* Profile Image Upload */}
@@ -833,7 +941,7 @@ export default function CreatePortfolioPage() {
 
                 <div className="space-y-4">
                   <label htmlFor="title" className="block text-sm font-semibold text-white">
-                    Portfolio Title
+                    Portfolio Title <span className="text-red-400">*</span>
                       <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
                       <SparklesIcon className="h-3 w-3 mr-1" />
                       AI Analysis
@@ -849,22 +957,27 @@ export default function CreatePortfolioPage() {
                       debouncedAnalyze('title', e.target.value, 'title');
                     }}
                     required
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    className={`w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md ${
+                      !formData.title ? 'border-red-400/50' : 'border-white/20'
+                    }`}
                     placeholder="Front-end Developer with 5 years experience"
                   />
+                  {!formData.title && (
+                    <p className="text-red-400 text-xs mt-1">This field is required</p>
+                  )}
             
                   {/* AI Suggestions for Title */}
                   {(aiSuggestions.title?.length > 0 || analyzingField === 'title') && (
-                    <div className="mt-4 p-4 bg-gradient-to-r from-brand-50 to-blue-50 border border-brand-200/50 rounded-xl backdrop-blur-sm">
+                    <div className="mt-4 p-4 bg-brand-500/10 border border-brand-400/30 rounded-xl backdrop-blur-sm">
                       <div className="flex items-center gap-2 mb-3">
-                        <SparklesIcon className="h-4 w-4 text-brand-600" />
-                        <span className="text-sm font-semibold text-brand-700">AI Suggestions</span>
+                        <SparklesIcon className="h-4 w-4 text-brand-300" />
+                        <span className="text-sm font-semibold text-brand-200">AI Suggestions</span>
                         {analyzingField === 'title' && (
-                          <div className="h-3 w-3 border border-brand-600 border-t-transparent rounded-full animate-spin"></div>
+                          <div className="h-3 w-3 border border-brand-300 border-t-transparent rounded-full animate-spin"></div>
                         )}
                       </div>
                       {aiSuggestions.title?.map((suggestion, index) => (
-                        <p key={index} className="text-sm text-gray-800 mb-1 font-medium">
+                        <p key={index} className="text-sm text-white mb-1 font-medium">
                           • {suggestion}
                         </p>
                       ))}
@@ -877,7 +990,7 @@ export default function CreatePortfolioPage() {
               htmlFor="job_title"
               className="block text-sm font-medium text-white"
             >
-              Job Title
+              Job Title <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
@@ -886,9 +999,14 @@ export default function CreatePortfolioPage() {
               value={formData.job_title}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+              className={`w-full px-4 py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 ${
+                !formData.job_title ? 'border-red-400/50' : 'border-white/20'
+              }`}
               placeholder="Senior Front-end Developer"
             />
+            {!formData.job_title && (
+              <p className="text-red-400 text-xs mt-1">This field is required</p>
+            )}
           </div>
 
           <div className="space-y-3">
@@ -896,7 +1014,7 @@ export default function CreatePortfolioPage() {
               htmlFor="description"
               className="block text-sm font-medium text-white"
             >
-              About You / Description
+              About You / Description <span className="text-red-400">*</span>
               <span className="ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
                 <SparklesIcon className="h-3 w-3 mr-1" />
                 AI Analysis
@@ -917,22 +1035,41 @@ export default function CreatePortfolioPage() {
               }}
               required
               rows={5}
-              className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10"
+              className={`w-full px-4 py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10 ${
+                !formData.description ? 'border-red-400/50' : 'border-white/20'
+              }`}
               placeholder="A brief description about yourself, your experience, and what you're looking for"
             ></textarea>
+            {!formData.description && (
+              <p className="text-red-400 text-xs mt-1">This field is required</p>
+            )}
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-xs text-gray-300">
+                {formData.description.length > 2000 ? (
+                  <span className="text-amber-400">AI analysis disabled for long descriptions (2000+ chars)</span>
+                ) : (
+                  <span>{formData.description.length} characters</span>
+                )}
+              </p>
+              {formData.description.length > 1500 && (
+                <p className="text-xs text-gray-400">
+                  Consider shortening for better performance
+                </p>
+              )}
+            </div>
             
             {/* AI Suggestions for Description */}
             {(aiSuggestions.description?.length > 0 || analyzingField === 'description') && (
-              <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <SparklesIcon className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">AI Suggestions</span>
+              <div className="mt-3 p-4 bg-brand-500/10 border border-brand-400/30 rounded-xl backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <SparklesIcon className="h-4 w-4 text-brand-300" />
+                  <span className="text-sm font-semibold text-brand-200">AI Suggestions</span>
                   {analyzingField === 'description' && (
-                    <div className="h-3 w-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border border-brand-300 border-t-transparent rounded-full animate-spin"></div>
                   )}
                 </div>
                 {aiSuggestions.description?.map((suggestion, index) => (
-                  <p key={index} className="text-sm text-gray-800 mb-1 font-medium">
+                  <p key={index} className="text-sm text-white mb-1 font-medium">
                     • {suggestion}
                   </p>
                 ))}
@@ -941,12 +1078,12 @@ export default function CreatePortfolioPage() {
 
             {/* Extracted Skills */}
             {(extractedSkills.length > 0 || extractingSkills) && (
-              <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="mt-3 p-4 bg-emerald-500/10 border border-emerald-400/30 rounded-xl backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <SparklesIcon className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-700">Auto-detected Skills</span>
+                  <SparklesIcon className="h-4 w-4 text-emerald-300" />
+                  <span className="text-sm font-semibold text-emerald-200">Auto-detected Skills</span>
                   {extractingSkills && (
-                    <div className="h-3 w-3 border border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="h-3 w-3 border border-emerald-300 border-t-transparent rounded-full animate-spin"></div>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -957,15 +1094,15 @@ export default function CreatePortfolioPage() {
                       disabled={selectedSkills.includes(skill)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm ${
                         selectedSkills.includes(skill)
-                          ? 'bg-green-200 text-green-800 cursor-not-allowed shadow-md'
-                          : 'bg-green-100 text-green-800 hover:bg-green-200 border border-green-300 hover:border-green-400 shadow-md hover:shadow-lg'
+                          ? 'bg-emerald-500/20 text-emerald-200 cursor-not-allowed shadow-md border border-emerald-400/30'
+                          : 'bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20 border border-emerald-400/30 hover:border-emerald-400/50 shadow-md hover:shadow-lg'
                       }`}
                     >
                       {selectedSkills.includes(skill) ? '✓ ' : '+ '}{skill}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-green-600 mt-2">
+                <p className="text-xs text-emerald-300 mt-2">
                   Click to add skills to your portfolio
                 </p>
               </div>

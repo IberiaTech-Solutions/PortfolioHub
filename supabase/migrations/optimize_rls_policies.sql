@@ -14,6 +14,12 @@ DROP POLICY IF EXISTS "Only admins can update admin_users" ON admin_users;
 DROP POLICY IF EXISTS "Only admins can delete admin_users" ON admin_users;
 
 -- Recreate optimized policies for portfolios table
+-- Allow anyone to view portfolios (public read access)
+CREATE POLICY "Anyone can view portfolios" 
+  ON portfolios 
+  FOR SELECT 
+  USING (true);
+
 CREATE POLICY "Users can insert their own portfolio" 
   ON portfolios 
   FOR INSERT 

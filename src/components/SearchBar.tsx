@@ -106,7 +106,7 @@ export default function SearchBar({
             />
             <button
               type="submit"
-              className="absolute right-2 top-2 px-6 py-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-lg font-medium transition-all duration-200 text-sm sm:text-base shadow-lg hover:shadow-xl"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-lg font-medium transition-all duration-200 text-sm sm:text-base shadow-lg hover:shadow-xl border border-brand-500"
             >
               Search
             </button>

@@ -59,6 +59,10 @@ type Portfolio = {
   hero_image?: string;
   github_url: string;
   linkedin_url: string;
+  location?: string;
+  experience_level?: string;
+  preferred_work_type?: string[];
+  languages?: string;
   additional_links: Array<{label: string, url: string}>;
   skills: string[];
   projects: Project[];
@@ -107,6 +111,10 @@ export default function CreatePortfolioPage() {
     hero_image: "",
     github_url: "",
     linkedin_url: "",
+    location: "",
+    experience_level: "",
+    preferred_work_type: [] as string[],
+    languages: "",
     additional_links: [] as Array<{label: string, url: string}>,
   });
   const [existingPortfolio, setExistingPortfolio] = useState<Portfolio | null>(
@@ -398,6 +406,10 @@ export default function CreatePortfolioPage() {
             hero_image: portfolioData.hero_image || "",
             github_url: portfolioData.github_url || "",
             linkedin_url: portfolioData.linkedin_url || "",
+            location: portfolioData.location || "",
+            experience_level: portfolioData.experience_level || "",
+            preferred_work_type: portfolioData.preferred_work_type || [],
+            languages: portfolioData.languages || "",
             additional_links: portfolioData.additional_links || [],
           });
           setSelectedSkills(portfolioData.skills || []);
@@ -422,7 +434,7 @@ export default function CreatePortfolioPage() {
   }, [router]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -1010,6 +1022,105 @@ export default function CreatePortfolioPage() {
             )}
           </div>
 
+          {/* Location and Experience Level Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label
+                htmlFor="location"
+                className="block text-sm font-medium text-white"
+              >
+                Location
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+                placeholder="San Francisco, CA or Remote"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label
+                htmlFor="experience_level"
+                className="block text-sm font-medium text-white"
+              >
+                Experience Level
+              </label>
+              <select
+                id="experience_level"
+                name="experience_level"
+                value={formData.experience_level}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+              >
+                <option value="">Select experience level</option>
+                <option value="Entry Level">Entry Level (0-2 years)</option>
+                <option value="Mid Level">Mid Level (3-5 years)</option>
+                <option value="Senior Level">Senior Level (6+ years)</option>
+                <option value="Lead Level">Lead Level (8+ years)</option>
+                <option value="Student">Student/Intern</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Work Type and Languages Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label
+                htmlFor="preferred_work_type"
+                className="block text-sm font-medium text-white"
+              >
+                Preferred Work Type
+              </label>
+              <div className="space-y-2">
+                {["Full-time", "Part-time", "Contract", "Freelance"].map((workType) => (
+                  <label key={workType} className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.preferred_work_type.includes(workType)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData(prev => ({
+                            ...prev,
+                            preferred_work_type: [...prev.preferred_work_type, workType]
+                          }));
+                        } else {
+                          setFormData(prev => ({
+                            ...prev,
+                            preferred_work_type: prev.preferred_work_type.filter(type => type !== workType)
+                          }));
+                        }
+                      }}
+                      className="w-4 h-4 text-brand-600 bg-white/10 border-white/20 rounded focus:ring-brand-500 focus:ring-2"
+                    />
+                    <span className="text-white text-sm">{workType}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label
+                htmlFor="languages"
+                className="block text-sm font-medium text-white"
+              >
+                Languages
+              </label>
+              <input
+                type="text"
+                id="languages"
+                name="languages"
+                value={formData.languages}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+                placeholder="English, Spanish, French"
+              />
+            </div>
+          </div>
+
           <div className="space-y-3">
             <label
               htmlFor="description"
@@ -1465,6 +1576,18 @@ export default function CreatePortfolioPage() {
                     <span className="text-sm text-gray-300">Basic Info</span>
                     <span className="text-sm font-medium text-white">
                       {formData.name && formData.title && formData.job_title ? '✓' : '○'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-300">Location & Experience</span>
+                    <span className="text-sm font-medium text-white">
+                      {formData.location && formData.experience_level ? '✓' : '○'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-300">Work Type & Languages</span>
+                    <span className="text-sm font-medium text-white">
+                      {formData.preferred_work_type.length > 0 && formData.languages ? '✓' : '○'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

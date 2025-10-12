@@ -18,6 +18,10 @@ type Portfolio = {
   hero_image?: string;
   github_url: string;
   linkedin_url: string;
+  location?: string;
+  experience_level?: string;
+  preferred_work_type?: string[];
+  languages?: string;
   additional_links: Array<{label: string, url: string}>;
   skills: string[];
   projects: Array<{
@@ -323,6 +327,69 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {/* Additional Information */}
+              {(portfolio.location || portfolio.experience_level || (portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0) || portfolio.languages) && (
+                <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 shadow-sm">
+                  <h3 className="text-xl font-heading font-bold text-white mb-6">Additional Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {portfolio.location && (
+                      <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-300">Location</p>
+                          <p className="text-white font-medium">{portfolio.location}</p>
+                        </div>
+                      </div>
+                    )}
+                    {portfolio.experience_level && (
+                      <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                        <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-300">Experience Level</p>
+                          <p className="text-white font-medium">{portfolio.experience_level}</p>
+                        </div>
+                      </div>
+                    )}
+                    {portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0 && (
+                      <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-300">Preferred Work Type</p>
+                          <p className="text-white font-medium">
+                            {portfolio.preferred_work_type.join(", ")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {portfolio.languages && (
+                      <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                        <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-rose-600 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-300">Languages</p>
+                          <p className="text-white font-medium">{portfolio.languages}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Contact Information */}
               {(portfolio.website_url || portfolio.github_url || portfolio.linkedin_url || portfolio.additional_links?.length > 0) && (

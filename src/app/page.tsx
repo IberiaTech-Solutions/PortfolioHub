@@ -22,6 +22,10 @@ type Portfolio = {
   hero_image?: string;
   github_url: string;
   linkedin_url: string;
+  location?: string;
+  experience_level?: string;
+  preferred_work_type?: string[];
+  languages?: string;
   skills: string[];
   job_title: string;
   created_at: string;
@@ -38,6 +42,11 @@ function HomeContent() {
   const [selectedJobTitles, setSelectedJobTitles] = useState<string[]>([]);
   const [availableSkills, setAvailableSkills] = useState<string[]>([]);
   const [availableJobTitles, setAvailableJobTitles] = useState<string[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
+  const [availableExperience, setAvailableExperience] = useState<string[]>([]);
+  const [availableLocations, setAvailableLocations] = useState<string[]>([]);
+  const [availableWorkTypes, setAvailableWorkTypes] = useState<string[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentSearchExample, setCurrentSearchExample] = useState(0);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -221,6 +230,58 @@ function HomeContent() {
     }
 
     setPortfolios(filteredPortfolios || []);
+
+    // Extract unique filter options from all portfolios data
+    const allPortfolios = portfoliosData as Portfolio[];
+    
+    // Extract unique job titles/roles
+    const uniqueRoles = Array.from(new Set(
+      allPortfolios
+        .map(p => p.job_title)
+        .filter(title => title && title.trim() !== '')
+    )).sort();
+    
+    // Extract unique experience levels (if we have experience data)
+    const uniqueExperience = Array.from(new Set(
+      allPortfolios
+        .map(p => p.experience_level)
+        .filter((exp): exp is string => exp != null && exp.trim() !== '')
+    )).sort();
+    
+    // Extract unique locations
+    const uniqueLocations = Array.from(new Set(
+      allPortfolios
+        .map(p => p.location)
+        .filter((loc): loc is string => loc != null && loc.trim() !== '')
+    )).sort();
+    
+    // Extract unique preferred work types
+    const allWorkTypes = allPortfolios
+      .flatMap(p => p.preferred_work_type || [])
+      .filter(workType => workType && workType.trim() !== '');
+    const uniqueWorkTypes = Array.from(new Set(allWorkTypes)).sort();
+    
+    // Extract unique languages
+    const uniqueLanguages = Array.from(new Set(
+      allPortfolios
+        .map(p => p.languages)
+        .filter((lang): lang is string => lang != null && lang.trim() !== '')
+    )).sort();
+    
+    // Extract unique skills
+    const allSkills = allPortfolios
+      .flatMap(p => p.skills || [])
+      .filter(skill => skill && skill.trim() !== '');
+    const uniqueSkills = Array.from(new Set(allSkills)).sort();
+
+    setAvailableRoles(uniqueRoles);
+    setAvailableExperience(uniqueExperience);
+    setAvailableLocations(uniqueLocations);
+    setAvailableWorkTypes(uniqueWorkTypes);
+    setAvailableLanguages(uniqueLanguages);
+    setAvailableSkills(uniqueSkills);
+    setAvailableJobTitles(uniqueRoles); // Job titles are the same as roles
+
     setLoading(false);
   };
 
@@ -396,6 +457,19 @@ function HomeContent() {
             </div>
 
             {/* Search Bar Block */}
+            <div className="text-center mb-6">
+              <p className="text-white text-sm sm:text-base font-medium">
+                <span className="inline-flex items-center gap-2">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Smart Search Powered by Real Data
+                </span>
+              </p>
+              <p className="text-white/80 text-xs sm:text-sm mt-1">
+                Our filters are dynamically generated from actual portfolio data for more accurate and relevant results
+              </p>
+            </div>
             <SearchBar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -412,6 +486,9 @@ function HomeContent() {
               setShowFilters={setShowFilters}
               getActiveFilterCount={getActiveFilterCount}
               enableStickyBehavior={true}
+              availableRoles={availableRoles}
+              availableExperience={availableExperience}
+              availableLocations={availableLocations}
             />
           </div>
         </div>
@@ -486,7 +563,7 @@ function HomeContent() {
                           className="block w-full h-full"
                         >
                           <Image
-                            src={portfolio.hero_image}
+                            src={portfolio.hero_image || '/Portfolio.jpg'}
                             alt={`${portfolio.title} portfolio hero`}
                             width={400}
                             height={192}
@@ -533,7 +610,7 @@ function HomeContent() {
                           className="block w-full h-full"
                         >
                           <Image
-                            src={portfolio.website_screenshot}
+                            src={portfolio.website_screenshot || '/Portfolio.jpg'}
                             alt={`${portfolio.title} portfolio screenshot`}
                             width={400}
                             height={192}
@@ -634,7 +711,7 @@ function HomeContent() {
                           {portfolio.profile_image ? (
                             <div className="w-16 h-16 rounded-3xl overflow-hidden shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-110 ring-2 ring-white/20 group-hover:ring-brand-300/30">
                               <Image
-                                src={portfolio.profile_image}
+                                src={portfolio.profile_image || '/Portfolio.jpg'}
                                 alt={`${portfolio.name} profile`}
                                 width={64}
                                 height={64}
@@ -671,7 +748,7 @@ function HomeContent() {
                             {portfolio.name}
                           </p>
                           <div className="flex items-center space-x-2">
-                            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border border-brand-300/50 shadow-sm">
+                            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-brand-500 text-black border border-brand-600 shadow-sm">
                               {portfolio.job_title}
                             </span>
                           </div>
@@ -691,12 +768,12 @@ function HomeContent() {
                           {portfolio.skills &&
                             portfolio.skills.slice(0, 3).map((skill, index) => {
                               const colors = [
-                                'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-600 shadow-lg',
-                                'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-600 shadow-lg',
-                                'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600 shadow-lg',
-                                'bg-gradient-to-r from-rose-500 to-rose-600 text-white border-rose-600 shadow-lg',
-                                'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600 shadow-lg',
-                                'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600 shadow-lg'
+                                'bg-brand-500 text-black border-brand-600 shadow-lg',
+                                'bg-emerald-500 text-white border-emerald-600 shadow-lg',
+                                'bg-amber-500 text-white border-amber-600 shadow-lg',
+                                'bg-rose-500 text-white border-rose-600 shadow-lg',
+                                'bg-blue-500 text-white border-blue-600 shadow-lg',
+                                'bg-purple-500 text-white border-purple-600 shadow-lg'
                               ];
                               const colorClass = colors[index % colors.length];
                               return (

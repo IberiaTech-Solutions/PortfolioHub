@@ -24,6 +24,9 @@ interface SearchBarProps {
   getActiveFilterCount: () => number;
   isSticky?: boolean;
   enableStickyBehavior?: boolean;
+  availableRoles?: string[];
+  availableExperience?: string[];
+  availableLocations?: string[];
 }
 
 export default function SearchBar({
@@ -43,49 +46,58 @@ export default function SearchBar({
   getActiveFilterCount,
   isSticky = false,
   enableStickyBehavior = false,
+  availableRoles = [],
+  availableExperience = [],
+  availableLocations = [],
 }: SearchBarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     if (!enableStickyBehavior) return;
 
-    let ticking = false;
-
     const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrollTop = window.scrollY;
-          setIsScrolled(scrollTop > 300); // Reduced threshold for earlier activation
-          ticking = false;
-        });
-        ticking = true;
-      }
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 600);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [enableStickyBehavior]);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
+    
+    // If search bar is not sticky, scroll to results section
+    if (!shouldBeSticky) {
+      setTimeout(() => {
+        const resultsSection = document.getElementById('discover-talent');
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 100); // Small delay to ensure search results are rendered
+    }
   };
 
   const shouldBeSticky = isSticky || (enableStickyBehavior && isScrolled);
   
   const containerClasses = shouldBeSticky 
-    ? "fixed top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-lg transition-all duration-500 ease-out transform animate-in slide-in-from-top-2 fade-in-0"
-    : "bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-2xl transition-all duration-500 ease-out transform";
+    ? "fixed top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xl transition-all duration-700 ease-out transform"
+    : "bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-2xl transition-all duration-700 ease-out transform";
 
   const innerClasses = shouldBeSticky 
-    ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 transition-all duration-300 ease-out"
-    : "space-y-4 transition-all duration-300 ease-out";
+    ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 transition-all duration-500 ease-out"
+    : "space-y-4 transition-all duration-500 ease-out";
 
   return (
     <div 
       className={containerClasses}
       style={{
-        transform: shouldBeSticky ? 'translateY(0)' : 'translateY(0)',
+        transform: shouldBeSticky ? 'translateY(0) scale(1)' : 'translateY(0) scale(1)',
         opacity: shouldBeSticky ? 1 : 1,
+        backdropFilter: shouldBeSticky ? 'blur(12px)' : 'blur(8px)',
       }}
     >
       <div className={innerClasses}>
@@ -106,7 +118,7 @@ export default function SearchBar({
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-lg font-medium transition-all duration-200 text-sm sm:text-base shadow-lg hover:shadow-xl border border-brand-500"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium transition-all duration-200 text-sm sm:text-base shadow-lg hover:shadow-xl border border-slate-700"
             >
               Search
             </button>
@@ -122,14 +134,11 @@ export default function SearchBar({
                 className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
               >
                 <option value="">All Roles</option>
-                <option value="Frontend Developer">Frontend Developer</option>
-                <option value="Backend Developer">Backend Developer</option>
-                <option value="Full-Stack Developer">Full-Stack Developer</option>
-                <option value="UI/UX Designer">UI/UX Designer</option>
-                <option value="DevOps Engineer">DevOps Engineer</option>
-                <option value="Data Scientist">Data Scientist</option>
-                <option value="Mobile Developer">Mobile Developer</option>
-                <option value="Product Manager">Product Manager</option>
+                {availableRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -139,10 +148,30 @@ export default function SearchBar({
                 className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
               >
                 <option value="">All Experience</option>
-                <option value="entry">Entry Level (0-2 years)</option>
-                <option value="mid">Mid Level (3-5 years)</option>
-                <option value="senior">Senior Level (6+ years)</option>
-                <option value="lead">Lead/Principal (8+ years)</option>
+                {availableExperience.map((exp) => {
+                  // Add descriptive text based on experience level
+                  const getExperienceDescription = (level: string) => {
+                    const lowerLevel = level.toLowerCase();
+                    if (lowerLevel.includes('entry') || lowerLevel.includes('junior') || lowerLevel.includes('0-2')) {
+                      return `${level} (0-2 years)`;
+                    } else if (lowerLevel.includes('mid') || lowerLevel.includes('intermediate') || lowerLevel.includes('3-5')) {
+                      return `${level} (3-5 years)`;
+                    } else if (lowerLevel.includes('senior') || lowerLevel.includes('6+')) {
+                      return `${level} (6+ years)`;
+                    } else if (lowerLevel.includes('lead') || lowerLevel.includes('principal') || lowerLevel.includes('8+')) {
+                      return `${level} (8+ years)`;
+                    } else if (lowerLevel.includes('intern') || lowerLevel.includes('student')) {
+                      return `${level} (Student/Intern)`;
+                    }
+                    return level; // Return as-is if no match
+                  };
+                  
+                  return (
+                    <option key={exp} value={exp}>
+                      {getExperienceDescription(exp)}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
@@ -152,11 +181,11 @@ export default function SearchBar({
                 className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
               >
                 <option value="">All Locations</option>
-                <option value="remote">Remote</option>
-                <option value="us">United States</option>
-                <option value="europe">Europe</option>
-                <option value="asia">Asia</option>
-                <option value="australia">Australia</option>
+                {availableLocations.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
               </select>
             </div>
 

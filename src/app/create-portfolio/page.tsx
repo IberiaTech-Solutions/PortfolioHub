@@ -81,6 +81,7 @@ export default function CreatePortfolioPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [predefinedSkills, setPredefinedSkills] = useState<Skill[]>([]);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
@@ -361,20 +362,13 @@ export default function CreatePortfolioPage() {
       }
 
       try {
-        // Run auth check and skills fetch in parallel
+        // Run all initial fetches in parallel for better performance
         const [authResult, skillsResult] = await Promise.all([
           supabase.auth.getUser(),
           supabase.from("predefined_skills").select("*").order("name")
         ]);
 
-        // Handle skills result
-        if (skillsResult.error) {
-          console.error("Error fetching skills:", skillsResult.error);
-        } else {
-          setPredefinedSkills(skillsResult.data as Skill[]);
-        }
-
-        // Handle auth result
+        // Handle auth result first
         const { user } = authResult.data;
         if (!user) {
           router.push("/auth?redirect=/create-portfolio");
@@ -383,7 +377,14 @@ export default function CreatePortfolioPage() {
 
         setUser(user);
 
-        // Fetch portfolio data after auth is confirmed
+        // Handle skills result
+        if (skillsResult.error) {
+          console.error("Error fetching skills:", skillsResult.error);
+        } else {
+          setPredefinedSkills(skillsResult.data as Skill[]);
+        }
+
+        // Fetch portfolio data in parallel with skills (already fetched)
         const { data: portfolio, error: portfolioError } = await supabase
           .from("portfolios")
           .select("*")
@@ -395,32 +396,46 @@ export default function CreatePortfolioPage() {
           // Continue without existing portfolio data
         } else if (portfolio) {
           const portfolioData = portfolio as unknown as Portfolio;
-          setExistingPortfolio(portfolioData);
-          setFormData({
-            title: portfolioData.title || "",
-            name: portfolioData.name || "",
-            job_title: portfolioData.job_title || "",
-            description: portfolioData.description || "",
-            website_url: portfolioData.website_url || "",
-            profile_image: portfolioData.profile_image || "",
-            hero_image: portfolioData.hero_image || "",
-            github_url: portfolioData.github_url || "",
-            linkedin_url: portfolioData.linkedin_url || "",
-            location: portfolioData.location || "",
-            experience_level: portfolioData.experience_level || "",
-            preferred_work_type: portfolioData.preferred_work_type || [],
-            languages: portfolioData.languages || "",
-            additional_links: portfolioData.additional_links || [],
-          });
-          setSelectedSkills(portfolioData.skills || []);
-          setWebsiteScreenshot(portfolioData.website_screenshot || "");
-          setDetectedProjects(portfolioData.projects || []);
-          if (portfolioData.profile_image) {
-            setProfileImagePreview(portfolioData.profile_image);
-          }
-          if (portfolioData.hero_image) {
-            setHeroImagePreview(portfolioData.hero_image);
-          }
+          
+          // Show form loading state while populating
+          setFormLoading(true);
+          
+          // Use setTimeout to batch state updates and show loading
+          setTimeout(() => {
+            // Batch all state updates for better performance
+            setExistingPortfolio(portfolioData);
+            setFormData({
+              title: portfolioData.title || "",
+              name: portfolioData.name || "",
+              job_title: portfolioData.job_title || "",
+              description: portfolioData.description || "",
+              website_url: portfolioData.website_url || "",
+              profile_image: portfolioData.profile_image || "",
+              hero_image: portfolioData.hero_image || "",
+              github_url: portfolioData.github_url || "",
+              linkedin_url: portfolioData.linkedin_url || "",
+              location: portfolioData.location || "",
+              experience_level: portfolioData.experience_level || "",
+              preferred_work_type: portfolioData.preferred_work_type || [],
+              languages: portfolioData.languages || "",
+              additional_links: portfolioData.additional_links || [],
+            });
+            
+            // Set other states in a single batch
+            setSelectedSkills(portfolioData.skills || []);
+            setWebsiteScreenshot(portfolioData.website_screenshot || "");
+            setDetectedProjects(portfolioData.projects || []);
+            
+            // Set image previews if they exist
+            if (portfolioData.profile_image) {
+              setProfileImagePreview(portfolioData.profile_image);
+            }
+            if (portfolioData.hero_image) {
+              setHeroImagePreview(portfolioData.hero_image);
+            }
+            
+            setFormLoading(false);
+          }, 100);
         }
       } catch (error) {
         console.error("Error initializing page:", error);
@@ -738,10 +753,16 @@ export default function CreatePortfolioPage() {
   // Show loading screen while initializing
   if (initialLoading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading portfolio editor...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-brand-500/30 border-t-brand-500 mx-auto mb-6"></div>
+          <h2 className="text-2xl font-bold text-white mb-2">Loading Portfolio Editor</h2>
+          <p className="text-gray-300 mb-4">Fetching your portfolio data...</p>
+          <div className="flex justify-center space-x-1">
+            <div className="w-2 h-2 bg-brand-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+            <div className="w-2 h-2 bg-brand-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+            <div className="w-2 h-2 bg-brand-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+          </div>
         </div>
       </div>
     );
@@ -749,6 +770,15 @@ export default function CreatePortfolioPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Form Loading Overlay */}
+      {formLoading && (
+        <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-brand-500/30 border-t-brand-500 mx-auto mb-4"></div>
+            <p className="text-white font-medium">Loading your portfolio data...</p>
+          </div>
+        </div>
+      )}
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient Waves */}

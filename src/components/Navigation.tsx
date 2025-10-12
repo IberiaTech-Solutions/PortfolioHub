@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase";
@@ -155,11 +156,16 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-display font-bold text-lg">PH</span>
+            <Link href="/" className="flex items-center">
+              <div className="w-48 h-48 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+                <Image 
+                  src="/images/Portfolio Hub Icon.png" 
+                  alt="PortfolioHub Logo" 
+                  width={192} 
+                  height={192}
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <span className="text-2xl font-display font-semibold text-white">PortfolioHub</span>
             </Link>
           </div>
 

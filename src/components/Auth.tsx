@@ -208,7 +208,7 @@ export default function Auth() {
       <div className="hidden lg:block lg:w-1/2 relative">
         <div className="absolute inset-0 bg-gray-50"></div>
         <Image
-          src="/Portfolio.jpg"
+          src="/images/Portfolio Hub Icon.png"
           alt="Portfolio Hub"
           fill
           sizes="50vw"

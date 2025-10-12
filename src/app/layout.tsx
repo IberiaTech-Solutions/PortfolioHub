@@ -5,6 +5,7 @@ import "./globals.css";
 // import { cookies } from "next/headers";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -50,7 +51,9 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${roboto.variable} ${poppins.variable} font-body antialiased`}
       >
-        <Navigation />
+        <Suspense fallback={<div className="h-16 bg-slate-900"></div>}>
+          <Navigation />
+        </Suspense>
         <main>{children}</main>
         <Footer />
       </body>

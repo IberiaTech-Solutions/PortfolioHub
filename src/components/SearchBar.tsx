@@ -21,7 +21,6 @@ interface SearchBarProps {
   currentPlaceholder: number;
   showFilters: boolean;
   setShowFilters: (show: boolean) => void;
-  getActiveFilterCount: () => number;
   isSticky?: boolean;
   enableStickyBehavior?: boolean;
   availableRoles?: string[];
@@ -43,7 +42,6 @@ export default function SearchBar({
   currentPlaceholder,
   showFilters,
   setShowFilters,
-  getActiveFilterCount,
   isSticky = false,
   enableStickyBehavior = false,
   availableRoles = [],
@@ -84,11 +82,11 @@ export default function SearchBar({
   const shouldBeSticky = isSticky || (enableStickyBehavior && isScrolled);
   
   const containerClasses = shouldBeSticky 
-    ? "fixed top-16 left-0 right-0 z-30 transition-all duration-700 ease-out transform"
+    ? "fixed top-16 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-md transition-all duration-700 ease-out transform"
     : "transition-all duration-700 ease-out transform";
 
   const innerClasses = shouldBeSticky 
-    ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 transition-all duration-500 ease-out"
+    ? "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 transition-all duration-500 ease-out"
     : "space-y-4 transition-all duration-500 ease-out";
 
   return (
@@ -114,22 +112,34 @@ export default function SearchBar({
               placeholder={placeholderExamples[currentPlaceholder]}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-32 py-4 sm:py-5 border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-base sm:text-xl"
+              className={`w-full pl-12 pr-32 border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 ${
+                shouldBeSticky 
+                  ? 'py-2 text-sm' 
+                  : 'py-4 sm:py-5 text-base sm:text-xl'
+              }`}
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium transition-all duration-200 text-sm sm:text-base shadow-lg hover:shadow-xl border border-slate-700"
+              className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl border border-slate-700 ${
+                shouldBeSticky 
+                  ? 'px-4 py-1 text-xs' 
+                  : 'px-6 py-2 text-sm sm:text-base'
+              }`}
             >
               Search
             </button>
           </div>
 
           {/* Filter Toggle Button */}
-          <div className="flex justify-center mb-4">
+          <div className={`flex ${shouldBeSticky ? 'justify-start' : 'justify-center'} mb-4`}>
             <button
               type="button"
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:text-gray-200 rounded-lg transition-all duration-200"
+              className={`flex items-center space-x-2 text-white hover:text-gray-200 rounded-lg transition-all duration-200 ${
+                shouldBeSticky 
+                  ? 'px-3 py-1 text-xs w-full justify-center' 
+                  : 'px-4 py-2 text-sm'
+              }`}
             >
               <span>Advanced Filters</span>
               <svg 
@@ -145,13 +155,19 @@ export default function SearchBar({
 
           {/* Collapsible Filter Row */}
           {showFilters && (
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center animate-in slide-in-from-top-2 duration-200">
+            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 items-center animate-in slide-in-from-top-2 duration-200 ${
+              shouldBeSticky ? 'w-full' : ''
+            }`}>
             {/* Role Filter */}
             <div className="flex-1">
               <select
                 value={selectedJobTitles.length > 0 ? selectedJobTitles[0] : ''}
                 onChange={(e) => setSelectedJobTitles(e.target.value ? [e.target.value] : [])}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                className={`w-full px-4 border border-gray-300 rounded-lg text-white bg-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 ${
+                  shouldBeSticky 
+                    ? 'py-2 text-xs' 
+                    : 'py-3 text-sm sm:text-base'
+                }`}
               >
                 <option value="">All Roles</option>
                 {availableRoles.map((role) => (
@@ -165,7 +181,11 @@ export default function SearchBar({
             {/* Experience Filter */}
             <div className="flex-1">
               <select
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                className={`w-full px-4 border border-gray-300 rounded-lg text-white bg-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 ${
+                  shouldBeSticky 
+                    ? 'py-2 text-xs' 
+                    : 'py-3 text-sm sm:text-base'
+                }`}
               >
                 <option value="">All Experience</option>
                 {availableExperience.map((exp) => {
@@ -198,7 +218,11 @@ export default function SearchBar({
             {/* Location Filter */}
             <div className="flex-1">
               <select
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                className={`w-full px-4 border border-gray-300 rounded-lg text-white bg-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 ${
+                  shouldBeSticky 
+                    ? 'py-2 text-xs' 
+                    : 'py-3 text-sm sm:text-base'
+                }`}
               >
                 <option value="">All Locations</option>
                 {availableLocations.map((location) => (
@@ -218,7 +242,7 @@ export default function SearchBar({
           <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-6">
             {/* Skills Filter */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-black mb-3">
                 Skills
               </label>
               <Listbox
@@ -230,8 +254,16 @@ export default function SearchBar({
                 multiple
               >
                 <div className="relative">
-                  <Listbox.Button className="relative w-full py-3 pl-4 pr-10 text-left bg-white border border-gray-200 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
-                    <span className="block truncate text-gray-900">
+                  <Listbox.Button className={`relative w-full pl-4 pr-10 text-left bg-transparent border border-gray-300 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent ${
+                    shouldBeSticky 
+                      ? 'py-2' 
+                      : 'py-3'
+                  }`}>
+                    <span className={`block truncate text-black ${
+                      shouldBeSticky 
+                        ? 'text-xs' 
+                        : 'text-sm'
+                    }`}>
                       {selectedSkills.length === 0
                         ? "Select skills"
                         : `${selectedSkills.length} selected`}
@@ -251,7 +283,7 @@ export default function SearchBar({
                   >
                     <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                       {availableSkills.length === 0 ? (
-                        <div className="px-4 py-3 text-gray-500 text-sm">
+                        <div className="px-4 py-3 text-black text-sm">
                           No skills found yet.
                         </div>
                       ) : (
@@ -262,8 +294,8 @@ export default function SearchBar({
                             className={({ active }) =>
                               `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                 active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-900"
+                                  ? "bg-gray-100 text-black"
+                                  : "text-black"
                               }`
                             }
                           >
@@ -277,7 +309,7 @@ export default function SearchBar({
                                   {skill}
                                 </span>
                                 {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-900">
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                                     <svg
                                       className="h-5 w-5"
                                       viewBox="0 0 20 20"
@@ -304,7 +336,7 @@ export default function SearchBar({
 
             {/* Job Titles Filter */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-black mb-3">
                 Job Titles
               </label>
               <Listbox
@@ -316,8 +348,16 @@ export default function SearchBar({
                 multiple
               >
                 <div className="relative">
-                  <Listbox.Button className="relative w-full py-3 pl-4 pr-10 text-left bg-white border border-gray-200 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent">
-                    <span className="block truncate text-gray-900">
+                  <Listbox.Button className={`relative w-full pl-4 pr-10 text-left bg-transparent border border-gray-300 rounded-md cursor-default focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent ${
+                    shouldBeSticky 
+                      ? 'py-2' 
+                      : 'py-3'
+                  }`}>
+                    <span className={`block truncate text-black ${
+                      shouldBeSticky 
+                        ? 'text-xs' 
+                        : 'text-sm'
+                    }`}>
                       {selectedJobTitles.length === 0
                         ? "Select job titles"
                         : `${selectedJobTitles.length} selected`}
@@ -337,7 +377,7 @@ export default function SearchBar({
                   >
                     <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                       {availableJobTitles.length === 0 ? (
-                        <div className="px-4 py-3 text-gray-500 text-sm">
+                        <div className="px-4 py-3 text-black text-sm">
                           No job titles found yet.
                         </div>
                       ) : (
@@ -348,8 +388,8 @@ export default function SearchBar({
                             className={({ active }) =>
                               `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                 active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-900"
+                                  ? "bg-gray-100 text-black"
+                                  : "text-black"
                               }`
                             }
                           >
@@ -363,7 +403,7 @@ export default function SearchBar({
                                   {title}
                                 </span>
                                 {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-900">
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                                     <svg
                                       className="h-5 w-5"
                                       viewBox="0 0 20 20"
@@ -391,12 +431,12 @@ export default function SearchBar({
             {/* Selected Filters Display */}
             {(selectedSkills.length > 0 || selectedJobTitles.length > 0) && (
               <div className="pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Active Filters</h3>
+                <h3 className="text-sm font-medium text-black mb-3">Active Filters</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedSkills.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-gray-900 text-white text-sm"
+                      className="inline-flex items-center px-3 py-1 rounded-full bg-white text-black text-sm"
                     >
                       {skill}
                       <button
@@ -406,7 +446,7 @@ export default function SearchBar({
                           );
                           onSearch(searchQuery);
                         }}
-                        className="ml-2 hover:text-gray-300 transition-colors duration-200"
+                        className="ml-2 hover:text-gray-200 transition-colors duration-200"
                       >
                         <XMarkIcon className="h-4 w-4" />
                       </button>
@@ -425,7 +465,7 @@ export default function SearchBar({
                           );
                           onSearch(searchQuery);
                         }}
-                        className="ml-2 hover:text-gray-300 transition-colors duration-200"
+                        className="ml-2 hover:text-gray-200 transition-colors duration-200"
                       >
                         <XMarkIcon className="h-4 w-4" />
                       </button>

@@ -275,9 +275,6 @@ function HomeContent() {
   //   performSearch(searchQuery);
   // };
 
-  const getActiveFilterCount = () => {
-    return selectedSkills.length + selectedJobTitles.length;
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -344,7 +341,7 @@ function HomeContent() {
             
             {/* Interactive Search Prompt */}
             <div className="mb-8 sm:mb-12">
-              <div className="inline-flex items-center space-x-2 text-slate-300 text-sm sm:text-base">
+              <div className="inline-flex items-center space-x-2 px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-slate-300 text-sm sm:text-base shadow-lg">
                 <span>{!authLoading && user ? "Find collaborators:" : "Try searching for:"}</span>
                 <div className="relative">
                   <span className="inline-block min-w-[200px] text-left">
@@ -389,7 +386,6 @@ function HomeContent() {
               currentPlaceholder={currentPlaceholder}
               showFilters={showFilters}
               setShowFilters={setShowFilters}
-              getActiveFilterCount={getActiveFilterCount}
               enableStickyBehavior={true}
               availableRoles={availableRoles}
               availableExperience={availableExperience}
@@ -776,20 +772,6 @@ function HomeContent() {
               </div>
             )}
             
-            {/* View All Button */}
-            {portfolios.length > 0 && (
-              <div className="text-center mt-12">
-                <Link
-                  href="/search"
-                  className="inline-flex items-center px-8 py-4 bg-brand-600 hover:bg-brand-700 text-black rounded-xl font-display font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  View All Portfolios
-                  <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              </div>
-            )}
           </div>
         ) : null}
         </div>

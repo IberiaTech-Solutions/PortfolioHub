@@ -356,89 +356,10 @@ function HomeContent() {
               </div>
             </div>
             
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 sm:mb-16 px-4">
-              {!authLoading && user ? (
-                <>
-                  <Link
-                    href="/create-portfolio"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-display font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit Portfolio
-                  </Link>
-                  <Link
-                    href="/collaborations"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-xl font-display font-semibold text-base sm:text-lg backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Collaborations
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/create-portfolio"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-display font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Showcase Your Work
-                  </Link>
-                  <Link
-                    href="/auth"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-xl font-display font-semibold text-base sm:text-lg backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    Join Our Community
-                  </Link>
-                </>
-              )}
-            </div>
-            
           </div>
 
           {/* Search Section */}
           <div className="w-full max-w-5xl mx-auto mb-12 sm:mb-16 px-4">
-            {/* Smart Search Suggestions */}
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center space-x-2 text-slate-300 text-sm">
-                <span>Try searching for:</span>
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => {
-                      setSearchQuery('React developers');
-                      performSearch('React developers');
-                    }}
-                    className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium hover:bg-white text-gray-900 transition-colors cursor-pointer shadow-sm"
-                  >
-                    React developers
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('UI/UX designers');
-                      performSearch('UI/UX designers');
-                    }}
-                    className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium hover:bg-white text-gray-900 transition-colors cursor-pointer shadow-sm"
-                  >
-                    UI/UX designers
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('Full-stack engineers');
-                      performSearch('Full-stack engineers');
-                    }}
-                    className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium hover:bg-white text-gray-900 transition-colors cursor-pointer shadow-sm"
-                  >
-                    Full-stack engineers
-                  </button>
-                </div>
-              </div>
-            </div>
 
             {/* Search Bar Block */}
             <div className="text-center mb-6">
@@ -741,9 +662,14 @@ function HomeContent() {
                       
                       {/* Modern Description */}
                       <div className="mb-6">
-                        <p className="text-gray-700 line-clamp-3 leading-relaxed text-sm font-normal">
+                        <p className="text-gray-700 line-clamp-2 leading-relaxed text-sm font-normal">
                           {portfolio.description}
                         </p>
+                        {portfolio.description && portfolio.description.length > 120 && (
+                          <button className="text-brand-600 hover:text-brand-700 text-xs font-medium mt-2 transition-colors">
+                            Read more
+                          </button>
+                        )}
                       </div>
                       
                       {/* Modern Skills Tags */}

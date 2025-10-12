@@ -20,8 +20,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              The global community for developers and designers to showcase, connect, and collaborate. 
-              Build your professional network and discover amazing opportunities.
+              Connect with talented professionals and showcase your work.
             </p>
             
           </div>

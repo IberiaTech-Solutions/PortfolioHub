@@ -84,8 +84,8 @@ export default function SearchBar({
   const shouldBeSticky = isSticky || (enableStickyBehavior && isScrolled);
   
   const containerClasses = shouldBeSticky 
-    ? "fixed top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xl transition-all duration-700 ease-out transform"
-    : "bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-2xl transition-all duration-700 ease-out transform";
+    ? "fixed top-16 left-0 right-0 z-30 transition-all duration-700 ease-out transform"
+    : "transition-all duration-700 ease-out transform";
 
   const innerClasses = shouldBeSticky 
     ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 transition-all duration-500 ease-out"
@@ -114,7 +114,7 @@ export default function SearchBar({
               placeholder={placeholderExamples[currentPlaceholder]}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-32 py-4 sm:py-5 bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-base sm:text-xl shadow-lg"
+              className="w-full pl-12 pr-32 py-4 sm:py-5 border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-base sm:text-xl"
             />
             <button
               type="submit"
@@ -124,14 +124,34 @@ export default function SearchBar({
             </button>
           </div>
 
-          {/* Filter Row */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center">
+          {/* Filter Toggle Button */}
+          <div className="flex justify-center mb-4">
+            <button
+              type="button"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:text-gray-200 rounded-lg transition-all duration-200"
+            >
+              <span>Advanced Filters</span>
+              <svg 
+                className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Collapsible Filter Row */}
+          {showFilters && (
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center animate-in slide-in-from-top-2 duration-200">
             {/* Role Filter */}
             <div className="flex-1">
               <select
                 value={selectedJobTitles.length > 0 ? selectedJobTitles[0] : ''}
                 onChange={(e) => setSelectedJobTitles(e.target.value ? [e.target.value] : [])}
-                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
               >
                 <option value="">All Roles</option>
                 {availableRoles.map((role) => (
@@ -145,7 +165,7 @@ export default function SearchBar({
             {/* Experience Filter */}
             <div className="flex-1">
               <select
-                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
               >
                 <option value="">All Experience</option>
                 {availableExperience.map((exp) => {
@@ -178,7 +198,7 @@ export default function SearchBar({
             {/* Location Filter */}
             <div className="flex-1">
               <select
-                className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base shadow-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
               >
                 <option value="">All Locations</option>
                 {availableLocations.map((location) => (
@@ -189,23 +209,8 @@ export default function SearchBar({
               </select>
             </div>
 
-            {/* Advanced Filters Toggle */}
-            <button
-              type="button"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center px-4 py-3 bg-white/70 hover:bg-white/90 border border-gray-200 rounded-lg text-gray-700 transition-all duration-200 text-sm sm:text-base shadow-sm backdrop-blur-sm"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              Filters
-              {getActiveFilterCount() > 0 && (
-                <span className="ml-2 px-2 py-1 bg-brand-600 text-black text-xs rounded-full">
-                  {getActiveFilterCount()}
-                </span>
-              )}
-            </button>
-          </div>
+            </div>
+          )}
         </form>
 
         {/* Filters Panel */}

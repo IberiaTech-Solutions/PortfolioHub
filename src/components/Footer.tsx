@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-slate-900 border-t border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {/* About Section */}
           <div>
             <Link href="/" className="flex items-center mb-6">
@@ -27,12 +27,12 @@ export default function Footer() {
 
           {/* Explore Section */}
           <div>
-            <h3 className="text-white font-heading font-semibold mb-6 text-sm uppercase tracking-wide">Explore</h3>
-            <ul className="space-y-4">
+            <h3 className="text-white font-heading font-semibold mb-4 text-sm uppercase tracking-wide">Explore</h3>
+            <ul className="space-y-3">
               <li>
                 <Link
                   href="/"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Home
                 </Link>
@@ -40,7 +40,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/create-portfolio"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Create Portfolio
                 </Link>
@@ -48,7 +48,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/search"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Browse Portfolios
                 </Link>
@@ -56,7 +56,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collaborations"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Collaborations
                 </Link>
@@ -64,7 +64,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/profile"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   My Profile
                 </Link>
@@ -74,12 +74,12 @@ export default function Footer() {
 
           {/* Legal Section */}
           <div>
-            <h3 className="text-white font-heading font-semibold mb-6 text-sm uppercase tracking-wide">Legal</h3>
-            <ul className="space-y-4">
+            <h3 className="text-white font-heading font-semibold mb-4 text-sm uppercase tracking-wide">Legal</h3>
+            <ul className="space-y-3">
               <li>
                 <Link
                   href="/privacy"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Privacy Policy
                 </Link>
@@ -87,7 +87,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Terms of Service
                 </Link>
@@ -95,7 +95,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/cookies"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
                 >
                   Cookie Policy
                 </Link>
@@ -103,9 +103,10 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:luis.lozoya.tech@gmail.com"
-                  className="text-gray-300 hover:text-brand-300 transition-colors duration-200 text-sm"
+                  className="text-gray-300 hover:text-teal-400 hover:underline transition-all duration-200 text-sm relative group"
                 >
                   Contact Support
+                  <span className="absolute -inset-1 bg-teal-500/20 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"></span>
                 </a>
               </li>
             </ul>

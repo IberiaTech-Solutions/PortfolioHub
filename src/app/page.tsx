@@ -515,7 +515,7 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl text-xs font-bold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
+                              className="inline-flex items-center px-3 py-1.5 bg-white/95 hover:bg-white text-gray-900 rounded-lg text-xs font-semibold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -556,7 +556,7 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl text-xs font-bold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
+                              className="inline-flex items-center px-3 py-1.5 bg-white/95 hover:bg-white text-gray-900 rounded-lg text-xs font-semibold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -567,27 +567,27 @@ function HomeContent() {
                         )}
                       </div>
                     ) : (
-                      <div className="relative h-40 sm:h-48 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 overflow-hidden">
+                      <div className="relative h-40 sm:h-48 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
                         {/* Pattern overlay */}
-                        <div className="absolute inset-0 opacity-10">
+                        <div className="absolute inset-0 opacity-20">
                           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5"/>
+                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" strokeWidth="0.5"/>
                               </pattern>
                             </defs>
                             <rect width="100" height="100" fill="url(#grid)" />
                           </svg>
                         </div>
-                        {/* Center content */}
+                        {/* Center content with initials */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
-                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                              </svg>
+                          <div className="text-center">
+                            <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                              <span className="text-white font-bold text-2xl">
+                                {portfolio.name?.split(' ').map(n => n.charAt(0)).join('').toUpperCase() || 'P'}
+                              </span>
                             </div>
-                            <p className="text-sm font-medium opacity-90">Portfolio Preview</p>
+                            <p className="text-gray-600 text-sm font-medium">Portfolio Preview</p>
                           </div>
                         </div>
                         {/* Visit Website Button */}
@@ -597,7 +597,7 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl text-xs font-bold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
+                              className="inline-flex items-center px-3 py-1.5 bg-white/95 hover:bg-white text-gray-900 rounded-lg text-xs font-semibold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -682,7 +682,7 @@ function HomeContent() {
                       <div className="mb-3">
                         <div className="flex flex-wrap gap-1">
                           {portfolio.skills &&
-                            portfolio.skills.slice(0, 2).map((skill, index) => {
+                            portfolio.skills.slice(0, 3).map((skill, index) => {
                               const colors = [
                                 'bg-brand-500 text-black border-brand-600',
                                 'bg-emerald-500 text-white border-emerald-600',
@@ -701,9 +701,9 @@ function HomeContent() {
                                 </span>
                               );
                             })}
-                          {portfolio.skills && portfolio.skills.length > 2 && (
+                          {portfolio.skills && portfolio.skills.length > 3 && (
                             <span className="bg-gray-100 text-gray-600 border border-gray-200 rounded-full px-1.5 py-0.5 text-xs font-medium">
-                              +{portfolio.skills.length - 2}
+                              +{portfolio.skills.length - 3} more
                             </span>
                           )}
                         </div>
@@ -759,12 +759,12 @@ function HomeContent() {
                         {/* Modern View Profile Button */}
                         <Link
                           href={`/portfolio/${portfolio.id}`}
-                          className="inline-flex items-center px-2 py-1 bg-brand-600 hover:bg-brand-700 text-black rounded-lg font-medium transition-all duration-300 hover:scale-105 text-xs border border-brand-500/30"
+                          className="inline-flex items-center px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-black rounded-lg font-semibold transition-all duration-300 hover:scale-105 text-xs border border-brand-500/30 shadow-lg hover:shadow-xl"
                         >
                           View Profile
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-2.5 w-2.5 ml-1"
+                            className="h-3 w-3 ml-1"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                           >

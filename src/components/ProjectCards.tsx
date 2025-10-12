@@ -43,7 +43,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
         {projects.map((project, index) => (
           <div
             key={index}
-            className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6 hover:bg-gray-100 transition-all duration-200 group"
+            className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6 hover:bg-gray-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group"
           >
             <div className="flex items-start justify-between mb-2 sm:mb-3">
               <div className="flex-1">
@@ -87,7 +87,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
 
             {project.techStack.length > 0 && (
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-                {project.techStack.map((tech, techIndex) => (
+                {project.techStack.slice(0, 3).map((tech, techIndex) => (
                   <span
                     key={techIndex}
                     className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded border border-gray-200"
@@ -95,6 +95,11 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                     {tech}
                   </span>
                 ))}
+                {project.techStack.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-50 text-gray-500 text-xs rounded border border-gray-200">
+                    +{project.techStack.length - 3} more
+                  </span>
+                )}
               </div>
             )}
 
@@ -111,7 +116,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1 text-gray-600 hover:text-gray-900 transition-colors text-xs sm:text-sm font-medium px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg sm:rounded-md w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-1 text-gray-600 hover:text-gray-900 transition-all duration-300 text-xs sm:text-sm font-semibold px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg sm:rounded-md w-full sm:w-auto hover:shadow-md hover:scale-105"
               >
                 View Project
                 <ArrowTopRightOnSquareIcon className="h-3 w-3 sm:h-4 sm:w-4" />

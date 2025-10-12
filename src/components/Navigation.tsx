@@ -22,6 +22,7 @@ export default function Navigation() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hasPortfolio, setHasPortfolio] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -150,179 +151,50 @@ export default function Navigation() {
     };
   }, [isDropdownOpen]);
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuOpen) {
+        const target = event.target as Element;
+        if (!target.closest('.mobile-menu')) {
+          setMobileMenuOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <nav className="bg-slate-900/95 backdrop-blur-md border-b border-slate-700 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14 sm:h-16 lg:h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <div className="w-48 h-48 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+              <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-48 lg:h-48 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
                 <Image 
                   src="/images/Portfolio Hub Icon.png" 
                   alt="PortfolioHub Logo" 
-                  width={192} 
-                  height={192}
+                  width={320} 
+                  height={320}
                   className="w-full h-full object-contain"
                 />
               </div>
             </Link>
           </div>
 
-          {/* Navigation Links & User Menu */}
+          {/* Desktop Navigation & User Menu + Mobile Hamburger */}
           <div className="flex items-center space-x-4">
-            {/* Navigation Links */}
-            <div className="hidden md:flex items-center space-x-1">
-              {mounted && !loading && user && (
-                <>
-                  <Link
-                    href="/#discover-talent"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      pathname === "/"
-                        ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                        : "text-gray-300 hover:text-white hover:bg-slate-800"
-                    }`}
-                  >
-                    Browse Portfolios
-                  </Link>
-                  <Link
-                    href="/create-portfolio"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      pathname === "/create-portfolio"
-                        ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                        : "text-gray-300 hover:text-white hover:bg-slate-800"
-                    }`}
-                  >
-                    {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
-                  </Link>
-                  <Link
-                    href="/collaborations"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      pathname === "/collaborations"
-                        ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                        : "text-gray-300 hover:text-white hover:bg-slate-800"
-                    }`}
-                  >
-                    Collaborations
-                  </Link>
-                </>
-              )}
-              {/* Show loading state for navigation links */}
-              {mounted && loading && (
-                <div className="flex items-center space-x-1">
-                  <div className="px-3 py-2 rounded-md text-sm font-medium text-gray-400 animate-pulse">
-                    Loading...
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* User Avatar Dropdown */}
-            {mounted && !loading && (
-              <div className="relative user-dropdown">
-                {user ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors duration-200"
-                    >
-                      <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
-                        <span className="text-white font-medium text-sm">
-                          {user.email?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <ChevronDownIcon className="w-4 h-4 text-gray-300" />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-56 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2 z-[60]">
-                        <div className="px-4 py-2 border-b border-slate-700">
-                          <p className="text-sm font-medium text-white">
-                            {user.email?.split('@')[0]}
-                          </p>
-                          <p className="text-xs text-gray-300 truncate">
-                            {user.email}
-                          </p>
-                        </div>
-                        
-                        <Link
-                          href="/profile"
-                          className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
-                          onClick={() => setIsDropdownOpen(false)}
-                        >
-                          <UserCircleIcon className="w-4 h-4 mr-3" />
-                          Profile
-                        </Link>
-                        
-                        <Link
-                          href="/create-portfolio"
-                          className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
-                          onClick={() => setIsDropdownOpen(false)}
-                        >
-                          <Cog6ToothIcon className="w-4 h-4 mr-3" />
-                          {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
-                        </Link>
-                        
-                        <div className="border-t border-slate-700 my-1"></div>
-                        
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleSignOut();
-                          }}
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
-                        >
-                          <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
-                          Sign Out
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Link
-                      href="/auth?mode=signin"
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        pathname === "/auth" && searchParams.get("mode") === "signin"
-                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                          : "text-gray-300 hover:text-white hover:bg-slate-800 border border-transparent hover:border-white/30"
-                      }`}
-                    >
-                      <UserCircleIcon className="w-5 h-5" />
-                      <span className="hidden sm:inline">Sign In</span>
-                    </Link>
-                    <Link
-                      href="/auth?mode=signup"
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        pathname === "/auth" && searchParams.get("mode") === "signup"
-                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                          : "text-gray-300 hover:text-white hover:bg-slate-800 border border-transparent hover:border-white/30"
-                      }`}
-                    >
-                      <span className="hidden sm:inline">Sign Up</span>
-                      <span className="sm:hidden">Sign Up</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {/* Show loading state for user menu */}
-            {mounted && loading && (
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-slate-700 rounded-full animate-pulse"></div>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+            {/* Mobile Menu Button */}
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-500"
-              aria-expanded="false"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="mobile-menu md:hidden inline-flex items-center justify-center p-2 -mr-2 rounded-lg text-white hover:text-gray-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-500 transition-all duration-200"
+              aria-expanded={mobileMenuOpen}
             >
               <span className="sr-only">Open main menu</span>
               <svg
@@ -341,9 +213,279 @@ export default function Navigation() {
                 />
               </svg>
             </button>
+
+            {/* Desktop Navigation & User Menu */}
+            <div className="hidden md:flex items-center space-x-4">
+              {/* Desktop Navigation Links */}
+              <div className="flex items-center space-x-1">
+                {mounted && !loading && user && (
+                  <>
+                    <Link
+                      href="/#discover-talent"
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                        pathname === "/"
+                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
+                          : "text-gray-300 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      Browse Portfolios
+                    </Link>
+                    <Link
+                      href="/create-portfolio"
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                        pathname === "/create-portfolio"
+                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
+                          : "text-gray-300 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
+                    </Link>
+                    <Link
+                      href="/collaborations"
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                        pathname === "/collaborations"
+                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
+                          : "text-gray-300 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      Collaborations
+                    </Link>
+                  </>
+                )}
+                {/* Show loading state for navigation links */}
+                {mounted && loading && (
+                  <div className="flex items-center space-x-1">
+                    <div className="px-3 py-2 rounded-md text-sm font-medium text-gray-400 animate-pulse">
+                      Loading...
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* User Avatar Dropdown */}
+              {mounted && !loading && (
+                <div className="relative user-dropdown">
+                  {user ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors duration-200"
+                      >
+                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                          <span className="text-white font-medium text-sm">
+                            {user.email?.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <ChevronDownIcon className="w-4 h-4 text-gray-300" />
+                      </button>
+
+                      {/* Dropdown Menu */}
+                      {isDropdownOpen && (
+                        <div className="absolute right-0 mt-2 w-56 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2 z-[60]">
+                          <div className="px-4 py-2 border-b border-slate-700">
+                            <p className="text-sm font-medium text-white">
+                              {user.email?.split('@')[0]}
+                            </p>
+                            <p className="text-xs text-gray-300 truncate">
+                              {user.email}
+                            </p>
+                          </div>
+                          
+                          <Link
+                            href="/profile"
+                            className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            <UserCircleIcon className="w-4 h-4 mr-3" />
+                            Profile
+                          </Link>
+                          
+                          <Link
+                            href="/create-portfolio"
+                            className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
+                            onClick={() => setIsDropdownOpen(false)}
+                          >
+                            <Cog6ToothIcon className="w-4 h-4 mr-3" />
+                            {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
+                          </Link>
+                          
+                          <div className="border-t border-slate-700 my-1"></div>
+                          
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleSignOut();
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
+                          >
+                            <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
+                            Sign Out
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Link
+                        href="/auth?mode=signin"
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          pathname === "/auth" && searchParams.get("mode") === "signin"
+                            ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
+                            : "text-gray-300 hover:text-white hover:bg-slate-800 border border-transparent hover:border-white/30"
+                        }`}
+                      >
+                        <UserCircleIcon className="w-5 h-5" />
+                        <span className="hidden sm:inline">Sign In</span>
+                      </Link>
+                      <Link
+                        href="/auth?mode=signup"
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          pathname === "/auth" && searchParams.get("mode") === "signup"
+                            ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
+                            : "text-gray-300 hover:text-white hover:bg-slate-800 border border-transparent hover:border-white/30"
+                        }`}
+                      >
+                        <span className="hidden sm:inline">Sign Up</span>
+                        <span className="sm:hidden">Sign Up</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Show loading state for user menu */}
+              {mounted && loading && (
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-slate-700 rounded-full animate-pulse"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile menu panel */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu md:hidden bg-slate-900/98 backdrop-blur-md border-b border-slate-700">
+          <div className="px-3 py-2 space-y-1">
+            {/* User Info Section (if logged in) */}
+            {mounted && !loading && user && (
+              <div className="flex items-center space-x-2 p-2 mb-1 bg-slate-800/30 rounded-lg">
+                <div className="w-8 h-8 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">
+                    {user.email?.split('@')[0]}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Links */}
+            {mounted && !loading && user && (
+              <div className="space-y-1">
+                <Link
+                  href="/#discover-talent"
+                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    pathname === "/"
+                      ? "bg-brand-600 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  Browse Portfolios
+                </Link>
+                <Link
+                  href="/create-portfolio"
+                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    pathname === "/create-portfolio"
+                      ? "bg-brand-600 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
+                </Link>
+                <Link
+                  href="/collaborations"
+                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    pathname === "/collaborations"
+                      ? "bg-brand-600 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  Collaborations
+                </Link>
+                <Link
+                  href="/profile"
+                  className="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-slate-800 transition-colors duration-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <UserCircleIcon className="w-4 h-4 mr-3" />
+                  Profile
+                </Link>
+              </div>
+            )}
+
+            {/* Auth Buttons (if not logged in) */}
+            {mounted && !loading && !user && (
+              <div className="space-y-1">
+                <Link
+                  href="/auth?mode=signin"
+                  className={`flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    pathname === "/auth" && searchParams.get("mode") === "signin"
+                      ? "bg-brand-600 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-slate-800"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <UserCircleIcon className="w-4 h-4 mr-2" />
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth?mode=signup"
+                  className="flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium bg-brand-600 hover:bg-brand-700 text-white transition-colors duration-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+
+            {/* Sign Out Button (if logged in) */}
+            {mounted && !loading && user && (
+              <div className="pt-1">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSignOut();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:text-red-200 hover:bg-red-900/20 transition-colors duration-200"
+                >
+                  <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

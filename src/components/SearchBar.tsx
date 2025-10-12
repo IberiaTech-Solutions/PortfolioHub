@@ -82,11 +82,11 @@ export default function SearchBar({
   const shouldBeSticky = isSticky || (enableStickyBehavior && isScrolled);
   
   const containerClasses = shouldBeSticky 
-    ? "fixed top-16 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-md transition-all duration-700 ease-out transform"
+    ? "fixed top-14 sm:top-16 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-md transition-all duration-700 ease-out transform"
     : "transition-all duration-700 ease-out transform";
 
   const innerClasses = shouldBeSticky 
-    ? "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 transition-all duration-500 ease-out"
+    ? "max-w-4xl mx-auto px-2 sm:px-4 lg:px-8 py-1 sm:py-2 transition-all duration-500 ease-out"
     : "space-y-4 transition-all duration-500 ease-out";
 
   return (
@@ -102,8 +102,10 @@ export default function SearchBar({
         <form onSubmit={handleSearch} className="space-y-4">
           {/* Main Search Bar */}
           <div className="relative">
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`absolute top-1/2 transform -translate-y-1/2 z-10 ${
+              shouldBeSticky ? 'left-3' : 'left-4'
+            }`}>
+              <svg className={`text-gray-400 ${shouldBeSticky ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -112,18 +114,18 @@ export default function SearchBar({
               placeholder={placeholderExamples[currentPlaceholder]}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-12 pr-32 border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 ${
+              className={`w-full pl-10 sm:pl-12 pr-24 sm:pr-28 lg:pr-32 border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 ${
                 shouldBeSticky 
-                  ? 'py-2 text-sm' 
-                  : 'py-4 sm:py-5 text-base sm:text-xl'
+                  ? 'py-1 sm:py-2 text-xs sm:text-sm' 
+                  : 'py-3 sm:py-4 lg:py-5 text-base sm:text-lg lg:text-xl'
               }`}
             />
             <button
               type="submit"
-              className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl border border-slate-700 ${
+              className={`absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 border-2 border-white/20 hover:border-white/40 ${
                 shouldBeSticky 
-                  ? 'px-4 py-1 text-xs' 
-                  : 'px-6 py-2 text-sm sm:text-base'
+                  ? 'px-2 sm:px-4 py-1 text-xs' 
+                  : 'px-4 sm:px-6 py-2 text-sm sm:text-base'
               }`}
             >
               Search
@@ -138,7 +140,7 @@ export default function SearchBar({
               className={`flex items-center space-x-2 text-white hover:text-gray-200 rounded-lg transition-all duration-200 ${
                 shouldBeSticky 
                   ? 'px-3 py-1 text-xs w-full justify-center' 
-                  : 'px-4 py-2 text-sm'
+                  : 'px-3 sm:px-4 py-2 text-sm'
               }`}
             >
               <span>Advanced Filters</span>

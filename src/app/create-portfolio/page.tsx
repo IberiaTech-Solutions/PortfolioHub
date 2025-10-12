@@ -801,15 +801,15 @@ export default function CreatePortfolioPage() {
         </svg>
       </div>
 
-      <div className="relative max-w-6xl mx-auto py-16 px-6">
+      <div className="relative max-w-6xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-medium mb-6 shadow-lg">
-            <SparklesIcon className="h-4 w-4 mr-2" />
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs sm:text-sm font-medium mb-4 sm:mb-6 shadow-lg">
+            <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             AI-Powered Portfolio Builder
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 sm:mb-6 leading-tight">
             {existingPortfolio ? "Edit Your" : "Create Your"}
             <br />
             <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">
@@ -817,24 +817,24 @@ export default function CreatePortfolioPage() {
             </span>
           </h1>
           
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8">
             Showcase your skills, projects, and collaborations in a beautiful, professional portfolio that stands out
           </p>
           
           {/* Feature Highlights */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm text-white shadow-lg">
-              <SparklesIcon className="h-4 w-4 mr-2 text-brand-600" />
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8">
+            <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs sm:text-sm text-white shadow-lg">
+              <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-brand-600" />
               AI-Powered Analysis
             </div>
-            <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm text-white shadow-lg">
-              <svg className="h-4 w-4 mr-2 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs sm:text-sm text-white shadow-lg">
+              <svg className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
               Auto Skill Detection
             </div>
-            <div className="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm text-white shadow-lg">
-              <svg className="h-4 w-4 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs sm:text-sm text-white shadow-lg">
+              <svg className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
               </svg>
               Project Integration
@@ -843,21 +843,21 @@ export default function CreatePortfolioPage() {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Form Section */}
           <div className="lg:col-span-2">
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
-              <div className="mb-6 p-4 bg-blue-500/10 border border-blue-400/30 rounded-lg">
-                <p className="text-sm text-blue-200">
+            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-500/10 border border-blue-400/30 rounded-lg">
+                <p className="text-xs sm:text-sm text-blue-200">
                   <span className="text-red-400 font-semibold">*</span> Required fields must be filled out to create your portfolio.
                 </p>
                 <p className="text-xs text-blue-300 mt-1">
                   AI Analysis: {MAX_AI_CALLS - aiCallCount} calls remaining
                 </p>
               </div>
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="space-y-4">
-                  <label htmlFor="name" className="block text-sm font-semibold text-white">
+              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+                <div className="space-y-3 sm:space-y-4">
+                  <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-white">
                     Your Full Name <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -867,7 +867,7 @@ export default function CreatePortfolioPage() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className={`w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md ${
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
                       !formData.name ? 'border-red-400/50' : 'border-white/20'
                     }`}
                     placeholder="John Doe"
@@ -878,15 +878,15 @@ export default function CreatePortfolioPage() {
                 </div>
 
                 {/* Profile Image Upload */}
-                <div className="space-y-4">
-                  <label htmlFor="profile_image" className="block text-sm font-semibold text-white">
+                <div className="space-y-3 sm:space-y-4">
+                  <label htmlFor="profile_image" className="block text-xs sm:text-sm font-semibold text-white">
                     Profile Image
                   </label>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                     {/* Image Preview */}
                     <div className="flex-shrink-0">
                       {profileImagePreview ? (
-                        <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gray-200">
                           <Image
                             src={profileImagePreview}
                             alt="Profile preview"
@@ -896,8 +896,8 @@ export default function CreatePortfolioPage() {
                           />
                         </div>
                       ) : (
-                        <div className="w-20 h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl border-2 border-gray-200 flex items-center justify-center">
-                          <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-lg sm:rounded-xl border-2 border-gray-200 flex items-center justify-center">
+                          <svg className="w-6 h-6 sm:w-8 sm:h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                         </div>
@@ -905,7 +905,7 @@ export default function CreatePortfolioPage() {
                     </div>
                     
                     {/* Upload Button */}
-                    <div className="flex-1">
+                    <div className="flex-1 w-full sm:w-auto">
                       <input
                         type="file"
                         id="profile_image"
@@ -915,9 +915,9 @@ export default function CreatePortfolioPage() {
                       />
                       <label
                         htmlFor="profile_image"
-                        className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg sm:rounded-xl text-white cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm"
                       >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         {profileImagePreview ? 'Change Image' : 'Upload Image'}
@@ -930,16 +930,16 @@ export default function CreatePortfolioPage() {
                 </div>
 
                 {/* Hero Image Upload */}
-                <div className="space-y-4">
-                  <label htmlFor="hero_image" className="block text-sm font-semibold text-white">
+                <div className="space-y-3 sm:space-y-4">
+                  <label htmlFor="hero_image" className="block text-xs sm:text-sm font-semibold text-white">
                     Portfolio Hero Image
-                    <span className="ml-2 text-xs text-gray-300 font-normal">(Banner image for portfolio cards)</span>
+                    <span className="ml-1 sm:ml-2 text-xs text-gray-300 font-normal">(Banner image for portfolio cards)</span>
                   </label>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                     {/* Image Preview */}
                     <div className="flex-shrink-0">
                       {heroImagePreview ? (
-                        <div className="w-32 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
+                        <div className="w-24 h-15 sm:w-32 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gray-200">
                           <Image
                             src={heroImagePreview}
                             alt="Hero image preview"
@@ -949,8 +949,8 @@ export default function CreatePortfolioPage() {
                           />
                         </div>
                       ) : (
-                        <div className="w-32 h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-xl border-2 border-gray-200 flex items-center justify-center">
-                          <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-24 h-15 sm:w-32 sm:h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-lg sm:rounded-xl border-2 border-gray-200 flex items-center justify-center">
+                          <svg className="w-6 h-6 sm:w-8 sm:h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
@@ -958,7 +958,7 @@ export default function CreatePortfolioPage() {
                     </div>
                     
                     {/* Upload Button */}
-                    <div className="flex-1">
+                    <div className="flex-1 w-full sm:w-auto">
                       <input
                         type="file"
                         id="hero_image"
@@ -968,9 +968,9 @@ export default function CreatePortfolioPage() {
                       />
                       <label
                         htmlFor="hero_image"
-                        className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg sm:rounded-xl text-white cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm"
                       >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         {heroImagePreview ? 'Change Hero Image' : 'Upload Hero Image'}
@@ -982,10 +982,10 @@ export default function CreatePortfolioPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <label htmlFor="title" className="block text-sm font-semibold text-white">
+                <div className="space-y-3 sm:space-y-4">
+                  <label htmlFor="title" className="block text-xs sm:text-sm font-semibold text-white">
                     Portfolio Title <span className="text-red-400">*</span>
-                      <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
+                      <span className="ml-2 sm:ml-3 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
                       <SparklesIcon className="h-3 w-3 mr-1" />
                       AI Analysis
                     </span>
@@ -1000,7 +1000,7 @@ export default function CreatePortfolioPage() {
                       debouncedAnalyze('title', e.target.value, 'title');
                     }}
                     required
-                    className={`w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md ${
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
                       !formData.title ? 'border-red-400/50' : 'border-white/20'
                     }`}
                     placeholder="Front-end Developer with 5 years experience"
@@ -1042,7 +1042,7 @@ export default function CreatePortfolioPage() {
               value={formData.job_title}
               onChange={handleChange}
               required
-              className={`w-full px-4 py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 ${
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base ${
                 !formData.job_title ? 'border-red-400/50' : 'border-white/20'
               }`}
               placeholder="Senior Front-end Developer"
@@ -1067,15 +1067,15 @@ export default function CreatePortfolioPage() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
                 placeholder="San Francisco, CA or Remote"
               />
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <label
                 htmlFor="experience_level"
-                className="block text-sm font-medium text-white"
+                className="block text-xs sm:text-sm font-medium text-white"
               >
                 Experience Level
               </label>
@@ -1084,7 +1084,7 @@ export default function CreatePortfolioPage() {
                 name="experience_level"
                 value={formData.experience_level}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
               >
                 <option value="">Select experience level</option>
                 <option value="Entry Level">Entry Level (0-2 years)</option>
@@ -1097,17 +1097,17 @@ export default function CreatePortfolioPage() {
           </div>
 
           {/* Work Type and Languages Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-2 sm:space-y-3">
               <label
                 htmlFor="preferred_work_type"
-                className="block text-sm font-medium text-white"
+                className="block text-xs sm:text-sm font-medium text-white"
               >
                 Preferred Work Type
               </label>
               <div className="space-y-2">
                 {["Full-time", "Part-time", "Contract", "Freelance"].map((workType) => (
-                  <label key={workType} className="flex items-center space-x-3 cursor-pointer">
+                  <label key={workType} className="flex items-center space-x-2 sm:space-x-3 cursor-pointer py-1">
                     <input
                       type="checkbox"
                       checked={formData.preferred_work_type.includes(workType)}
@@ -1124,18 +1124,18 @@ export default function CreatePortfolioPage() {
                           }));
                         }
                       }}
-                      className="w-4 h-4 text-brand-600 bg-white/10 border-white/20 rounded focus:ring-brand-500 focus:ring-2"
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-brand-600 bg-white/10 border-white/20 rounded focus:ring-brand-500 focus:ring-2"
                     />
-                    <span className="text-white text-sm">{workType}</span>
+                    <span className="text-white text-xs sm:text-sm">{workType}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <label
                 htmlFor="languages"
-                className="block text-sm font-medium text-white"
+                className="block text-xs sm:text-sm font-medium text-white"
               >
                 Languages
               </label>
@@ -1145,24 +1145,24 @@ export default function CreatePortfolioPage() {
                 name="languages"
                 value={formData.languages}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
                 placeholder="English, Spanish, French"
               />
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-white"
+              className="block text-xs sm:text-sm font-medium text-white"
             >
               About You / Description <span className="text-red-400">*</span>
-              <span className="ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
+              <span className="ml-2 sm:ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
                 <SparklesIcon className="h-3 w-3 mr-1" />
                 AI Analysis
               </span>
-              <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-300 border border-green-500/30">
-                <SparklesIcon className="h-4 w-4 mr-1" />
+              <span className="ml-1 sm:ml-2 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-green-500/20 text-green-300 border border-green-500/30">
+                <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                 Auto Skills
               </span>
             </label>
@@ -1176,8 +1176,8 @@ export default function CreatePortfolioPage() {
                 debouncedExtractSkills(e.target.value);
               }}
               required
-              rows={5}
-              className={`w-full px-4 py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10 ${
+              rows={4}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10 text-sm sm:text-base ${
                 !formData.description ? 'border-red-400/50' : 'border-white/20'
               }`}
               placeholder="A brief description about yourself, your experience, and what you're looking for"
@@ -1388,10 +1388,10 @@ export default function CreatePortfolioPage() {
           <div className="space-y-2">
             <label
               htmlFor="website_url"
-              className="block text-sm font-medium text-white"
+              className="block text-xs sm:text-sm font-medium text-white"
             >
               Website URL
-              <span className="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
+              <span className="ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
                 <SparklesIcon className="h-3 w-3 mr-1" />
                 Auto Projects
               </span>
@@ -1406,7 +1406,7 @@ export default function CreatePortfolioPage() {
                 debouncedDetectProjects(formData.github_url, e.target.value);
                 debouncedGenerateScreenshot(e.target.value);
               }}
-              className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
               placeholder="https://yourwebsite.com"
             />
           </div>
@@ -1414,10 +1414,10 @@ export default function CreatePortfolioPage() {
           <div className="space-y-2">
             <label
               htmlFor="github_url"
-              className="block text-sm font-medium text-white"
+              className="block text-xs sm:text-sm font-medium text-white"
             >
               GitHub URL
-              <span className="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
+              <span className="ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
                 <SparklesIcon className="h-3 w-3 mr-1" />
                 Auto Projects
               </span>
@@ -1431,15 +1431,15 @@ export default function CreatePortfolioPage() {
                 handleChange(e);
                 debouncedDetectProjects(e.target.value, formData.website_url);
               }}
-              className="w-full px-4 py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
               placeholder="https://github.com/yourusername"
             />
           </div>
 
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-4">
                   <label
                     htmlFor="linkedin_url"
-                    className="block text-sm font-semibold text-white"
+                    className="block text-xs sm:text-sm font-semibold text-white"
                   >
                     LinkedIn URL
                   </label>
@@ -1449,23 +1449,23 @@ export default function CreatePortfolioPage() {
                     name="linkedin_url"
                     value={formData.linkedin_url}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
                     placeholder="https://linkedin.com/in/yourprofile"
                   />
                 </div>
 
                 {/* Additional Links Section */}
-                <div className="space-y-4">
-                  <label className="block text-sm font-semibold text-white">
+                <div className="space-y-3 sm:space-y-4">
+                  <label className="block text-xs sm:text-sm font-semibold text-white">
                     Additional Links
-                    <span className="ml-2 text-sm font-normal text-gray-300">
+                    <span className="ml-1 sm:ml-2 text-xs sm:text-sm font-normal text-gray-300">
                       (Dribbble, Behance, Bestfolios, etc.)
                     </span>
                   </label>
                   
                   <div className="space-y-3">
                     {formData.additional_links.map((link, index) => (
-                      <div key={index} className="flex gap-3">
+                      <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <input
                           type="text"
                           placeholder="Label (e.g., Dribbble)"
@@ -1475,7 +1475,7 @@ export default function CreatePortfolioPage() {
                             newLinks[index].label = e.target.value;
                             setFormData({ ...formData, additional_links: newLinks });
                           }}
-                          className="flex-1 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                          className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
                         />
                         <input
                           type="url"
@@ -1486,7 +1486,7 @@ export default function CreatePortfolioPage() {
                             newLinks[index].url = e.target.value;
                             setFormData({ ...formData, additional_links: newLinks });
                           }}
-                          className="flex-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                          className="flex-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
                         />
                         <button
                           type="button"
@@ -1494,9 +1494,9 @@ export default function CreatePortfolioPage() {
                             const newLinks = formData.additional_links.filter((_, i) => i !== index);
                             setFormData({ ...formData, additional_links: newLinks });
                           }}
-                          className="px-3 py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-colors duration-200"
+                          className="px-3 py-2 sm:py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg sm:rounded-xl transition-colors duration-200 flex items-center justify-center"
                         >
-                          <XMarkIcon className="h-5 w-5" />
+                          <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                         </button>
                       </div>
                     ))}
@@ -1509,9 +1509,9 @@ export default function CreatePortfolioPage() {
                           additional_links: [...formData.additional_links, { label: "", url: "" }]
                         });
                       }}
-                      className="flex items-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-gray-300 hover:text-white hover:bg-white/20 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-gray-300 hover:text-white hover:bg-white/20 transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm w-full sm:w-auto"
                     >
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                       Add Link
@@ -1522,12 +1522,12 @@ export default function CreatePortfolioPage() {
 
           {/* Project Auto-Detection */}
           {(detectedProjects.length > 0 || detectingProjects) && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2">
-                <SparklesIcon className="h-5 w-5 text-brand-300" />
-                <h3 className="text-lg font-medium text-white">Auto-Detected Projects</h3>
+                <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 text-brand-300" />
+                <h3 className="text-base sm:text-lg font-medium text-white">Auto-Detected Projects</h3>
                 {detectingProjects && (
-                  <div className="h-4 w-4 border border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="h-3 w-3 sm:h-4 sm:w-4 border border-gray-600 border-t-transparent rounded-full animate-spin"></div>
                 )}
               </div>
               <ProjectCards 
@@ -1545,11 +1545,11 @@ export default function CreatePortfolioPage() {
             onCollaborationsChange={setCollaborations}
           />
 
-                <div className="flex justify-center pt-8">
+                <div className="flex justify-center pt-6 sm:pt-8">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-xl font-display font-semibold backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-lg sm:rounded-xl font-display font-semibold backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0 text-sm sm:text-base w-full sm:w-auto"
                   >
                     {loading
                       ? "Saving..."
@@ -1564,16 +1564,16 @@ export default function CreatePortfolioPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-4 sm:top-8 space-y-4 sm:space-y-6">
               {/* AI Features Card */}
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
-                    <SparklesIcon className="h-5 w-5 text-brand-700" />
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-lg sm:rounded-xl flex items-center justify-center">
+                    <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 text-brand-700" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white">AI Features</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-white">AI Features</h3>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-brand-500 rounded-full mt-2"></div>
                     <div>

@@ -45,8 +45,6 @@ function HomeContent() {
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [availableExperience, setAvailableExperience] = useState<string[]>([]);
   const [availableLocations, setAvailableLocations] = useState<string[]>([]);
-  const [availableWorkTypes, setAvailableWorkTypes] = useState<string[]>([]);
-  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentSearchExample, setCurrentSearchExample] = useState(0);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -255,18 +253,6 @@ function HomeContent() {
         .filter((loc): loc is string => loc != null && loc.trim() !== '')
     )).sort();
     
-    // Extract unique preferred work types
-    const allWorkTypes = allPortfolios
-      .flatMap(p => p.preferred_work_type || [])
-      .filter(workType => workType && workType.trim() !== '');
-    const uniqueWorkTypes = Array.from(new Set(allWorkTypes)).sort();
-    
-    // Extract unique languages
-    const uniqueLanguages = Array.from(new Set(
-      allPortfolios
-        .map(p => p.languages)
-        .filter((lang): lang is string => lang != null && lang.trim() !== '')
-    )).sort();
     
     // Extract unique skills
     const allSkills = allPortfolios
@@ -277,8 +263,6 @@ function HomeContent() {
     setAvailableRoles(uniqueRoles);
     setAvailableExperience(uniqueExperience);
     setAvailableLocations(uniqueLocations);
-    setAvailableWorkTypes(uniqueWorkTypes);
-    setAvailableLanguages(uniqueLanguages);
     setAvailableSkills(uniqueSkills);
     setAvailableJobTitles(uniqueRoles); // Job titles are the same as roles
 

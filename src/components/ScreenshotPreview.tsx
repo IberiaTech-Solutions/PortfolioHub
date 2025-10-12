@@ -97,7 +97,7 @@ export default function ScreenshotPreview({
                 rel="noopener noreferrer"
                 className="ml-2 inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium"
               >
-                Visit Site
+                Visit Personal Site
                 <ArrowTopRightOnSquareIcon className="h-4 w-4" />
               </a>
             </div>

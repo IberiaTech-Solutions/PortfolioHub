@@ -82,7 +82,9 @@ export default function PortfolioDetailPage() {
 
       if (error) {
         console.error("Error fetching portfolio:", error);
-        router.push("/");
+        console.error("Portfolio ID:", params.id);
+        console.error("Supabase client:", !!supabase);
+        setLoading(false);
         return;
       }
 
@@ -485,24 +487,6 @@ export default function PortfolioDetailPage() {
               </div>
             </div>
 
-            {/* Call to Action */}
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-heading font-bold text-white mb-6">Get Started</h3>
-              <div className="space-y-4">
-                <Link
-                  href="/create-portfolio"
-                  className="block w-full px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl text-center font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
-                >
-                  Create Your Portfolio
-                </Link>
-                <Link
-                  href="/auth"
-                  className="block w-full px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-center font-bold transition-all duration-300 border-2 border-white/20 shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  Sign Up / Sign In
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </div>

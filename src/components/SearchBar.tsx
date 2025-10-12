@@ -171,7 +171,7 @@ export default function SearchBar({
               </svg>
               Filters
               {getActiveFilterCount() > 0 && (
-                <span className="ml-2 px-2 py-1 bg-brand-600 text-white text-xs rounded-full">
+                <span className="ml-2 px-2 py-1 bg-brand-600 text-black text-xs rounded-full">
                   {getActiveFilterCount()}
                 </span>
               )}

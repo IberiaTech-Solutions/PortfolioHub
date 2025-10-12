@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/utils/supabase";
+import { User } from "@supabase/supabase-js";
 import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
@@ -40,6 +41,8 @@ function HomeContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentSearchExample, setCurrentSearchExample] = useState(0);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Rotating search examples
   const searchExamples = [
@@ -76,6 +79,37 @@ function HomeContent() {
 
     return () => clearInterval(placeholderInterval);
   }, [placeholderExamples.length]);
+
+  // Check authentication status
+  useEffect(() => {
+    const getUser = async () => {
+      if (!supabase) {
+        console.warn('Supabase not configured');
+        setAuthLoading(false);
+        return;
+      }
+      
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Error getting user:', error);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    getUser();
+
+    // Listen for auth state changes
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      return () => subscription.unsubscribe();
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch available skills and job titles
@@ -242,18 +276,31 @@ function HomeContent() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 w-full">
           <div className="text-center mb-12 sm:mb-16 lg:mb-20">
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold text-white mb-6 sm:mb-8 tracking-tight">
-              Find Your Next
-              <br />
-              <span className="font-light text-slate-200">Collaboration</span>
+              {!authLoading && user ? (
+                <>
+                  Welcome Back,
+                  <br />
+                  <span className="font-light text-slate-200">Ready to Collaborate?</span>
+                </>
+              ) : (
+                <>
+                  Find Your Next
+                  <br />
+                  <span className="font-light text-slate-200">Collaboration</span>
+                </>
+              )}
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl font-body text-brand-300 max-w-3xl mx-auto leading-relaxed font-light mb-8 sm:mb-12 px-4">
-              The global community for developers and designers to showcase, connect, and collaborate.
+              {!authLoading && user 
+                ? "Discover talented professionals and showcase your work in our global community."
+                : "The global community for developers and designers to showcase, connect, and collaborate."
+              }
             </p>
             
             {/* Interactive Search Prompt */}
             <div className="mb-8 sm:mb-12">
               <div className="inline-flex items-center space-x-2 text-slate-300 text-sm sm:text-base">
-                <span>Try searching for:</span>
+                <span>{!authLoading && user ? "Find collaborators:" : "Try searching for:"}</span>
                 <div className="relative">
                   <span className="inline-block min-w-[200px] text-left">
                     <span className="text-brand-300 font-medium transition-all duration-500 ease-in-out">
@@ -266,21 +313,46 @@ function HomeContent() {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 sm:mb-16 px-4">
-              <Link
-                href="/create-portfolio"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-display font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Showcase Your Work
-              </Link>
-              <Link
-                href="/auth"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-xl font-display font-semibold text-base sm:text-lg backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
-              >
-                Join Our Community
-              </Link>
+              {!authLoading && user ? (
+                <>
+                  <Link
+                    href="/create-portfolio"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-display font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Portfolio
+                  </Link>
+                  <Link
+                    href="/collaborations"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-xl font-display font-semibold text-base sm:text-lg backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Collaborations
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/create-portfolio"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-display font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Showcase Your Work
+                  </Link>
+                  <Link
+                    href="/auth"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-xl font-display font-semibold text-base sm:text-lg backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    Join Our Community
+                  </Link>
+                </>
+              )}
             </div>
             
           </div>
@@ -347,7 +419,7 @@ function HomeContent() {
 
       {/* Results Section */}
       {/* Main Content Section */}
-      <div className="bg-gray-50 py-12 sm:py-16 lg:py-20" style={{ paddingTop: 'calc(3rem + env(safe-area-inset-top))' }}>
+      <div id="discover-talent" className="bg-gray-50 py-12 sm:py-16 lg:py-20" style={{ paddingTop: 'calc(3rem + env(safe-area-inset-top))' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-12 sm:mb-16">
@@ -402,7 +474,7 @@ function HomeContent() {
                 {portfolios.map((portfolio) => (
                   <div
                     key={portfolio.id}
-                    className="group relative bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:scale-[1.02] hover:border-brand-200/50"
+                    className="group relative bg-white/90 backdrop-blur-md border border-white/20 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 hover:scale-[1.03] hover:border-brand-300/30"
                   >
                     {/* Portfolio Hero Image */}
                     {portfolio.hero_image ? (
@@ -431,7 +503,7 @@ function HomeContent() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                         {/* Portfolio Badge */}
                         <div className="absolute top-4 right-4">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-900 backdrop-blur-sm shadow-md">
+                          <span className="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-white/95 text-gray-900 backdrop-blur-md shadow-lg border border-white/30">
                             Portfolio
                           </span>
                         </div>
@@ -442,12 +514,12 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-900 rounded-lg text-xs font-bold backdrop-blur-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                              className="inline-flex items-center px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl text-xs font-bold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                               </svg>
-                              Visit Site
+                              Visit Personal Site
                             </a>
                           </div>
                         )}
@@ -478,7 +550,7 @@ function HomeContent() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                         {/* Portfolio Badge */}
                         <div className="absolute top-4 right-4">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-900 backdrop-blur-sm shadow-md">
+                          <span className="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-white/95 text-gray-900 backdrop-blur-md shadow-lg border border-white/30">
                             Portfolio
                           </span>
                         </div>
@@ -489,12 +561,12 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-900 rounded-lg text-xs font-bold backdrop-blur-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                              className="inline-flex items-center px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl text-xs font-bold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                               </svg>
-                              Visit Site
+                              Visit Personal Site
                             </a>
                           </div>
                         )}
@@ -514,7 +586,7 @@ function HomeContent() {
                         </div>
                         {/* Portfolio Badge */}
                         <div className="absolute top-4 right-4">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-900 backdrop-blur-sm shadow-md">
+                          <span className="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-white/95 text-gray-900 backdrop-blur-md shadow-lg border border-white/30">
                             Portfolio
                           </span>
                         </div>
@@ -536,33 +608,36 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-900 rounded-lg text-xs font-bold backdrop-blur-sm shadow-md transition-all duration-200 hover:shadow-lg"
+                              className="inline-flex items-center px-4 py-2 bg-white/95 hover:bg-white text-gray-900 rounded-xl text-xs font-bold backdrop-blur-md shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:scale-105"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                               </svg>
-                              Visit Site
+                              Visit Personal Site
                             </a>
                           </div>
                         )}
                       </div>
                     )}
                     
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-transparent to-emerald-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    {/* Modern Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-transparent to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                    
+                    {/* Subtle Inner Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                     
                     {/* Profile Header */}
                     <div className="relative p-6 pb-4">
                       <div className="flex items-start space-x-4 mb-5">
-                        {/* Enhanced Avatar */}
+                        {/* Modern Avatar */}
                         <div className="flex-shrink-0 relative">
                           {portfolio.profile_image ? (
-                            <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
+                            <div className="w-16 h-16 rounded-3xl overflow-hidden shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-110 ring-2 ring-white/20 group-hover:ring-brand-300/30">
                               <Image
                                 src={portfolio.profile_image}
                                 alt={`${portfolio.name} profile`}
-                                width={56}
-                                height={56}
+                                width={64}
+                                height={64}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';
@@ -571,73 +646,70 @@ function HomeContent() {
                               />
                               {/* Fallback gradient */}
                               <div className="hidden w-full h-full bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">
+                                <span className="text-white font-bold text-xl">
                                   {portfolio.name?.charAt(0).toUpperCase()}
                                 </span>
                               </div>
                             </div>
                           ) : (
-                            <div className="w-14 h-14 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110">
-                              <span className="text-white font-bold text-lg">
+                            <div className="w-16 h-16 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 rounded-3xl flex items-center justify-center shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-110 ring-2 ring-white/20 group-hover:ring-brand-300/30">
+                              <span className="text-white font-bold text-xl">
                                 {portfolio.name?.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}
-                          {/* Status Indicator */}
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+                          {/* Modern Status Indicator */}
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-400 to-emerald-500 border-3 border-white rounded-full shadow-lg"></div>
                         </div>
                         
-                        {/* Enhanced Profile Info */}
+                        {/* Modern Profile Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-heading font-bold text-gray-900 mb-1 group-hover:text-brand-600 transition-colors duration-300 line-clamp-1">
+                          <h3 className="text-xl font-heading font-bold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors duration-500 line-clamp-1">
                             {portfolio.title}
                           </h3>
-                          <p className="text-gray-700 text-sm font-semibold mb-1">
+                          <p className="text-gray-600 text-sm font-medium mb-3">
                             {portfolio.name}
                           </p>
                           <div className="flex items-center space-x-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-800 border border-brand-200">
+                            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border border-brand-300/50 shadow-sm">
                               {portfolio.job_title}
-                            </span>
-                            <span className="text-xs text-gray-500 font-medium">
-                              Available
                             </span>
                           </div>
                         </div>
                       </div>
                       
-                      {/* Enhanced Description */}
-                      <div className="mb-5">
-                        <p className="text-gray-800 line-clamp-3 leading-relaxed text-sm font-medium">
+                      {/* Modern Description */}
+                      <div className="mb-6">
+                        <p className="text-gray-700 line-clamp-3 leading-relaxed text-sm font-normal">
                           {portfolio.description}
                         </p>
                       </div>
                       
-                      {/* Enhanced Skills Tags */}
+                      {/* Modern Skills Tags */}
                       <div className="mb-6">
                         <div className="flex flex-wrap gap-2">
                           {portfolio.skills &&
                             portfolio.skills.slice(0, 3).map((skill, index) => {
                               const colors = [
-                                'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-600',
-                                'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-600',
-                                'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600',
-                                'bg-gradient-to-r from-rose-500 to-rose-600 text-white border-rose-600',
-                                'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600',
-                                'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600'
+                                'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-600 shadow-lg',
+                                'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-600 shadow-lg',
+                                'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600 shadow-lg',
+                                'bg-gradient-to-r from-rose-500 to-rose-600 text-white border-rose-600 shadow-lg',
+                                'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600 shadow-lg',
+                                'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600 shadow-lg'
                               ];
                               const colorClass = colors[index % colors.length];
                               return (
                                 <span
                                   key={index}
-                                  className={`${colorClass} rounded-xl px-3 py-1.5 text-xs font-semibold border shadow-sm group-hover:shadow-md transition-all duration-200`}
+                                  className={`${colorClass} rounded-2xl px-4 py-2 text-xs font-semibold border group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}
                                 >
                                   {skill}
                                 </span>
                               );
                             })}
                           {portfolio.skills && portfolio.skills.length > 3 && (
-                            <span className="bg-gradient-to-r from-gray-800 to-gray-900 text-white border border-gray-800 rounded-xl px-3 py-1.5 text-xs font-bold shadow-md">
+                            <span className="bg-gradient-to-r from-gray-700 to-gray-800 text-white border border-gray-600 rounded-2xl px-4 py-2 text-xs font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                               +{portfolio.skills.length - 3} more
                             </span>
                           )}
@@ -648,17 +720,17 @@ function HomeContent() {
                     {/* Enhanced Social Links & Actions */}
                     <div className="relative px-6 pb-6">
                       <div className="flex items-center justify-between">
-                        {/* Enhanced Social Links */}
-                        <div className="flex items-center space-x-2">
+                        {/* Modern Social Links */}
+                        <div className="flex items-center space-x-3">
                           {portfolio.github_url && (
                             <a
                               href={portfolio.github_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2.5 text-gray-600 hover:text-white hover:bg-gray-800 rounded-xl transition-all duration-200 hover:scale-110 shadow-md hover:shadow-lg"
+                              className="p-3 text-gray-500 hover:text-white hover:bg-gray-800 rounded-2xl transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-gray-200/50 hover:border-gray-700"
                               title="GitHub"
                             >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                               </svg>
                             </a>
@@ -668,10 +740,10 @@ function HomeContent() {
                               href={portfolio.linkedin_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2.5 text-gray-600 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-200 hover:scale-110 shadow-md hover:shadow-lg"
+                              className="p-3 text-gray-500 hover:text-white hover:bg-blue-600 rounded-2xl transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-gray-200/50 hover:border-blue-500"
                               title="LinkedIn"
                             >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                               </svg>
                             </a>
@@ -681,20 +753,20 @@ function HomeContent() {
                               href={portfolio.website_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2.5 text-gray-600 hover:text-white hover:bg-emerald-600 rounded-xl transition-all duration-200 hover:scale-110 shadow-md hover:shadow-lg"
+                              className="p-3 text-gray-500 hover:text-white hover:bg-emerald-600 rounded-2xl transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl border border-gray-200/50 hover:border-emerald-500"
                               title="Website"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                               </svg>
                             </a>
                           )}
                         </div>
                         
-                        {/* Enhanced View Profile Button */}
+                        {/* Modern View Profile Button */}
                         <Link
                           href={`/portfolio/${portfolio.id}`}
-                          className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-black rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 text-sm"
+                          className="inline-flex items-center px-6 py-3 bg-brand-600 hover:bg-brand-700 text-black rounded-3xl font-semibold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 text-sm border-2 border-brand-500/30"
                         >
                           View Profile
                           <svg
@@ -722,7 +794,7 @@ function HomeContent() {
               <div className="text-center mt-12">
                 <Link
                   href="/search"
-                  className="inline-flex items-center px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-display font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="inline-flex items-center px-8 py-4 bg-brand-600 hover:bg-brand-700 text-black rounded-xl font-display font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   View All Portfolios
                   <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

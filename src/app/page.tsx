@@ -395,6 +395,76 @@ function HomeContent() {
         </div>
       </div>
 
+      {/* Partners / Integrations Section */}
+      <div className="bg-slate-900 border-t border-white/10 py-10 sm:py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-gray-500 text-xs sm:text-sm font-medium uppercase tracking-widest mb-8">
+            Powered by industry-leading technology
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16 opacity-60 hover:opacity-80 transition-opacity duration-500">
+            {/* OpenAI */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0011.17.178 6.022 6.022 0 004.746 3.46a5.971 5.971 0 00-3.978 2.9 6.015 6.015 0 00.738 7.061 5.985 5.985 0 00.518 4.911 6.046 6.046 0 006.51 2.9A6.065 6.065 0 0012.83 23.82a6.022 6.022 0 006.424-3.282 5.971 5.971 0 003.978-2.9 6.015 6.015 0 00-.738-7.061zM12.83 22.32a4.548 4.548 0 01-2.916-1.058l.145-.084 4.843-2.797a.785.785 0 00.397-.683v-6.823l2.048 1.183a.073.073 0 01.04.056v5.655a4.56 4.56 0 01-4.557 4.551zM3.486 18.14a4.528 4.528 0 01-.542-3.043l.146.088 4.842 2.797a.793.793 0 00.793 0l5.91-3.413v2.366a.074.074 0 01-.03.063L9.72 19.81a4.56 4.56 0 01-6.234-1.67zM2.223 7.942A4.525 4.525 0 014.6 5.95l-.002.165v5.594a.782.782 0 00.393.68l5.91 3.413-2.047 1.182a.073.073 0 01-.07.006L3.9 14.178a4.56 4.56 0 01-1.677-6.236zM18.753 11.6l-5.91-3.413L14.89 6.99a.073.073 0 01.07-.006l4.883 2.82a4.558 4.558 0 01-.7 8.211v-5.76a.785.785 0 00-.39-.656zm2.04-3.05l-.146-.087-4.842-2.798a.793.793 0 00-.793 0l-5.91 3.414V6.713a.074.074 0 01.03-.063l4.883-2.813a4.556 4.556 0 016.778 4.713zM8.31 12.74l-2.047-1.183a.073.073 0 01-.04-.056V5.847a4.555 4.555 0 017.47-3.495l-.145.084-4.843 2.797a.785.785 0 00-.397.683l-.003 6.823zM9.508 11.2L12 9.762l2.492 1.438v2.876L12 15.514l-2.492-1.438z"/>
+              </svg>
+              <span className="font-heading font-semibold text-sm">OpenAI</span>
+            </div>
+            {/* Supabase */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-5 h-5" viewBox="0 0 109 113" fill="currentColor">
+                <path d="M63.708 110.284c-2.86 3.601-8.658 1.628-8.727-2.97l-1.007-67.251h45.22c8.19 0 12.758 9.46 7.665 15.874z"/>
+                <path d="M63.708 110.284c-2.86 3.601-8.658 1.628-8.727-2.97l-1.007-67.251h45.22c8.19 0 12.758 9.46 7.665 15.874z" fillOpacity=".2"/>
+                <path d="M45.317 2.071c2.86-3.601 8.657-1.628 8.726 2.97l.442 67.251H9.83c-8.19 0-12.759-9.46-7.665-15.875z"/>
+              </svg>
+              <span className="font-heading font-semibold text-sm">Supabase</span>
+            </div>
+            {/* Vercel */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-5 h-5" viewBox="0 0 76 65" fill="currentColor">
+                <path d="M37.532 0L75.064 65H0z"/>
+              </svg>
+              <span className="font-heading font-semibold text-sm">Vercel</span>
+            </div>
+            {/* Next.js */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-5 h-5" viewBox="0 0 180 180" fill="currentColor">
+                <mask id="a" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="180">
+                  <circle cx="90" cy="90" r="90" fill="white"/>
+                </mask>
+                <g mask="url(#a)">
+                  <circle cx="90" cy="90" r="90" fill="currentColor"/>
+                  <path d="M149.508 157.52L69.142 54H54v71.97h12.114V69.384l73.885 95.461a90.304 90.304 0 009.509-7.325z" fill="black"/>
+                  <rect x="115" y="54" width="12" height="72" fill="black"/>
+                </g>
+              </svg>
+              <span className="font-heading font-semibold text-sm">Next.js</span>
+            </div>
+            {/* LinkedIn (jobs data) */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              <span className="font-heading font-semibold text-sm">LinkedIn Jobs</span>
+            </div>
+            {/* Indeed */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.566 21.563v-8.762c0-.317.05-.634.05-.95 0-2.06-.683-3.328-2.78-3.328-1.89 0-3.328 1.524-3.328 3.645v9.395H2.004V6.86h3.504v2.06h.05c.733-1.425 2.255-2.377 3.96-2.377 3.012 0 5.553 2.06 5.553 6.338v8.682z"/>
+                <circle cx="3.756" cy="3.125" r="2.06"/>
+              </svg>
+              <span className="font-heading font-semibold text-sm">Indeed</span>
+            </div>
+            {/* Glassdoor */}
+            <div className="flex items-center gap-2 text-gray-400">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.144 20.572H6.856A2.856 2.856 0 014 17.716V8.57h2.856v9.145h13.145V20.57h-2.857zM6.856 3.43h10.288A2.856 2.856 0 0120 6.284v9.145h-2.856V6.285H4V3.43h2.856z"/>
+              </svg>
+              <span className="font-heading font-semibold text-sm">Glassdoor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Results Section */}
       {/* Main Content Section */}
       <div id="discover-talent" className="bg-gray-50 py-12 sm:py-16 lg:py-20" style={{ paddingTop: 'calc(3rem + env(safe-area-inset-top))' }}>

@@ -36,7 +36,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/search" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
+                <Link href="/#discover-talent" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Browse Talent
                 </Link>
               </li>

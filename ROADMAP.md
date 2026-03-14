@@ -37,22 +37,28 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] Vanity URLs (`talentagent.com/username`)
 - [x] Username input with availability check in portfolio editor
 
-### Branding
+### Branding & UX
 - [x] TalentAgent rebrand (from PortfolioHub)
 - [x] SVG logo system (LogoFull, LogoIcon, LogoFullDark)
 - [x] Brand favicon (indigo T-network icon)
-- [x] Updated meta/SEO descriptions
+- [x] Updated meta/SEO + Open Graph/Twitter Cards
+- [x] Homepage hero copy aligned with AI talent platform vision
+- [x] "Powered by" partners section (OpenAI, Supabase, Vercel, LinkedIn Jobs, etc.)
+- [x] Codebase cleanup (removed dead search page, unused ScreenshotPreview component)
+
+### AI Resume Intelligence
+- [x] AI resume parser API — upload/paste resume, AI extracts structured data
+- [x] Resume import UI on create-portfolio page (file upload + text paste)
 
 ---
 
 ## Priority 1 — Polish & Ship (Fix What's Built)
 
-- [ ] **Fix portfolio search** — Current search is basic text matching. Add PostgreSQL full-text search for accurate results.
+- [ ] **GitHub profile scoring** — Analyze repos, commit frequency, languages, stars → generate a developer credibility score. AI agent references it.
 - [ ] **Suggested jobs on profile page** — Show top 3 matching jobs with AI scores when candidates view their own profile.
-- [ ] **Error boundaries** — Add React error boundaries so pages don't crash on component failures.
-- [ ] **Proper TypeScript types** — Replace `as unknown as` casts with proper shared type definitions.
-- [ ] **Homepage copy update** — Update hero text from "Find Your Next Collaboration" to reflect TalentAgent's AI matching value prop.
-- [ ] **Privacy field enforcement** — Currently toggles save to DB but portfolio detail page doesn't hide private fields from non-owners.
+- [ ] **Privacy field enforcement** — Portfolio detail page hides private fields from non-owners. Currently saves to DB but doesn't filter on display.
+- [ ] **Fix portfolio search** — Replace basic text matching with PostgreSQL full-text search.
+- [ ] **Proper TypeScript types** — Replace `as unknown as` casts with shared type definitions.
 
 ## Priority 2 — Differentiators (What Nobody Else Has)
 
@@ -61,6 +67,7 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [ ] **Shareable fit assessment cards** — Generate a shareable image/link after assessment: "Luis scored 87% for Senior Frontend at Stripe." Candidates share on social = free distribution.
 - [ ] **Recruiter dashboard** — Saved searches, candidate shortlists, bulk AI chat ("ask all 10 about distributed systems"), outreach tools.
 - [ ] **Weekly AI career digest email** — "3 new jobs match your profile this week. Top match: Senior Dev at Acme (92%)."
+- [ ] **AI interview question generator** — Based on job description + candidate gaps, generate personalized prep questions. Helps candidates prepare, shows recruiters you're serious.
 - [ ] **In-app notifications** — Alert candidates when someone chats with their AI, views their profile, or a matching job is posted.
 
 ## Priority 3 — Moat Builders (Hard to Copy)

@@ -125,12 +125,15 @@ export async function GET(request: NextRequest) {
       params.set('employment_types', employment.toUpperCase());
     }
 
+    const apiHost = process.env.JSEARCH_API_HOST || 'jsearch27.p.rapidapi.com';
+
     const response = await fetch(
-      `https://jsearch.p.rapidapi.com/search?${params.toString()}`,
+      `https://${apiHost}/search?${params.toString()}`,
       {
         headers: {
           'X-RapidAPI-Key': apiKey,
-          'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+          'X-RapidAPI-Host': apiHost,
+          'Content-Type': 'application/json',
         },
       }
     );

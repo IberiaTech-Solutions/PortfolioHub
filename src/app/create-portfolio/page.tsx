@@ -123,6 +123,9 @@ export default function CreatePortfolioPage() {
   });
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [resumeParsing, setResumeParsing] = useState(false);
+  const [resumeText, setResumeText] = useState("");
+  const [showResumeImport, setShowResumeImport] = useState(false);
   const [existingPortfolio, setExistingPortfolio] = useState<Portfolio | null>(
     null
   );
@@ -454,6 +457,107 @@ export default function CreatePortfolioPage() {
 
     initializePage();
   }, [router]);
+
+  // Resume import handler
+  const handleResumeImport = async (source: 'file' | 'text') => {
+    let text = resumeText;
+
+    if (source === 'file') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.txt,.md,.pdf';
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        setResumeParsing(true);
+        try {
+          // Read file as text
+          text = await file.text();
+
+          const formDataPayload = new FormData();
+          formDataPayload.append('text', text);
+
+          const res = await fetch('/api/parseResume', {
+            method: 'POST',
+            body: formDataPayload,
+          });
+
+          const result = await res.json();
+          if (result.data) {
+            applyResumeData(result.data);
+          } else {
+            alert(result.error || 'Failed to parse resume');
+          }
+        } catch {
+          alert('Failed to parse resume. Try pasting the text instead.');
+        } finally {
+          setResumeParsing(false);
+        }
+      };
+      input.click();
+      return;
+    }
+
+    // Text paste mode
+    if (!text || text.trim().length < 50) {
+      alert('Please paste your resume text (at least 50 characters)');
+      return;
+    }
+
+    setResumeParsing(true);
+    try {
+      const formDataPayload = new FormData();
+      formDataPayload.append('text', text);
+
+      const res = await fetch('/api/parseResume', {
+        method: 'POST',
+        body: formDataPayload,
+      });
+
+      const result = await res.json();
+      if (result.data) {
+        applyResumeData(result.data);
+      } else {
+        alert(result.error || 'Failed to parse resume');
+      }
+    } catch {
+      alert('Failed to parse resume. Please try again.');
+    } finally {
+      setResumeParsing(false);
+    }
+  };
+
+  const applyResumeData = (data: {
+    name?: string; job_title?: string; title?: string; description?: string;
+    skills?: string[]; location?: string; experience_level?: string;
+    preferred_work_type?: string[]; languages?: string;
+    website_url?: string; github_url?: string; linkedin_url?: string;
+    projects?: Array<{ title: string; description: string; url: string; techStack: string[] }>;
+  }) => {
+    setFormData((prev) => ({
+      ...prev,
+      name: data.name || prev.name,
+      job_title: data.job_title || prev.job_title,
+      title: data.title || prev.title,
+      description: data.description || prev.description,
+      location: data.location || prev.location,
+      experience_level: data.experience_level || prev.experience_level,
+      preferred_work_type: data.preferred_work_type?.length ? data.preferred_work_type : prev.preferred_work_type,
+      languages: data.languages || prev.languages,
+      website_url: data.website_url || prev.website_url,
+      github_url: data.github_url || prev.github_url,
+      linkedin_url: data.linkedin_url || prev.linkedin_url,
+    }));
+    if (data.skills?.length) {
+      setSelectedSkills((prev) => [...new Set([...prev, ...data.skills!])]);
+    }
+    if (data.projects?.length) {
+      setDetectedProjects((prev) => [...prev, ...data.projects!.map(p => ({ ...p, lastUpdated: new Date().toISOString() }))]);
+    }
+    setShowResumeImport(false);
+    setResumeText('');
+  };
 
   // Username availability check
   const checkUsername = useCallback(async (username: string) => {
@@ -896,6 +1000,84 @@ export default function CreatePortfolioPage() {
                   AI Analysis: {MAX_AI_CALLS - aiCallCount} calls remaining
                 </p>
               </div>
+              {/* Resume Import Section */}
+              {!existingPortfolio && (
+                <div className="mb-8">
+                  {!showResumeImport ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowResumeImport(true)}
+                      className="w-full py-4 bg-gradient-to-r from-brand-500/20 to-emerald-500/20 hover:from-brand-500/30 hover:to-emerald-500/30 border-2 border-dashed border-brand-500/40 hover:border-brand-500/60 rounded-2xl text-white font-heading font-bold transition-all duration-300 flex items-center justify-center gap-3"
+                    >
+                      <svg className="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      Import from Resume — Fill your profile in 30 seconds
+                    </button>
+                  ) : (
+                    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+                          <SparklesIcon className="w-5 h-5 text-brand-400" />
+                          Import from Resume
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setShowResumeImport(false)}
+                          className="text-gray-400 hover:text-white transition-colors"
+                        >
+                          <XMarkIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <p className="text-gray-400 text-sm mb-4">
+                        Upload a file or paste your resume text. AI will extract your info and fill the form automatically.
+                      </p>
+                      <div className="space-y-4">
+                        <textarea
+                          value={resumeText}
+                          onChange={(e) => setResumeText(e.target.value)}
+                          placeholder="Paste your resume text here..."
+                          rows={6}
+                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+                          disabled={resumeParsing}
+                        />
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleResumeImport('text')}
+                            disabled={resumeParsing || resumeText.trim().length < 50}
+                            className="flex-1 py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
+                          >
+                            {resumeParsing ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                Parsing with AI...
+                              </>
+                            ) : (
+                              <>
+                                <SparklesIcon className="w-4 h-4" />
+                                Parse Resume Text
+                              </>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleResumeImport('file')}
+                            disabled={resumeParsing}
+                            className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-all duration-300 border border-white/20 flex items-center justify-center gap-2"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            Upload File (.txt, .md)
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                 <div className="space-y-3 sm:space-y-4">
                   <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-white">

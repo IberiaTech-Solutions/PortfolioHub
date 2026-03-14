@@ -1,0 +1,623 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { supabase } from "@/utils/supabase";
+import { User } from "@supabase/supabase-js";
+import {
+  BriefcaseIcon,
+  MapPinIcon,
+  CurrencyDollarIcon,
+  ClockIcon,
+  SparklesIcon,
+  BuildingOfficeIcon,
+  ArrowTopRightOnSquareIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  FunnelIcon,
+} from "@heroicons/react/24/outline";
+
+type Job = {
+  id: string;
+  posted_by: string;
+  title: string;
+  company: string;
+  company_logo?: string;
+  description: string;
+  requirements?: string;
+  location?: string;
+  work_type: string;
+  remote_policy: string;
+  experience_level?: string;
+  salary_min?: number;
+  salary_max?: number;
+  salary_currency: string;
+  skills: string[];
+  application_url?: string;
+  application_email?: string;
+  is_active: boolean;
+  created_at: string;
+};
+
+type Portfolio = {
+  id: string;
+  name: string;
+  job_title: string;
+  title: string;
+  description: string;
+  skills: string[];
+  projects: Array<{
+    title: string;
+    description: string;
+    url: string;
+    techStack: string[];
+  }>;
+  location?: string;
+  experience_level?: string;
+  preferred_work_type?: string[];
+  languages?: string;
+};
+
+type JobMatch = {
+  score: number;
+  verdict: string;
+  summary: string;
+  matchingSkills: string[];
+  missingSkills: string[];
+  shouldApply: boolean;
+  tip: string;
+};
+
+export default function JobsPage() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [matches, setMatches] = useState<Record<string, JobMatch>>({});
+  const [matchingJobId, setMatchingJobId] = useState<string | null>(null);
+  const [expandedJob, setExpandedJob] = useState<string | null>(null);
+  const [filterWorkType, setFilterWorkType] = useState<string>("");
+  const [filterRemote, setFilterRemote] = useState<string>("");
+  const [filterLevel, setFilterLevel] = useState<string>("");
+  const [filterLocation, setFilterLocation] = useState<string>("");
+  const [filterCurrency, setFilterCurrency] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  useEffect(() => {
+    const init = async () => {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
+      // Get user & portfolio in parallel
+      const [{ data: { user } }, { data: jobsData }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from("jobs").select("*").eq("is_active", true).order("created_at", { ascending: false }),
+      ]);
+
+      setUser(user);
+      setJobs((jobsData as Job[]) || []);
+
+      if (user) {
+        const { data: portfolioData } = await supabase
+          .from("portfolios")
+          .select("*, collaborations(*)")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (portfolioData) {
+          setPortfolio(portfolioData as unknown as Portfolio);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    init();
+  }, []);
+
+  const getAIMatch = async (job: Job) => {
+    if (!portfolio || matchingJobId) return;
+    if (matches[job.id]) {
+      setExpandedJob(expandedJob === job.id ? null : job.id);
+      return;
+    }
+
+    setMatchingJobId(job.id);
+    setExpandedJob(job.id);
+
+    try {
+      const res = await fetch("/api/jobMatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job, portfolio }),
+      });
+
+      const data = await res.json();
+      if (data.match) {
+        setMatches((prev) => ({ ...prev, [job.id]: data.match }));
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setMatchingJobId(null);
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 75) return "from-emerald-500 to-emerald-600";
+    if (score >= 50) return "from-amber-500 to-amber-600";
+    return "from-rose-500 to-rose-600";
+  };
+
+  const getScoreBg = (score: number) => {
+    if (score >= 75) return "bg-emerald-500/10 border-emerald-500/30";
+    if (score >= 50) return "bg-amber-500/10 border-amber-500/30";
+    return "bg-rose-500/10 border-rose-500/30";
+  };
+
+  const formatSalary = (min?: number, max?: number, currency = "USD") => {
+    if (!min && !max) return null;
+    const fmt = (n: number) =>
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 0,
+      }).format(n);
+    if (min && max) return `${fmt(min)} - ${fmt(max)}`;
+    if (min) return `From ${fmt(min)}`;
+    return `Up to ${fmt(max!)}`;
+  };
+
+  const workTypeLabel: Record<string, string> = {
+    "full-time": "Full-time",
+    "part-time": "Part-time",
+    contract: "Contract",
+    freelance: "Freelance",
+  };
+
+  const remoteLabel: Record<string, string> = {
+    remote: "Remote",
+    hybrid: "Hybrid",
+    onsite: "On-site",
+  };
+
+  const levelLabel: Record<string, string> = {
+    junior: "Junior",
+    mid: "Mid-level",
+    senior: "Senior",
+    lead: "Lead",
+  };
+
+  // Extract unique locations and currencies from jobs for dynamic filters
+  const availableLocations = Array.from(
+    new Set(jobs.map((j) => {
+      const loc = j.location || "";
+      // Extract country or region from location string
+      const parts = loc.split(",").map((s) => s.trim());
+      return parts[parts.length - 1] || loc;
+    }).filter(Boolean))
+  ).sort();
+
+  const availableCurrencies = Array.from(
+    new Set(jobs.map((j) => j.salary_currency).filter(Boolean))
+  ).sort();
+
+  const filteredJobs = jobs.filter((job) => {
+    if (filterWorkType && job.work_type !== filterWorkType) return false;
+    if (filterRemote && job.remote_policy !== filterRemote) return false;
+    if (filterLevel && job.experience_level !== filterLevel) return false;
+    if (filterLocation && !(job.location || "").toLowerCase().includes(filterLocation.toLowerCase())) return false;
+    if (filterCurrency && job.salary_currency !== filterCurrency) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const searchable = `${job.title} ${job.company} ${job.description} ${job.skills?.join(" ")} ${job.location}`.toLowerCase();
+      if (!searchable.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const timeAgo = (date: string) => {
+    const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+    return new Date(date).toLocaleDateString();
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-brand-400/20 to-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-brand-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
+            <BriefcaseIcon className="w-4 h-4 mr-2" />
+            AI-Powered Job Matching
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-display font-bold text-white mb-4">
+            Find Your Perfect Role
+          </h1>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            {portfolio
+              ? "Browse jobs and let AI tell you honestly which ones are worth your time."
+              : "Create a portfolio first to unlock AI-powered job matching."}
+          </p>
+          {!user && (
+            <Link
+              href="/auth?mode=signin"
+              className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Sign in to get AI matches
+            </Link>
+          )}
+          {user && !portfolio && (
+            <Link
+              href="/create-portfolio"
+              className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Create Portfolio to Unlock Matching
+            </Link>
+          )}
+        </div>
+
+        {/* Search */}
+        <div className="max-w-2xl mx-auto mb-6">
+          <div className="relative">
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search jobs by title, company, skill, or location..."
+              className="w-full bg-white/10 border border-white/20 rounded-2xl pl-12 pr-4 py-3.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+          <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <FunnelIcon className="w-4 h-4" />
+            <span className="hidden sm:inline">Filter:</span>
+          </div>
+          <select
+            value={filterWorkType}
+            onChange={(e) => setFilterWorkType(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
+          >
+            <option value="" className="bg-slate-800">All Types</option>
+            {Object.entries(workTypeLabel).map(([val, label]) => (
+              <option key={val} value={val} className="bg-slate-800">{label}</option>
+            ))}
+          </select>
+          <select
+            value={filterRemote}
+            onChange={(e) => setFilterRemote(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
+          >
+            <option value="" className="bg-slate-800">All Work Policy</option>
+            {Object.entries(remoteLabel).map(([val, label]) => (
+              <option key={val} value={val} className="bg-slate-800">{label}</option>
+            ))}
+          </select>
+          <select
+            value={filterLevel}
+            onChange={(e) => setFilterLevel(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
+          >
+            <option value="" className="bg-slate-800">All Levels</option>
+            {Object.entries(levelLabel).map(([val, label]) => (
+              <option key={val} value={val} className="bg-slate-800">{label}</option>
+            ))}
+          </select>
+          <select
+            value={filterLocation}
+            onChange={(e) => setFilterLocation(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
+          >
+            <option value="" className="bg-slate-800">All Countries</option>
+            {availableLocations.map((loc) => (
+              <option key={loc} value={loc} className="bg-slate-800">{loc}</option>
+            ))}
+          </select>
+          <select
+            value={filterCurrency}
+            onChange={(e) => setFilterCurrency(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
+          >
+            <option value="" className="bg-slate-800">All Currencies</option>
+            {availableCurrencies.map((cur) => (
+              <option key={cur} value={cur} className="bg-slate-800">{cur}</option>
+            ))}
+          </select>
+          <span className="text-gray-500 text-sm">
+            {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"}
+          </span>
+        </div>
+
+        {/* Jobs List */}
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 animate-pulse">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl"></div>
+                  <div className="flex-1">
+                    <div className="h-5 bg-white/20 rounded w-1/3 mb-2"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/4 mb-3"></div>
+                    <div className="h-3 bg-white/10 rounded w-full mb-2"></div>
+                    <div className="h-3 bg-white/10 rounded w-2/3"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredJobs.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <BriefcaseIcon className="w-10 h-10 text-gray-400" />
+            </div>
+            <h2 className="text-2xl font-display font-bold text-white mb-3">
+              {jobs.length === 0 ? "No jobs posted yet" : "No jobs match your filters"}
+            </h2>
+            <p className="text-gray-400 mb-6">
+              {jobs.length === 0
+                ? "Be the first to post a job and attract top talent."
+                : "Try adjusting your filters to see more results."}
+            </p>
+            {user && jobs.length === 0 && (
+              <Link
+                href="/jobs/post"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                Post a Job
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredJobs.map((job) => {
+              const match = matches[job.id];
+              const isExpanded = expandedJob === job.id;
+              const isMatching = matchingJobId === job.id;
+
+              return (
+                <div
+                  key={job.id}
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:border-white/30"
+                >
+                  {/* Job Card */}
+                  <div className="p-6">
+                    <div className="flex items-start gap-4">
+                      {/* Company Icon */}
+                      <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                        {job.company_logo ? (
+                          <img src={job.company_logo} alt={job.company} className="w-8 h-8 rounded-lg object-cover" />
+                        ) : (
+                          <BuildingOfficeIcon className="w-6 h-6 text-white" />
+                        )}
+                      </div>
+
+                      {/* Job Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="text-lg font-heading font-bold text-white mb-1">
+                              {job.title}
+                            </h3>
+                            <p className="text-brand-300 font-medium text-sm">
+                              {job.company}
+                            </p>
+                          </div>
+                          <span className="text-gray-500 text-xs whitespace-nowrap">
+                            {timeAgo(job.created_at)}
+                          </span>
+                        </div>
+
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {job.work_type && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-500/20 text-brand-300 rounded-lg text-xs font-medium border border-brand-500/30">
+                              <ClockIcon className="w-3 h-3" />
+                              {workTypeLabel[job.work_type] || job.work_type}
+                            </span>
+                          )}
+                          {job.remote_policy && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-medium border border-emerald-500/30">
+                              <MapPinIcon className="w-3 h-3" />
+                              {remoteLabel[job.remote_policy] || job.remote_policy}
+                            </span>
+                          )}
+                          {job.location && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/10 text-gray-300 rounded-lg text-xs font-medium border border-white/20">
+                              <MapPinIcon className="w-3 h-3" />
+                              {job.location}
+                            </span>
+                          )}
+                          {job.experience_level && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-500/20 text-purple-300 rounded-lg text-xs font-medium border border-purple-500/30">
+                              {levelLabel[job.experience_level] || job.experience_level}
+                            </span>
+                          )}
+                          {formatSalary(job.salary_min, job.salary_max, job.salary_currency) && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded-lg text-xs font-medium border border-amber-500/30">
+                              <CurrencyDollarIcon className="w-3 h-3" />
+                              {formatSalary(job.salary_min, job.salary_max, job.salary_currency)}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Description preview */}
+                        <p className="text-gray-400 text-sm mt-3 line-clamp-2 leading-relaxed">
+                          {job.description}
+                        </p>
+
+                        {/* Skills */}
+                        {job.skills && job.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {job.skills.slice(0, 6).map((skill, i) => {
+                              const isMatch = portfolio?.skills?.some(
+                                (s) => s.toLowerCase() === skill.toLowerCase()
+                              );
+                              return (
+                                <span
+                                  key={i}
+                                  className={`px-2 py-0.5 rounded-md text-xs font-medium border ${
+                                    isMatch
+                                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                                      : "bg-white/5 text-gray-400 border-white/10"
+                                  }`}
+                                >
+                                  {isMatch && <span className="mr-1">+</span>}
+                                  {skill}
+                                </span>
+                              );
+                            })}
+                            {job.skills.length > 6 && (
+                              <span className="px-2 py-0.5 text-gray-500 text-xs">
+                                +{job.skills.length - 6} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-3 mt-4">
+                          {portfolio && (
+                            <button
+                              onClick={() => getAIMatch(job)}
+                              disabled={isMatching}
+                              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 shadow-lg hover:shadow-xl ${
+                                match
+                                  ? `${getScoreBg(match.score)} text-white border`
+                                  : "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white"
+                              }`}
+                            >
+                              {isMatching ? (
+                                <>
+                                  <div className="flex items-center space-x-1">
+                                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"></div>
+                                  </div>
+                                  Analyzing...
+                                </>
+                              ) : match ? (
+                                <>
+                                  <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-r ${getScoreColor(match.score)} text-white text-xs font-bold`}>
+                                    {match.score}
+                                  </span>
+                                  {match.verdict}
+                                </>
+                              ) : (
+                                <>
+                                  <SparklesIcon className="w-4 h-4" />
+                                  AI Match Score
+                                </>
+                              )}
+                            </button>
+                          )}
+                          {(job.application_url || job.application_email) && (
+                            <a
+                              href={job.application_url || `mailto:${job.application_email}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-all duration-300 border border-white/20"
+                            >
+                              Apply
+                              <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Match Results */}
+                  {isExpanded && match && (
+                    <div className={`border-t border-white/10 p-6 ${getScoreBg(match.score)}`}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Summary */}
+                        <div className="sm:col-span-2">
+                          <div className="flex items-center gap-3 mb-2">
+                            {match.shouldApply ? (
+                              <CheckCircleIcon className="w-5 h-5 text-emerald-400" />
+                            ) : (
+                              <XCircleIcon className="w-5 h-5 text-rose-400" />
+                            )}
+                            <p className="text-white text-sm font-bold">
+                              {match.shouldApply
+                                ? "You should consider applying"
+                                : "This might not be the best fit right now"}
+                            </p>
+                          </div>
+                          <p className="text-gray-300 text-sm">{match.summary}</p>
+                        </div>
+
+                        {/* Matching Skills */}
+                        {match.matchingSkills?.length > 0 && (
+                          <div>
+                            <h4 className="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-2">
+                              Matching Skills
+                            </h4>
+                            <div className="flex flex-wrap gap-1.5">
+                              {match.matchingSkills.map((s, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-md text-xs border border-emerald-500/30"
+                                >
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Missing Skills */}
+                        {match.missingSkills?.length > 0 && (
+                          <div>
+                            <h4 className="text-amber-400 text-xs font-bold uppercase tracking-wide mb-2">
+                              Skills to Build
+                            </h4>
+                            <div className="flex flex-wrap gap-1.5">
+                              {match.missingSkills.map((s, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-md text-xs border border-amber-500/30"
+                                >
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tip */}
+                        {match.tip && (
+                          <div className="sm:col-span-2 bg-white/5 rounded-xl p-3 border border-white/10">
+                            <p className="text-brand-300 text-sm">
+                              <span className="font-bold">Tip:</span> {match.tip}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

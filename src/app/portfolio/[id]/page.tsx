@@ -5,14 +5,16 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
-import { 
-  CodeBracketIcon, 
-  GlobeAltIcon, 
+import {
+  CodeBracketIcon,
+  GlobeAltIcon,
   UserGroupIcon,
   StarIcon,
   ArrowTopRightOnSquareIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
+import PortfolioChat from "@/components/PortfolioChat";
+import VerifiedBadge from "@/components/VerifiedBadge";
 
 type Portfolio = {
   id: string;
@@ -31,6 +33,9 @@ type Portfolio = {
   experience_level?: string;
   preferred_work_type?: string[];
   languages?: string;
+  username?: string;
+  is_verified?: boolean;
+  private_fields?: string[];
   additional_links: Array<{label: string, url: string}>;
   skills: string[];
   projects: Array<{
@@ -95,6 +100,13 @@ export default function PortfolioDetailPage() {
 
       setPortfolio(portfolioData as unknown as Portfolio);
       setLoading(false);
+
+      // Track page view (fire-and-forget)
+      fetch('/api/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portfolio_id: params.id, event_type: 'view' }),
+      }).catch(() => {});
     };
 
     if (params.id) {
@@ -205,6 +217,11 @@ export default function PortfolioDetailPage() {
           
           <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
             {portfolio.name}
+            {portfolio.is_verified && (
+              <span className="inline-block ml-3 align-middle">
+                <VerifiedBadge size="md" />
+              </span>
+            )}
           </h1>
           <p className="text-2xl text-gray-200 mb-4">
             {portfolio.job_title}
@@ -519,6 +536,14 @@ export default function PortfolioDetailPage() {
             <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
               <h3 className="text-xl font-heading font-bold text-white mb-6">Share Portfolio</h3>
               <div className="space-y-4">
+                {portfolio.username && (
+                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Vanity URL</p>
+                    <p className="text-brand-300 font-mono text-sm font-bold">
+                      portfoliohub.com/{portfolio.username}
+                    </p>
+                  </div>
+                )}
                 <button
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -562,6 +587,9 @@ export default function PortfolioDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* AI Chat Widget */}
+      <PortfolioChat portfolio={portfolio} />
     </div>
   );
 }

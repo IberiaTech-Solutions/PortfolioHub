@@ -35,6 +35,17 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
+  openGraph: {
+    title: "TalentAgent - AI-Powered Talent Platform",
+    description: "Stop competing with 400 applicants. Your AI agent showcases your depth, matches you to jobs honestly, and controls your narrative.",
+    siteName: "TalentAgent",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TalentAgent - AI-Powered Talent Platform",
+    description: "Stop competing with 400 applicants. Your AI agent showcases your depth, matches you to jobs honestly, and controls your narrative.",
+  },
 };
 
 export default async function RootLayout({

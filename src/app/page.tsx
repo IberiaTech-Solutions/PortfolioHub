@@ -322,27 +322,27 @@ function HomeContent() {
                 <>
                   Welcome Back,
                   <br />
-                  <span className="font-light text-slate-200">Ready to Collaborate?</span>
+                  <span className="font-light text-slate-200">Your AI Agent is Live</span>
                 </>
               ) : (
                 <>
-                  Find Your Next
+                  Your AI Agent.
                   <br />
-                  <span className="font-light text-slate-200">Collaboration</span>
+                  <span className="font-light text-slate-200">Your Career. Your Terms.</span>
                 </>
               )}
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl font-body text-brand-300 max-w-3xl mx-auto leading-relaxed font-light mb-8 sm:mb-12 px-4">
-              {!authLoading && user 
-                ? "Discover talented professionals and showcase your work in our global community."
-                : "The global community for developers and designers to showcase, connect, and collaborate."
+              {!authLoading && user
+                ? "Your AI agent is representing you to recruiters right now. Check your matches and analytics."
+                : "Stop competing with 400 applicants. Let your AI agent showcase your depth, match you to jobs honestly, and control your narrative."
               }
             </p>
             
             {/* Interactive Search Prompt */}
             <div className="mb-8 sm:mb-12">
               <div className="inline-flex items-center space-x-2 px-4 sm:px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-slate-300 text-xs sm:text-sm lg:text-base shadow-lg max-w-full">
-                <span>{!authLoading && user ? "Find collaborators:" : "Try searching for:"}</span>
+                <span>{!authLoading && user ? "Find talent:" : "Try searching for:"}</span>
                 <div className="relative">
                   <span className="inline-block min-w-[150px] sm:min-w-[200px] text-left">
                     <span className="text-brand-300 font-medium transition-all duration-500 ease-in-out">

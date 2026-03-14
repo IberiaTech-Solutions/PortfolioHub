@@ -209,7 +209,7 @@ export default function Auth() {
         <div className="absolute inset-0 bg-gray-50"></div>
         <Image
           src="/Portfolio.jpg"
-          alt="Portfolio Hub"
+          alt="TalentAgent"
           fill
           sizes="50vw"
           className="object-cover"

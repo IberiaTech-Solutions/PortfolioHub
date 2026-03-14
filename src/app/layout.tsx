@@ -28,12 +28,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "TalentAgent - Showcase Your Work",
-  description: "Connect with talented professionals and showcase your skills to the world. Find developers, designers, and creators.",
+  title: "TalentAgent - AI-Powered Talent Platform",
+  description: "Control your narrative. Let AI agents represent your work. Get matched to jobs honestly. The platform where depth beats keywords.",
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
 };
 

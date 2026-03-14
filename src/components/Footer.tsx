@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { LogoFull } from "@/components/Logo";
 
 export default function Footer() {
   return (
@@ -9,20 +9,11 @@ export default function Footer() {
           {/* About Section */}
           <div>
             <Link href="/" className="flex items-center mb-6">
-              <div className="w-48 h-48 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
-                <Image 
-                  src="/images/Portfolio Hub Icon.png" 
-                  alt="TalentAgent Logo" 
-                  width={192} 
-                  height={192}
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <LogoFull />
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              Connect with talented professionals and showcase your work.
+              AI-powered talent platform where depth beats keywords. Let your AI agent represent your work.
             </p>
-            
           </div>
 
           {/* Explore Section */}
@@ -30,43 +21,28 @@ export default function Footer() {
             <h3 className="text-white font-heading font-semibold mb-4 text-sm uppercase tracking-wide">Explore</h3>
             <ul className="space-y-3">
               <li>
-                <Link
-                  href="/"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
+                <Link href="/" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Home
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/create-portfolio"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
+                <Link href="/jobs" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
+                  Jobs
+                </Link>
+              </li>
+              <li>
+                <Link href="/create-portfolio" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Create Portfolio
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/search"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
-                  Browse Portfolios
+                <Link href="/search" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
+                  Browse Talent
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/collaborations"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
+                <Link href="/collaborations" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Collaborations
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/profile"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
-                  My Profile
                 </Link>
               </li>
             </ul>
@@ -77,26 +53,17 @@ export default function Footer() {
             <h3 className="text-white font-heading font-semibold mb-4 text-sm uppercase tracking-wide">Legal</h3>
             <ul className="space-y-3">
               <li>
-                <Link
-                  href="/privacy"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
+                <Link href="/privacy" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/terms"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
+                <Link href="/terms" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/cookies"
-                  className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm"
-                >
+                <Link href="/cookies" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
                   Cookie Policy
                 </Link>
               </li>
@@ -117,7 +84,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-slate-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-300 text-xs">
-              © {new Date().getFullYear()} TalentAgent. All rights reserved.
+              &copy; {new Date().getFullYear()} TalentAgent. All rights reserved.
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
               <span className="text-gray-300 text-xs">Made with</span>

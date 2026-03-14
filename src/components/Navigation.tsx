@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
-import { 
-  UserCircleIcon, 
+import {
+  UserCircleIcon,
   ChevronDownIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightEndOnRectangleIcon
 } from "@heroicons/react/24/outline";
+import { LogoFull, LogoIcon } from "@/components/Logo";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -175,15 +175,8 @@ export default function Navigation() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-48 lg:h-48 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
-                <Image 
-                  src="/images/Portfolio Hub Icon.png" 
-                  alt="TalentAgent Logo" 
-                  width={320} 
-                  height={320}
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <LogoFull className="hidden sm:block" />
+              <LogoIcon className="sm:hidden w-8 h-8" />
             </Link>
           </div>
 
@@ -329,7 +322,7 @@ export default function Navigation() {
                             }}
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-slate-700 transition-colors duration-200"
                           >
-                            <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
+                            <ArrowRightEndOnRectangleIcon className="w-4 h-4 mr-3" />
                             Sign Out
                           </button>
                         </div>
@@ -502,7 +495,7 @@ export default function Navigation() {
                   }}
                   className="flex items-center w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:text-red-200 hover:bg-red-900/20 transition-colors duration-200"
                 >
-                  <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
+                  <ArrowRightEndOnRectangleIcon className="w-4 h-4 mr-3" />
                   Sign Out
                 </button>
               </div>

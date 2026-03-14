@@ -465,17 +465,208 @@ function HomeContent() {
         </div>
       </div>
 
-      {/* Results Section */}
-      {/* Main Content Section */}
+      {/* How it Works Section */}
+      <div className="bg-white py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14 sm:mb-20">
+            <p className="text-brand-600 font-heading font-bold text-sm uppercase tracking-widest mb-3">How it works</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-gray-900 mb-4">
+              From Resume to AI Agent in 3 Steps
+            </h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+              No more tweaking bullet points for ATS bots. Build once, let your AI agent do the rest.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            {/* Step 1 */}
+            <div className="relative text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </div>
+              <div className="absolute top-8 left-[60%] hidden md:block w-[80%] border-t-2 border-dashed border-gray-200"></div>
+              <span className="inline-block px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-bold mb-3">Step 1</span>
+              <h3 className="text-xl font-heading font-bold text-gray-900 mb-2">Import Your Resume</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Paste your resume or upload a file. AI extracts your skills, experience, and projects in 30 seconds.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div className="absolute top-8 left-[60%] hidden md:block w-[80%] border-t-2 border-dashed border-gray-200"></div>
+              <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold mb-3">Step 2</span>
+              <h3 className="text-xl font-heading font-bold text-gray-900 mb-2">Your AI Agent Goes Live</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                An AI agent trained on your work answers questions from recruiters 24/7. It demonstrates depth that resumes can&apos;t.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold mb-3">Step 3</span>
+              <h3 className="text-xl font-heading font-bold text-gray-900 mb-2">Get Matched Honestly</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                AI scores your fit for every job. It tells you when to apply — and when not to. No more wasting time on dead ends.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Feature Showcase Section */}
+      <div className="bg-slate-900 py-16 sm:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-20 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14 sm:mb-20">
+            <p className="text-brand-400 font-heading font-bold text-sm uppercase tracking-widest mb-3">Features</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
+              Everything You Need to Stand Out
+            </h2>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+              Built for the professionals who are done playing the ATS lottery.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Feature 1 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-brand-500/30 transition-all duration-500 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-heading font-bold text-white mb-2">AI Portfolio Agent</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Recruiters chat with your AI agent to understand your experience in depth. No more 6-second resume scans.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-500 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-heading font-bold text-white mb-2">Honest Fit Scores</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                AI scores your fit 0-100 for every job. It tells you &quot;don&apos;t apply&quot; when the match is weak. Trust beats false hope.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-500 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-heading font-bold text-white mb-2">Real Job Matching</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Jobs from LinkedIn, Indeed, and Glassdoor — matched to your skills in real-time. No more scrolling through 500 irrelevant posts.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-amber-500/30 transition-all duration-500 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-heading font-bold text-white mb-2">Resume Import</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Paste your resume, AI fills your entire profile in 30 seconds. Skills, projects, experience — all extracted automatically.
+              </p>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-rose-500/30 transition-all duration-500 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-heading font-bold text-white mb-2">Profile Analytics</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                See who viewed your profile, chatted with your AI, and ran fit assessments. Know your market value in real-time.
+              </p>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-500 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-heading font-bold text-white mb-2">Shareable Profile</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Get a vanity URL like talentagent.com/yourname. Share it in emails, LinkedIn, and applications instead of a PDF resume.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-gradient-to-br from-brand-600 via-brand-700 to-purple-800 py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-6">
+            Ready to Stop Playing the Resume Game?
+          </h2>
+          <p className="text-lg sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+            Join professionals who let their AI agent do the talking. Import your resume and go live in under a minute.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/auth?mode=signup"
+              className="inline-flex items-center px-8 py-4 bg-white text-brand-700 rounded-xl font-heading font-bold text-lg transition-all duration-300 shadow-2xl hover:shadow-white/25 hover:scale-105"
+            >
+              Get Started Free
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            <Link
+              href="/jobs"
+              className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/30 rounded-xl font-heading font-bold text-lg transition-all duration-300 hover:bg-white/20 hover:scale-105"
+            >
+              Browse Jobs First
+            </Link>
+          </div>
+          <p className="text-white/50 text-sm mt-6">No credit card required. Free forever for candidates.</p>
+        </div>
+      </div>
+
+      {/* Discover Talent Section */}
       <div id="discover-talent" className="bg-gray-50 py-12 sm:py-16 lg:py-20" style={{ paddingTop: 'calc(3rem + env(safe-area-inset-top))' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-display font-light text-gray-900 mb-4">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-4">
               Discover Talent
             </h2>
             <p className="text-lg sm:text-xl font-body text-gray-600 max-w-2xl mx-auto px-4">
-              Browse through portfolios of skilled professionals ready to collaborate
+              Browse professionals with AI-powered profiles. Chat with their agents to evaluate fit instantly.
             </p>
           </div>
           

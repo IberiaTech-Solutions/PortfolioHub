@@ -52,16 +52,17 @@ AI-powered talent platform where candidates control their narrative and recruite
 ## Priority 0 — Premium UX ($50M Startup Look & Feel)
 
 ### Toast Notifications
-- [ ] Replace all `alert()` calls with a toast notification system
-- [ ] Success/error/info variants with auto-dismiss
-- [ ] Glassmorphism style matching the design system
+- [x] Toast notification system (success/error/info with glassmorphism + slide-in animation)
+- [x] Replaced all `alert()` calls with toast() across create-portfolio page
+- [x] ToastProvider wrapping entire app
 
 ### Landing Page Upgrade
-- [ ] **Hero section polish** — Animated gradient text, floating UI mockup preview
-- [ ] **"How it Works" section** — 3-step visual: Import Resume → AI Agent Goes Live → Get Matched
-- [ ] **Feature showcase** — Cards for AI Chat, Fit Assessment, Job Matching with screenshots/illustrations
+- [x] **"How it Works" section** — 3-step visual: Import Resume → AI Agent Goes Live → Get Matched
+- [x] **Feature showcase** — 6 feature cards (AI Chat, Fit Scores, Job Matching, Resume Import, Analytics, Shareable Profile)
+- [x] **CTA section** — Gradient banner with "Get Started Free" + "Browse Jobs First" dual CTAs
+- [x] **Discover Talent section** — Updated copy to reflect AI platform positioning
 - [ ] **Social proof section** — User count, testimonials, "X jobs matched this week" live counter
-- [ ] **CTA sections** — "Get Started Free" buttons between sections with conversion-focused copy
+- [ ] **Hero animation** — Animated gradient text, floating UI mockup preview
 
 ### Onboarding Wizard
 - [ ] Step-by-step flow replacing the massive form: (1) Import resume or start fresh (2) Review extracted data (3) Add skills (4) Upload photo (5) Your AI agent is live

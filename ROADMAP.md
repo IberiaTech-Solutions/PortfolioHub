@@ -1,4 +1,4 @@
-# PortfolioHub Roadmap
+# TalentAgent Roadmap
 
 ## Vision
 AI-powered talent platform where candidates control their narrative and recruiters evaluate depth — not keywords. Inspired by the broken hiring pipeline (0.4% success rate) and the need for a centralized hub that solves distribution, trust, and matching.
@@ -7,10 +7,10 @@ AI-powered talent platform where candidates control their narrative and recruite
 
 ## Priority 1 — Ship Now (High Impact, Foundation Exists)
 
-- [ ] **Verified by PortfolioHub trust badge** — AI only uses verified portfolio data, not candidate-controlled prompts. Badge displayed on profiles.
+- [ ] **Verified by TalentAgent trust badge** — AI only uses verified portfolio data, not candidate-controlled prompts. Badge displayed on profiles.
 - [ ] **Privacy controls per field** — Users mark fields as public/private. NDA-safe mode for sensitive work history.
 - [ ] **Profile view analytics** — Track views, AI chats, and fit assessments per profile. Dashboard for candidates.
-- [ ] **Vanity URLs** — `portfoliohub.com/luis` instead of `/portfolio/uuid`. Shareable in emails, LinkedIn bios, resumes.
+- [ ] **Vanity URLs** — `talentagent.com/luis` instead of `/portfolio/uuid`. Shareable in emails, LinkedIn bios, resumes.
 - [ ] **Suggested jobs on profile page** — When candidates view their own profile, show top matching jobs with AI scores.
 
 ## Priority 2 — Differentiators (What Nobody Else Has)

@@ -89,7 +89,7 @@ async function fetchGitHubProjects(githubUrl: string): Promise<Project[]> {
   const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`, {
     headers: {
       'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'PortfolioHub/1.0',
+      'User-Agent': 'TalentAgent/1.0',
     },
   });
 
@@ -121,7 +121,7 @@ async function analyzeWebsiteForProjects(websiteUrl: string, openai: OpenAI): Pr
     // Fetch website content
     const response = await fetch(websiteUrl, {
       headers: {
-        'User-Agent': 'PortfolioHub/1.0',
+        'User-Agent': 'TalentAgent/1.0',
       },
     });
 

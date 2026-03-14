@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - PortfolioHub",
-  description: "Terms of Service for PortfolioHub",
+  title: "Terms of Service - TalentAgent",
+  description: "Terms of Service for TalentAgent",
 };
 
 export default function TermsPage() {
@@ -19,7 +19,7 @@ export default function TermsPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Acceptance of Terms</h2>
             <p className="text-gray-600 mb-4">
-              By accessing and using PortfolioHub, you accept and agree to be bound by the terms 
+              By accessing and using TalentAgent, you accept and agree to be bound by the terms 
               and provision of this agreement.
             </p>
           </section>
@@ -27,7 +27,7 @@ export default function TermsPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Use License</h2>
             <p className="text-gray-600 mb-4">
-              Permission is granted to temporarily use PortfolioHub for personal, non-commercial 
+              Permission is granted to temporarily use TalentAgent for personal, non-commercial 
               transitory viewing only. This is the grant of a license, not a transfer of title.
             </p>
           </section>

@@ -70,7 +70,10 @@ type JobMatch = {
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [externalJobs, setExternalJobs] = useState<Job[]>([]);
+  const [loadingExternal, setLoadingExternal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeSource, setActiveSource] = useState<"all" | "posted" | "external">("all");
   const [user, setUser] = useState<User | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [matches, setMatches] = useState<Record<string, JobMatch>>({});
@@ -112,6 +115,16 @@ export default function JobsPage() {
       }
 
       setLoading(false);
+
+      // Fetch external jobs in background
+      setLoadingExternal(true);
+      fetch('/api/fetchJobs?query=software+developer')
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.jobs) setExternalJobs(data.jobs);
+        })
+        .catch(() => {})
+        .finally(() => setLoadingExternal(false));
     };
 
     init();
@@ -190,9 +203,14 @@ export default function JobsPage() {
     lead: "Lead",
   };
 
-  // Extract unique locations and currencies from jobs for dynamic filters
+  // Combine jobs based on active source
+  const allJobs = activeSource === "posted" ? jobs
+    : activeSource === "external" ? externalJobs
+    : [...jobs, ...externalJobs];
+
+  // Extract unique locations and currencies from combined jobs
   const availableLocations = Array.from(
-    new Set(jobs.map((j) => {
+    new Set(allJobs.map((j) => {
       const loc = j.location || "";
       // Extract country or region from location string
       const parts = loc.split(",").map((s) => s.trim());
@@ -201,10 +219,10 @@ export default function JobsPage() {
   ).sort();
 
   const availableCurrencies = Array.from(
-    new Set(jobs.map((j) => j.salary_currency).filter(Boolean))
+    new Set(allJobs.map((j) => j.salary_currency).filter(Boolean))
   ).sort();
 
-  const filteredJobs = jobs.filter((job) => {
+  const filteredJobs = allJobs.filter((job) => {
     if (filterWorkType && job.work_type !== filterWorkType) return false;
     if (filterRemote && job.remote_policy !== filterRemote) return false;
     if (filterLevel && job.experience_level !== filterLevel) return false;
@@ -265,6 +283,25 @@ export default function JobsPage() {
               Create Portfolio to Unlock Matching
             </Link>
           )}
+        </div>
+
+        {/* Source Tabs */}
+        <div className="flex justify-center gap-2 mb-6">
+          {(["all", "posted", "external"] as const).map((source) => (
+            <button
+              key={source}
+              onClick={() => setActiveSource(source)}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 border ${
+                activeSource === source
+                  ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-500 shadow-lg"
+                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {source === "all" ? `All Jobs (${jobs.length + externalJobs.length})` :
+               source === "posted" ? `Posted (${jobs.length})` :
+               `External (${externalJobs.length})${loadingExternal ? '...' : ''}`}
+            </button>
+          ))}
         </div>
 
         {/* Search */}

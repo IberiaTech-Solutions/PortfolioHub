@@ -12,7 +12,7 @@ export default function Footer() {
               <div className="w-48 h-48 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
                 <Image 
                   src="/images/Portfolio Hub Icon.png" 
-                  alt="PortfolioHub Logo" 
+                  alt="TalentAgent Logo" 
                   width={192} 
                   height={192}
                   className="w-full h-full object-contain"
@@ -117,7 +117,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-slate-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-300 text-xs">
-              © {new Date().getFullYear()} PortfolioHub. All rights reserved.
+              © {new Date().getFullYear()} TalentAgent. All rights reserved.
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
               <span className="text-gray-300 text-xs">Made with</span>

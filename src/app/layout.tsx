@@ -28,7 +28,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "PortfolioHub - Showcase Your Work",
+  title: "TalentAgent - Showcase Your Work",
   description: "Connect with talented professionals and showcase your skills to the world. Find developers, designers, and creators.",
   icons: {
     icon: '/favicon.ico',

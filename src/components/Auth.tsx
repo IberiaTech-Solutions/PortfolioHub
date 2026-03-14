@@ -215,7 +215,7 @@ export default function Auth() {
           className="object-cover"
         />
         <div className="absolute bottom-0 left-0 p-8 text-white">
-          <h2 className="text-3xl font-light mb-4">Welcome to PortfolioHub</h2>
+          <h2 className="text-3xl font-light mb-4">Welcome to TalentAgent</h2>
           <p className="text-gray-200 text-lg">
             Showcase your work, connect with professionals, and grow your
             career.

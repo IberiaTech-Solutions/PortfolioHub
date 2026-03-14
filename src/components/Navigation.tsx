@@ -178,7 +178,7 @@ export default function Navigation() {
               <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-48 lg:h-48 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
                 <Image 
                   src="/images/Portfolio Hub Icon.png" 
-                  alt="PortfolioHub Logo" 
+                  alt="TalentAgent Logo" 
                   width={320} 
                   height={320}
                   className="w-full h-full object-contain"

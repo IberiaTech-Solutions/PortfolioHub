@@ -549,6 +549,8 @@ export default function CreatePortfolioPage() {
 
       const portfolioData = {
         ...formData,
+        username: formData.username && formData.username.length >= 3 ? formData.username : null,
+        private_fields: formData.private_fields.length > 0 ? formData.private_fields : [],
         skills: selectedSkills,
         projects: detectedProjects,
         website_screenshot: websiteScreenshot,

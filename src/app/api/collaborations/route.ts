@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Check if collaborator exists in PortfolioHub (optional)
+    // Check if collaborator exists in TalentAgent (optional)
     // For now, we'll set collaborator_user_id to null and let them verify later
     const collaboratorUserId = null;
 

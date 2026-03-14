@@ -207,7 +207,7 @@ export default function PostJobPage() {
             Find Your Next Hire
           </h1>
           <p className="text-gray-400 max-w-lg mx-auto">
-            Post a job and let AI match you with the best candidates on PortfolioHub.
+            Post a job and let AI match you with the best candidates on TalentAgent.
           </p>
         </div>
 

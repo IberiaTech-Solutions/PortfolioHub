@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy - PortfolioHub",
-  description: "Cookie Policy for PortfolioHub",
+  title: "Cookie Policy - TalentAgent",
+  description: "Cookie Policy for TalentAgent",
 };
 
 export default function CookiesPage() {

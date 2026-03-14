@@ -43,7 +43,7 @@ function buildSystemPrompt(portfolio: PortfolioData): string {
     .map(c => `- ${c.project_title} with ${c.collaborator_name} (Role: ${c.role})`)
     .join('\n') || 'No collaborations listed';
 
-  return `You are an AI assistant representing ${portfolio.name}'s professional portfolio on PortfolioHub. You speak in third person about ${portfolio.name} — you are NOT ${portfolio.name}, you are their portfolio AI agent.
+  return `You are an AI assistant representing ${portfolio.name}'s professional portfolio on TalentAgent. You speak in third person about ${portfolio.name} — you are NOT ${portfolio.name}, you are their portfolio AI agent.
 
 Your job is to help anyone (recruiters, hiring managers, potential collaborators, or ${portfolio.name} themselves) learn about ${portfolio.name}'s skills, experience, and work. Be helpful, professional, and honest. If you don't have information about something, say so clearly rather than making things up.
 

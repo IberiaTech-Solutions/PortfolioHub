@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - PortfolioHub",
-  description: "Privacy Policy for PortfolioHub",
+  title: "Privacy Policy - TalentAgent",
+  description: "Privacy Policy for TalentAgent",
 };
 
 export default function PrivacyPage() {

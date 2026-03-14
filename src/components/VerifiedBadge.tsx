@@ -27,7 +27,7 @@ export default function VerifiedBadge({ size = "sm" }: { size?: "sm" | "md" }) {
 
       {showTooltip && (
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl border border-slate-700 whitespace-nowrap z-50">
-          This profile&apos;s data is verified by PortfolioHub
+          This profile&apos;s data is verified by TalentAgent
           <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-slate-800 rotate-45 border-r border-b border-slate-700"></div>
         </div>
       )}

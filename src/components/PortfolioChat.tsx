@@ -372,7 +372,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
                   </button>
                 </form>
                 <p className="text-gray-600 text-[10px] text-center mt-2">
-                  AI agent powered by PortfolioHub
+                  AI agent powered by TalentAgent
                 </p>
               </div>
             </div>

@@ -13,6 +13,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
+import PrivacyToggle from "@/components/PrivacyToggle";
 
 // Lazy load heavy components
 const ProjectCards = dynamic(() => import("@/components/ProjectCards"), {
@@ -105,6 +106,7 @@ export default function CreatePortfolioPage() {
   const [formData, setFormData] = useState({
     title: "",
     name: "",
+    username: "",
     job_title: "",
     description: "",
     website_url: "",
@@ -117,7 +119,10 @@ export default function CreatePortfolioPage() {
     preferred_work_type: [] as string[],
     languages: "",
     additional_links: [] as Array<{label: string, url: string}>,
+    private_fields: [] as string[],
   });
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const [existingPortfolio, setExistingPortfolio] = useState<Portfolio | null>(
     null
   );
@@ -407,6 +412,7 @@ export default function CreatePortfolioPage() {
             setFormData({
               title: portfolioData.title || "",
               name: portfolioData.name || "",
+              username: (portfolioData as unknown as { username?: string }).username || "",
               job_title: portfolioData.job_title || "",
               description: portfolioData.description || "",
               website_url: portfolioData.website_url || "",
@@ -419,6 +425,7 @@ export default function CreatePortfolioPage() {
               preferred_work_type: portfolioData.preferred_work_type || [],
               languages: portfolioData.languages || "",
               additional_links: portfolioData.additional_links || [],
+              private_fields: (portfolioData as unknown as { private_fields?: string[] }).private_fields || [],
             });
             
             // Set other states in a single batch
@@ -448,11 +455,43 @@ export default function CreatePortfolioPage() {
     initializePage();
   }, [router]);
 
+  // Username availability check
+  const checkUsername = useCallback(async (username: string) => {
+    if (!username || username.length < 3 || !supabase) {
+      setUsernameAvailable(null);
+      return;
+    }
+    setCheckingUsername(true);
+    const { data } = await supabase
+      .from("portfolios")
+      .select("id")
+      .eq("username", username)
+      .maybeSingle();
+    // Available if no result OR the result is the user's own portfolio
+    setUsernameAvailable(!data || data.id === existingPortfolio?.id);
+    setCheckingUsername(false);
+  }, [existingPortfolio?.id]);
+
+  const togglePrivateField = (fieldName: string, isPrivate: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      private_fields: isPrivate
+        ? [...prev.private_fields, fieldName]
+        : prev.private_fields.filter((f) => f !== fieldName),
+    }));
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Auto-suggest username when name changes
+    if (name === "name" && !formData.username) {
+      const suggested = value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      setFormData((prev) => ({ ...prev, [name]: value, username: suggested }));
+    }
   };
 
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -877,6 +916,49 @@ export default function CreatePortfolioPage() {
                   )}
                 </div>
 
+                {/* Username / Vanity URL */}
+                <div className="space-y-1">
+                  <label htmlFor="username" className="block text-xs sm:text-sm font-semibold text-white">
+                    Username <span className="text-gray-500 font-normal">(vanity URL)</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">portfoliohub.com/</span>
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={(e) => {
+                        const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+                        setFormData((prev) => ({ ...prev, username: val }));
+                        setUsernameAvailable(null);
+                        // Debounce check
+                        if (debounceTimers.current['username']) clearTimeout(debounceTimers.current['username']);
+                        debounceTimers.current['username'] = setTimeout(() => checkUsername(val), 500);
+                      }}
+                      className="w-full pl-[140px] pr-10 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm sm:text-base"
+                      placeholder="your-name"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {checkingUsername && (
+                        <div className="w-4 h-4 border-2 border-brand-400 border-t-transparent rounded-full animate-spin"></div>
+                      )}
+                      {!checkingUsername && usernameAvailable === true && formData.username.length >= 3 && (
+                        <CheckIcon className="w-5 h-5 text-emerald-400" />
+                      )}
+                      {!checkingUsername && usernameAvailable === false && (
+                        <XMarkIcon className="w-5 h-5 text-red-400" />
+                      )}
+                    </div>
+                  </div>
+                  {usernameAvailable === false && (
+                    <p className="text-red-400 text-xs">This username is taken</p>
+                  )}
+                  {usernameAvailable === true && formData.username.length >= 3 && (
+                    <p className="text-emerald-400 text-xs">Username available!</p>
+                  )}
+                </div>
+
                 {/* Profile Image Upload */}
                 <div className="space-y-3 sm:space-y-4">
                   <label htmlFor="profile_image" className="block text-xs sm:text-sm font-semibold text-white">
@@ -1055,12 +1137,19 @@ export default function CreatePortfolioPage() {
           {/* Location and Experience Level Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <label
-                htmlFor="location"
-                className="block text-sm font-medium text-white"
-              >
-                Location
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-white"
+                >
+                  Location
+                </label>
+                <PrivacyToggle
+                  fieldName="location"
+                  isPrivate={formData.private_fields.includes("location")}
+                  onToggle={togglePrivateField}
+                />
+              </div>
               <input
                 type="text"
                 id="location"
@@ -1133,12 +1222,19 @@ export default function CreatePortfolioPage() {
             </div>
 
             <div className="space-y-2 sm:space-y-3">
-              <label
-                htmlFor="languages"
-                className="block text-xs sm:text-sm font-medium text-white"
-              >
-                Languages
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="languages"
+                  className="block text-xs sm:text-sm font-medium text-white"
+                >
+                  Languages
+                </label>
+                <PrivacyToggle
+                  fieldName="languages"
+                  isPrivate={formData.private_fields.includes("languages")}
+                  onToggle={togglePrivateField}
+                />
+              </div>
               <input
                 type="text"
                 id="languages"

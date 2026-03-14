@@ -253,7 +253,7 @@ export default function JobsPage() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
             <BriefcaseIcon className="w-4 h-4 mr-2" />
             AI-Powered Job Matching
           </div>
@@ -383,14 +383,14 @@ export default function JobsPage() {
         {loading ? (
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 animate-pulse">
+              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 animate-pulse">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl"></div>
+                  <div className="w-12 h-12 bg-white/10 rounded-xl"></div>
                   <div className="flex-1">
-                    <div className="h-5 bg-white/20 rounded w-1/3 mb-2"></div>
-                    <div className="h-4 bg-white/10 rounded w-1/4 mb-3"></div>
-                    <div className="h-3 bg-white/10 rounded w-full mb-2"></div>
-                    <div className="h-3 bg-white/10 rounded w-2/3"></div>
+                    <div className="h-5 bg-white/10 rounded w-1/3 mb-2"></div>
+                    <div className="h-4 bg-white/5 rounded w-1/4 mb-3"></div>
+                    <div className="h-3 bg-white/5 rounded w-full mb-2"></div>
+                    <div className="h-3 bg-white/5 rounded w-2/3"></div>
                   </div>
                 </div>
               </div>
@@ -428,17 +428,24 @@ export default function JobsPage() {
               return (
                 <div
                   key={job.id}
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:border-white/30"
+                  className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:border-white/30"
                 >
                   {/* Job Card */}
                   <div className="p-6">
                     <div className="flex items-start gap-4">
                       {/* Company Icon */}
-                      <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                        {job.company_logo ? (
-                          <img src={job.company_logo} alt={job.company} className="w-8 h-8 rounded-lg object-cover" />
-                        ) : (
-                          <BuildingOfficeIcon className="w-6 h-6 text-white" />
+                      <div className="relative flex-shrink-0">
+                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                          {job.company_logo ? (
+                            <img src={job.company_logo} alt={job.company} className="w-8 h-8 rounded-lg object-cover" />
+                          ) : (
+                            <BuildingOfficeIcon className="w-6 h-6 text-gray-400" />
+                          )}
+                        </div>
+                        {match && match.score < 30 && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center">
+                            <XCircleIcon className="w-3 h-3 text-white" />
+                          </div>
                         )}
                       </div>
 
@@ -453,9 +460,16 @@ export default function JobsPage() {
                               {job.company}
                             </p>
                           </div>
-                          <span className="text-gray-500 text-xs whitespace-nowrap">
-                            {timeAgo(job.created_at)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {match && match.score < 30 && (
+                              <span className="px-2 py-0.5 bg-rose-500/10 text-rose-400 rounded-md text-xs font-medium">
+                                Skip
+                              </span>
+                            )}
+                            <span className="text-gray-500 text-xs whitespace-nowrap">
+                              {timeAgo(job.created_at)}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Tags */}

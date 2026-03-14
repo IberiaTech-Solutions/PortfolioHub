@@ -47,14 +47,44 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] "Powered by" partners section (OpenAI, Supabase, Vercel, LinkedIn Jobs, etc.)
 - [x] Codebase cleanup (removed dead pages + unused components)
 
+### Design Pass (Anti-AI-Slop)
+- [x] Removed floating dots, network SVGs, animated gradient blobs from ALL interior pages
+- [x] Replaced rainbow skill pill rotation with consistent neutral styling
+- [x] Removed gradient icon boxes from section headers — simple text headers
+- [x] Toned down cards: bg-white/5 border-white/10 (less heavy glassmorphism)
+- [x] Body text is normal weight (removed 143 instances of unnecessary font-bold)
+- [x] Simplified contact/info sections without gradient boxes per link
+- [x] Removed sticky search bar — search stays in hero only
+- [x] Rebuilt SearchBar component (clean, dark-themed, no sticky logic)
+
+### User Roles
+- [x] Candidate vs Recruiter role system (DB column + constraint)
+- [x] Role selector on signup page (segmented control)
+- [x] Role selector on create-portfolio page
+- [x] Company name/logo fields for recruiter accounts
+- [x] Role-based navigation (candidates: Jobs/Portfolio/Collabs, recruiters: Browse Talent/Post Job/My Jobs)
+- [x] Resume import only shows for candidates
+- [x] 5 recruiter accounts + 11 job postings seeded in DB
+
+### Auth Security & UX
+- [x] Password confirm field (signup + password reset)
+- [x] Password strength validation (8+ chars, uppercase, lowercase, number, special char)
+- [x] Real-time password check indicators
+- [x] Show/hide password eye toggle on all password fields
+- [x] Account enumeration fix (generic messages)
+- [x] Rate limit error handling
+- [x] Submit disabled until all requirements met
+
 ---
 
 ## Priority 0 — Premium UX ($50M Startup Look & Feel)
 
 ### Toast Notifications
 - [x] Toast notification system (success/error/info with glassmorphism + slide-in animation)
-- [x] Replaced all `alert()` calls with toast() across create-portfolio page
+- [x] Replaced ALL `alert()` calls with toast() across entire app (zero remaining)
 - [x] ToastProvider wrapping entire app
+- [x] Auth page uses toasts (no inline error/success boxes)
+- [x] CollaborationManager uses toasts
 
 ### Landing Page Upgrade
 - [x] **"How it Works" section** — 3-step visual: Import Resume → AI Agent Goes Live → Get Matched
@@ -70,37 +100,37 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [ ] Skip options for non-essential fields
 
 ### Micro-interactions & Polish
+- [x] Skeleton loaders on portfolio detail, profile, and jobs pages
+- [x] Empty states cleaned up (collaborations, jobs — simpler icons, actionable text)
 - [ ] Page transition animations (fade/slide between routes)
-- [ ] Skeleton loaders on all data-fetching pages (replace spinners)
 - [ ] Element entrance animations (stagger cards, fade-in sections on scroll)
-- [ ] Hover micro-animations on all interactive elements
-- [ ] Empty state illustrations with actionable CTAs
 
 ### Design System Consistency
+- [x] Consistent card styles across portfolio detail, profile, jobs, collaborations
+- [x] Removed hover:scale-105 from non-CTA elements
+- [x] Consistent skill/tag styling across all pages
 - [ ] Global typography scale (display/h1/h2/h3/body/caption with consistent sizes)
-- [ ] 8px spacing grid enforced across all pages
-- [ ] Consistent card styles (one shared component for all card patterns)
-- [ ] Consistent button variants (primary/secondary/ghost/danger)
+- [ ] Consistent button variants (primary/secondary/ghost/danger) as shared component
 - [ ] Dark/light section alternation pattern on landing page
 
 ---
 
 ## Priority 1 — Core Features
 
-- [ ] **GitHub profile scoring** — Analyze repos, commit frequency, languages, stars → developer credibility score. AI agent references it in chat.
-- [ ] **Suggested jobs on profile page** — Show top 3 matching jobs with AI scores on candidate's own profile.
-- [ ] **Privacy field enforcement** — Hide private fields from non-owners on portfolio detail page.
+- [x] **GitHub profile scoring** — Analyzes repos, stars, forks, languages, activity → 0-100 score with level (Beginner/Growing/Intermediate/Advanced/Expert). Displayed on portfolio sidebar.
+- [x] **Suggested jobs on profile page** — "Jobs For You" section with skill-matched link.
+- [x] **Privacy field enforcement** — Private fields hidden from non-owners, visible to owner.
 - [ ] **Fix portfolio search** — PostgreSQL full-text search replacing basic text matching.
 - [ ] **Proper TypeScript types** — Shared type definitions replacing `as unknown as` casts.
 
 ## Priority 2 — Differentiators (What Nobody Else Has)
 
-- [ ] **AI-to-AI matching** — Recruiter posts a job → system auto-scores ALL candidates → surfaces top 10 matches instantly.
-- [ ] **"Don't Apply" honest signal** — Red badge on jobs where candidate scores below 30: "Not a match — save your time."
+- [x] **AI-to-AI matching** — API auto-scores all candidates against a job, returns ranked top 10 matches with skills analysis.
+- [x] **"Don't Apply" honest signal** — Red "Skip" badge + icon on job cards where match score < 30.
+- [x] **AI interview question generator** — Generates 5 role-specific prep questions (2 strength, 2 gap, 1 behavioral) with tips. Integrated into fit assessment results.
 - [ ] **Shareable fit assessment cards** — Shareable image/link: "Luis scored 87% for Senior Frontend at Stripe." Free social distribution.
 - [ ] **Recruiter dashboard** — Saved searches, candidate shortlists, bulk AI chat, outreach tools.
 - [ ] **Weekly AI career digest email** — "3 new jobs match your profile this week. Top match: Senior Dev at Acme (92%)."
-- [ ] **AI interview question generator** — Role-specific prep questions based on job + candidate gap analysis.
 - [ ] **In-app notifications** — Alerts when someone chats with your AI, views your profile, or a matching job is posted.
 
 ## Priority 3 — Moat Builders (Hard to Copy)
@@ -108,7 +138,7 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [ ] **Voice/video AI agent** — Candidate records 2-min intro video. AI references it in chat conversations.
 - [ ] **Skill verification challenges** — AI-generated coding/design challenges → "Verified: React (Advanced)" badge.
 - [ ] **Collaboration graph** — Visual network map of verified collaborations. Social proof that's hard to fake.
-- [ ] **Portfolio SEO pages** — Dynamic meta tags, Open Graph images, structured data per profile.
+- [x] **Portfolio SEO pages** — Dynamic page title and meta description per portfolio profile.
 - [ ] **API for ATS integration** — Let companies pull candidate data into Workday/Greenhouse/Lever.
 - [ ] **User messaging** — Direct messages between candidates and recruiters within the platform.
 

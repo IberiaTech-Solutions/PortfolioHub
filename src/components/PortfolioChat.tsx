@@ -56,6 +56,12 @@ type FitAssessment = {
   shouldApply: boolean;
 };
 
+type InterviewQuestion = {
+  question: string;
+  type: "strength" | "gap" | "behavioral";
+  tip: string;
+};
+
 type Tab = "chat" | "fit";
 
 export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
@@ -63,6 +69,8 @@ export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
   const [activeTab, setActiveTab] = useState<Tab>("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestion[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDescription, setJobDescription] = useState("");
   const [assessment, setAssessment] = useState<FitAssessment | null>(null);
@@ -555,13 +563,71 @@ export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
                     </div>
                   )}
 
+                  {/* Interview Prep */}
+                  {!loadingQuestions && interviewQuestions.length === 0 && (
+                    <button
+                      onClick={async () => {
+                        setLoadingQuestions(true);
+                        try {
+                          const res = await fetch('/api/interviewQuestions', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              jobTitle: jobDescription.split('\n')[0]?.slice(0, 100),
+                              jobDescription: jobDescription,
+                              jobSkills: assessment.strengths,
+                              candidateSkills: assessment.strengths,
+                              candidateGaps: assessment.gaps,
+                            }),
+                          });
+                          const data = await res.json();
+                          if (data.questions) setInterviewQuestions(data.questions);
+                        } catch { /* silent */ }
+                        finally { setLoadingQuestions(false); }
+                      }}
+                      className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                      <SparklesIcon className="w-4 h-4" />
+                      Generate Interview Prep Questions
+                    </button>
+                  )}
+
+                  {loadingQuestions && (
+                    <div className="w-full py-3 bg-white/5 rounded-xl flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-brand-400 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-gray-400 text-sm">Generating questions...</span>
+                    </div>
+                  )}
+
+                  {interviewQuestions.length > 0 && (
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+                      <h4 className="text-white text-sm font-medium">Interview Prep</h4>
+                      {interviewQuestions.map((q, i) => (
+                        <div key={i} className="py-2 border-t border-white/5 first:border-0 first:pt-0">
+                          <div className="flex items-start gap-2">
+                            <span className={`mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                              q.type === 'strength' ? 'bg-emerald-500/15 text-emerald-400' :
+                              q.type === 'gap' ? 'bg-amber-500/15 text-amber-400' :
+                              'bg-brand-500/15 text-brand-400'
+                            }`}>
+                              {q.type}
+                            </span>
+                            <p className="text-gray-200 text-sm">{q.question}</p>
+                          </div>
+                          <p className="text-gray-500 text-xs mt-1 ml-12">{q.tip}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Reset button */}
                   <button
                     onClick={() => {
                       setAssessment(null);
                       setJobDescription("");
+                      setInterviewQuestions([]);
                     }}
-                    className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <ArrowPathIcon className="w-4 h-4" />
                     Try Another Job

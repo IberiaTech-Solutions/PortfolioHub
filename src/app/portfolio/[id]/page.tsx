@@ -60,6 +60,8 @@ export default function PortfolioDetailPage() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [githubScore, setGithubScore] = useState<{ score: number; level: string; topLanguages: Array<{ language: string; repos: number }> } | null>(null);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -98,7 +100,34 @@ export default function PortfolioDetailPage() {
       }
 
       setPortfolio(portfolioData as unknown as Portfolio);
+
+      // Set dynamic page title and meta
+      document.title = `${portfolioData.name} — ${portfolioData.job_title} | TalentAgent`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      const desc = typeof portfolioData.description === 'string' ? portfolioData.description.slice(0, 120) : '';
+      if (metaDesc) {
+        metaDesc.setAttribute('content', `${portfolioData.name} is a ${portfolioData.job_title}. ${desc}`);
+      }
+
+      // Check if current user is the owner
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && portfolioData.user_id === user.id) {
+        setIsOwner(true);
+      }
+
       setLoading(false);
+
+      // Fetch GitHub score if they have a GitHub URL
+      if (portfolioData.github_url) {
+        fetch('/api/githubScore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ githubUrl: portfolioData.github_url }),
+        })
+          .then(r => r.json())
+          .then(data => { if (!data.error) setGithubScore(data); })
+          .catch(() => {});
+      }
 
       // Track page view (fire-and-forget)
       fetch('/api/analytics', {
@@ -115,14 +144,43 @@ export default function PortfolioDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce"></div>
+      <div className="min-h-screen bg-slate-900">
+        <div className="max-w-7xl mx-auto py-16 px-6">
+          <div className="text-center mb-16">
+            <div className="w-32 h-32 bg-white/10 rounded-full mx-auto mb-8 animate-pulse"></div>
+            <div className="h-10 bg-white/10 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-white/5 rounded-lg w-48 mx-auto mb-3 animate-pulse"></div>
+            <div className="h-4 bg-white/5 rounded-lg w-56 mx-auto animate-pulse"></div>
           </div>
-          <p className="text-gray-300">Loading portfolio...</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 animate-pulse">
+                <div className="h-5 bg-white/10 rounded w-24 mb-6"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-white/5 rounded w-full"></div>
+                  <div className="h-4 bg-white/5 rounded w-5/6"></div>
+                  <div className="h-4 bg-white/5 rounded w-4/6"></div>
+                </div>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 animate-pulse">
+                <div className="h-5 bg-white/10 rounded w-20 mb-6"></div>
+                <div className="flex flex-wrap gap-2">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-8 bg-white/5 rounded-lg w-20"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 animate-pulse">
+                <div className="h-4 bg-white/10 rounded w-20 mb-4"></div>
+                <div className="space-y-3">
+                  <div className="h-8 bg-white/5 rounded-lg"></div>
+                  <div className="h-8 bg-white/5 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -338,7 +396,43 @@ export default function PortfolioDetailPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-5">
+            {/* GitHub Score */}
+            {githubScore && (
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <h3 className="text-sm font-heading font-semibold text-gray-400 uppercase tracking-wide mb-4">GitHub Score</h3>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="relative w-14 h-14">
+                    <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
+                      <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                      <circle
+                        cx="28" cy="28" r="24" fill="none"
+                        stroke={githubScore.score >= 60 ? "#10b981" : githubScore.score >= 30 ? "#f59e0b" : "#6366f1"}
+                        strokeWidth="4" strokeLinecap="round"
+                        strokeDasharray={`${(githubScore.score / 100) * 151} 151`}
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-white text-sm font-bold">
+                      {githubScore.score}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">{githubScore.level}</p>
+                    <p className="text-gray-500 text-xs">Developer Score</p>
+                  </div>
+                </div>
+                {githubScore.topLanguages.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-white/5">
+                    {githubScore.topLanguages.map((lang) => (
+                      <span key={lang.language} className="px-2 py-0.5 bg-white/5 text-gray-400 rounded-md text-xs">
+                        {lang.language}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Contact Info */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
               <h3 className="text-sm font-heading font-semibold text-gray-400 uppercase tracking-wide mb-4">Contact</h3>
@@ -407,25 +501,25 @@ export default function PortfolioDetailPage() {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <h3 className="text-sm font-heading font-semibold text-gray-400 uppercase tracking-wide mb-4">Details</h3>
                 <div className="space-y-4">
-                  {portfolio.location && (
+                  {portfolio.location && (isOwner || !portfolio.private_fields?.includes('location')) && (
                     <div className="py-2.5">
                       <p className="text-xs text-gray-500">Location</p>
                       <p className="text-gray-200 text-sm">{portfolio.location}</p>
                     </div>
                   )}
-                  {portfolio.experience_level && (
+                  {portfolio.experience_level && (isOwner || !portfolio.private_fields?.includes('experience_level')) && (
                     <div className="py-2.5 border-t border-white/5">
                       <p className="text-xs text-gray-500">Experience</p>
                       <p className="text-gray-200 text-sm">{portfolio.experience_level}</p>
                     </div>
                   )}
-                  {portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0 && (
+                  {portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0 && (isOwner || !portfolio.private_fields?.includes('preferred_work_type')) && (
                     <div className="py-2.5 border-t border-white/5">
                       <p className="text-xs text-gray-500">Work Type</p>
                       <p className="text-gray-200 text-sm">{portfolio.preferred_work_type.join(", ")}</p>
                     </div>
                   )}
-                  {portfolio.languages && (
+                  {portfolio.languages && (isOwner || !portfolio.private_fields?.includes('languages')) && (
                     <div className="py-2.5 border-t border-white/5">
                       <p className="text-xs text-gray-500">Languages</p>
                       <p className="text-gray-200 text-sm">{portfolio.languages}</p>

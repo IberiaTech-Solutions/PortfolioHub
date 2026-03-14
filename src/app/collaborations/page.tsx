@@ -144,7 +144,7 @@ export default function CollaborationVerification() {
       <div className="relative max-w-6xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
         {/* Hero Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs sm:text-sm font-medium mb-4 sm:mb-6 shadow-lg">
+          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/5 border border-white/10 rounded-full text-white text-xs sm:text-sm font-medium mb-4 sm:mb-6 shadow-lg">
             <svg className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01.99L14 10.5V22h2v-6h2v6h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9l-1.5-4.5A1.5 1.5 0 0 0 6 9H4.5c-.8 0-1.54.37-2.01.99L1.5 11.5V22H4v-6h2v6h1.5z"/>
             </svg>
@@ -165,17 +165,17 @@ export default function CollaborationVerification() {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
+        <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
           {collaborations.length === 0 ? (
-            <div className="text-center py-12 sm:py-16 lg:py-20">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01.99L14 10.5V22h2v-6h2v6h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9l-1.5-4.5A1.5 1.5 0 0 0 6 9H4.5c-.8 0-1.54.37-2.01.99L1.5 11.5V22H4v-6h2v6h1.5z"/>
+            <div className="text-center py-16">
+              <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3 sm:mb-4">No Collaboration Requests</h3>
-              <p className="text-gray-300 mb-6 sm:mb-8 text-base sm:text-lg max-w-md mx-auto leading-relaxed">
-                You haven&apos;t been tagged in any collaborations yet. When someone includes you in their portfolio, you&apos;ll see the request here.
+              <h3 className="text-lg font-heading font-semibold text-white mb-2">No collaboration requests yet</h3>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                When someone includes you in their portfolio as a collaborator, their request will appear here.
               </p>
             </div>
           ) : (
@@ -183,7 +183,7 @@ export default function CollaborationVerification() {
               {collaborations.map((collaboration) => (
                 <div
                   key={collaboration.id}
-                  className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:bg-white/20 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
+                  className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 hover:bg-white/8 transition-colors duration-200"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6 gap-4 sm:gap-0">
                     <div className="flex-1">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UserGroupIcon, PlusIcon, XMarkIcon, CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { useToast } from '@/components/Toast';
 
 interface Collaboration {
   id: string;
@@ -24,6 +25,7 @@ export default function CollaborationManager({
   collaborations, 
   onCollaborationsChange 
 }: CollaborationManagerProps) {
+  const { toast } = useToast();
   const [isAdding, setIsAdding] = useState(false);
   const [newCollaboration, setNewCollaboration] = useState({
     collaboratorName: '',
@@ -43,7 +45,7 @@ export default function CollaborationManager({
     
     if (!newCollaboration.collaboratorName || !newCollaboration.collaboratorEmail || 
         !newCollaboration.projectTitle || !newCollaboration.role) {
-      alert('Please fill in all required fields');
+      toast('Please fill in all required fields', 'error');
       return;
     }
 
@@ -71,7 +73,7 @@ export default function CollaborationManager({
         role: ''
       });
       setIsAdding(false);
-      alert('Collaboration added! It will be saved when you create your portfolio.');
+      toast('Collaboration added! It will be saved when you create your portfolio.', 'success');
       return;
     }
 
@@ -105,15 +107,15 @@ export default function CollaborationManager({
           role: ''
         });
         setIsAdding(false);
-        alert('Collaboration added successfully!');
+        toast('Collaboration added successfully!', 'success');
       } else {
         const errorData = await response.json();
         console.error('API Error:', errorData);
-        alert(`Error: ${errorData.error || 'Failed to add collaboration'}`);
+        toast(errorData.error || 'Failed to add collaboration', 'error');
       }
     } catch (error) {
       console.error('Error adding collaboration:', error);
-      alert('Failed to add collaboration. Please try again.');
+      toast('Failed to add collaboration. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

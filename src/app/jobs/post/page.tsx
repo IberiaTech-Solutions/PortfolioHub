@@ -197,7 +197,7 @@ export default function PostJobPage() {
 
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
             <BriefcaseIcon className="w-4 h-4 mr-2" />
             Post a Job
           </div>
@@ -212,7 +212,7 @@ export default function PostJobPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Job Title */}
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl flex items-center justify-center shadow-lg">
                 <BriefcaseIcon className="w-5 h-5 text-white" />
@@ -281,7 +281,7 @@ export default function PostJobPage() {
           </div>
 
           {/* Work Details */}
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
                 <SparklesIcon className="w-5 h-5 text-white" />
@@ -379,7 +379,7 @@ export default function PostJobPage() {
           </div>
 
           {/* Salary */}
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,7 +438,7 @@ export default function PostJobPage() {
           </div>
 
           {/* Skills */}
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,7 +511,7 @@ export default function PostJobPage() {
           </div>
 
           {/* Application */}
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

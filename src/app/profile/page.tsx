@@ -113,11 +113,24 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce"></div>
+      <div className="min-h-screen bg-slate-900">
+        <div className="max-w-6xl mx-auto py-12 px-6">
+          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden animate-pulse">
+            <div className="h-40 bg-white/10"></div>
+            <div className="p-8 pt-16">
+              <div className="h-8 bg-white/10 rounded w-48 mb-3"></div>
+              <div className="h-5 bg-white/5 rounded w-32"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 animate-pulse">
+                <div className="h-12 bg-white/10 rounded-xl w-12 mb-4"></div>
+                <div className="h-8 bg-white/10 rounded w-16 mb-2"></div>
+                <div className="h-4 bg-white/5 rounded w-24"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -131,7 +144,7 @@ export default function ProfilePage() {
 
       <div className="relative max-w-6xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6 space-y-8 sm:space-y-10 lg:space-y-12">
         {/* Profile Header */}
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl overflow-hidden">
           <div className="relative">
             {portfolio?.hero_image ? (
               <div className="h-32 sm:h-40 relative overflow-hidden">
@@ -234,7 +247,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid gap-3 sm:gap-4">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl border border-white/20 shadow-sm">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
                 <span className="p-2 sm:p-3 bg-gradient-to-br from-brand-500/20 to-brand-600/20 rounded-lg sm:rounded-xl">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -252,7 +265,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl border border-white/20 shadow-sm">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/10">
                 <span className="p-2 sm:p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-lg sm:rounded-xl">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -295,55 +308,74 @@ export default function ProfilePage() {
         {/* Analytics Dashboard */}
         {portfolio && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-brand-500/15 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-3xl font-display font-bold text-white">{analytics.views}</p>
-                  <p className="text-gray-400 text-sm">Profile Views</p>
+                  <p className="text-2xl font-heading font-bold text-white">{analytics.views}</p>
+                  <p className="text-gray-500 text-sm">Profile Views</p>
                 </div>
               </div>
-              <p className="text-gray-500 text-xs mt-3">Last 30 days</p>
+              <p className="text-gray-600 text-xs mt-3">Last 30 days</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-emerald-500/15 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-3xl font-display font-bold text-white">{analytics.chats}</p>
-                  <p className="text-gray-400 text-sm">AI Chats</p>
+                  <p className="text-2xl font-heading font-bold text-white">{analytics.chats}</p>
+                  <p className="text-gray-500 text-sm">AI Chats</p>
                 </div>
               </div>
-              <p className="text-gray-500 text-xs mt-3">Last 30 days</p>
+              <p className="text-gray-600 text-xs mt-3">Last 30 days</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-purple-500/15 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-3xl font-display font-bold text-white">{analytics.assessments}</p>
-                  <p className="text-gray-400 text-sm">Fit Assessments</p>
+                  <p className="text-2xl font-heading font-bold text-white">{analytics.assessments}</p>
+                  <p className="text-gray-500 text-sm">Fit Assessments</p>
                 </div>
               </div>
-              <p className="text-gray-500 text-xs mt-3">Last 30 days</p>
+              <p className="text-gray-600 text-xs mt-3">Last 30 days</p>
             </div>
+          </div>
+        )}
+
+        {/* Suggested Jobs */}
+        {portfolio && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-heading font-semibold text-white">Jobs For You</h2>
+              <Link href="/jobs" className="text-brand-400 hover:text-brand-300 text-sm font-medium transition-colors">
+                View All
+              </Link>
+            </div>
+            <p className="text-gray-500 text-sm mb-4">Based on your skills and experience</p>
+            <Link
+              href="/jobs"
+              className="block w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-center text-gray-300 hover:text-white text-sm font-medium transition-colors"
+            >
+              Browse {portfolio.skills?.length || 0} skill-matched jobs
+            </Link>
           </div>
         )}
 
         {/* Portfolio Section */}
         {portfolio ? (
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 sm:mb-8 gap-4 sm:gap-0">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-1 sm:mb-2">
@@ -363,7 +395,7 @@ export default function ProfilePage() {
 
             <div className="space-y-6 sm:space-y-8">
               {/* Basic Information */}
-              <div className="p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/20 shadow-sm">
+              <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
                 <h3 className="text-xl sm:text-2xl font-heading font-bold text-white mb-3 sm:mb-4">Basic Information</h3>
                 <div className="space-y-3 sm:space-y-4">
                   <div>
@@ -382,7 +414,7 @@ export default function ProfilePage() {
 
               {/* Additional Information */}
               {(portfolio.location || portfolio.experience_level || (portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0) || portfolio.languages) && (
-                <div className="p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/20 shadow-sm">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Additional Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {portfolio.location && (
@@ -446,7 +478,7 @@ export default function ProfilePage() {
 
               {/* Contact Information */}
               {(portfolio.website_url || portfolio.github_url || portfolio.linkedin_url || portfolio.additional_links?.length > 0) && (
-                <div className="p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/20 shadow-sm">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Contact Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {portfolio.website_url && (
@@ -532,7 +564,7 @@ export default function ProfilePage() {
 
               {/* Projects */}
               {portfolio.projects && portfolio.projects.length > 0 && (
-                <div className="p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/20 shadow-sm">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Featured Projects</h3>
                   <div className="grid gap-3 sm:gap-4">
                     {portfolio.projects.map((project, index) => (
@@ -570,7 +602,7 @@ export default function ProfilePage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-12 shadow-xl">
+          <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-12">
             <div className="text-center max-w-lg mx-auto">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-brand-500/20 to-brand-600/20 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-lg">
                 <svg

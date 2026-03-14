@@ -122,6 +122,9 @@ export default function CreatePortfolioPage() {
     languages: "",
     additional_links: [] as Array<{label: string, url: string}>,
     private_fields: [] as string[],
+    user_role: "candidate" as string,
+    company_name: "",
+    company_logo: "",
   });
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
@@ -431,6 +434,9 @@ export default function CreatePortfolioPage() {
               languages: portfolioData.languages || "",
               additional_links: portfolioData.additional_links || [],
               private_fields: (portfolioData as unknown as { private_fields?: string[] }).private_fields || [],
+              user_role: (portfolioData as unknown as { user_role?: string }).user_role || "candidate",
+              company_name: (portfolioData as unknown as { company_name?: string }).company_name || "",
+              company_logo: (portfolioData as unknown as { company_logo?: string }).company_logo || "",
             });
             
             // Set other states in a single batch
@@ -1002,8 +1008,80 @@ export default function CreatePortfolioPage() {
                   AI Analysis: {MAX_AI_CALLS - aiCallCount} calls remaining
                 </p>
               </div>
-              {/* Resume Import Section */}
+              {/* Role Selector */}
               {!existingPortfolio && (
+                <div className="mb-8">
+                  <p className="text-sm font-medium text-gray-300 mb-3">I am a...</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, user_role: "candidate" }))}
+                      className={`p-4 rounded-xl border text-left transition-all ${
+                        formData.user_role === "candidate"
+                          ? "bg-brand-600/15 border-brand-500/50 text-white"
+                          : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="text-lg mb-1">
+                        <svg className="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <p className="font-heading font-semibold text-sm">Candidate</p>
+                      <p className="text-xs text-gray-500 mt-1">Looking for jobs, showcase my work</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, user_role: "recruiter" }))}
+                      className={`p-4 rounded-xl border text-left transition-all ${
+                        formData.user_role === "recruiter"
+                          ? "bg-brand-600/15 border-brand-500/50 text-white"
+                          : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className="text-lg mb-1">
+                        <svg className="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <p className="font-heading font-semibold text-sm">Recruiter / Company</p>
+                      <p className="text-xs text-gray-500 mt-1">Hiring talent, posting jobs</p>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Company Fields (recruiter only) */}
+              {formData.user_role === "recruiter" && (
+                <div className="mb-8 bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+                  <h3 className="text-sm font-heading font-semibold text-white">Company Details</h3>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Company Name</label>
+                    <input
+                      type="text"
+                      name="company_name"
+                      value={formData.company_name}
+                      onChange={handleChange}
+                      placeholder="Acme Corp"
+                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Company Logo URL</label>
+                    <input
+                      type="url"
+                      name="company_logo"
+                      value={formData.company_logo}
+                      onChange={handleChange}
+                      placeholder="https://example.com/logo.png"
+                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Resume Import Section */}
+              {!existingPortfolio && formData.user_role === "candidate" && (
                 <div className="mb-8">
                   {!showResumeImport ? (
                     <button

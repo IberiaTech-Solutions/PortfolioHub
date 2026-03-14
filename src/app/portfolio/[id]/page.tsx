@@ -9,7 +9,6 @@ import {
   CodeBracketIcon,
   GlobeAltIcon,
   UserGroupIcon,
-  StarIcon,
   ArrowTopRightOnSquareIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
@@ -152,36 +151,17 @@ export default function PortfolioDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
+      {/* Subtle Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Gradient Waves */}
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-brand-400/20 to-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-brand-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        
-        {/* Floating Dots */}
-        <div className="absolute top-20 left-20 w-2 h-2 bg-brand-400/30 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-        <div className="absolute top-40 right-32 w-1.5 h-1.5 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-32 left-32 w-2.5 h-2.5 bg-purple-400/30 rounded-full animate-bounce" style={{animationDelay: '3s'}}></div>
-        
-        {/* Network Lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <defs>
-            <pattern id="network" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 10 0 L 10 20 M 0 10 L 20 10" stroke="currentColor" strokeWidth="0.5" fill="none"/>
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#network)" className="text-brand-400"/>
-        </svg>
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-brand-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-500/5 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto py-16 px-6">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
-            <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            Professional Portfolio
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-xs font-medium mb-6 tracking-wide uppercase">
+            Portfolio
           </div>
           
           {/* Profile Image */}
@@ -242,16 +222,11 @@ export default function PortfolioDetailPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
             {portfolio.description && (
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl flex items-center justify-center shadow-xl">
-                    <CodeBracketIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-white">About</h2>
-                </div>
-                <div className="text-white leading-relaxed space-y-4">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+                <h2 className="text-lg font-heading font-semibold text-white mb-4">About</h2>
+                <div className="text-gray-300 leading-relaxed space-y-3">
                   {portfolio.description.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="text-lg mb-4 last:mb-0 font-semibold">
+                    <p key={index} className="text-base">
                       {paragraph.trim()}
                     </p>
                   ))}
@@ -261,49 +236,26 @@ export default function PortfolioDetailPage() {
 
             {/* Skills Section */}
             {portfolio.skills && portfolio.skills.length > 0 && (
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <StarIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-white">Skills</h2>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {portfolio.skills.map((skill, index) => {
-                    const colors = [
-                      'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-600',
-                      'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-600',
-                      'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-600',
-                      'bg-gradient-to-r from-rose-500 to-rose-600 text-white border-rose-600',
-                      'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600',
-                      'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600'
-                    ];
-                    const colorClass = colors[index % colors.length];
-                    return (
-                      <span
-                        key={index}
-                        className={`${colorClass} px-4 py-2 rounded-xl text-sm font-bold border shadow-md`}
-                      >
-                        {skill}
-                      </span>
-                    );
-                  })}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+                <h2 className="text-lg font-heading font-semibold text-white mb-4">Skills</h2>
+                <div className="flex flex-wrap gap-2">
+                  {portfolio.skills.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-white/10 text-gray-200 rounded-lg text-sm font-medium border border-white/10 hover:bg-white/15 transition-colors"
+                    >
+                      {skill}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
 
             {/* Website Screenshot Section */}
             {portfolio.website_screenshot && (
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-white">Website Preview</h2>
-                </div>
-                <div className="rounded-xl overflow-hidden border border-white/20 shadow-lg">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+                <h2 className="text-lg font-heading font-semibold text-white mb-4">Website Preview</h2>
+                <div className="rounded-xl overflow-hidden border border-white/10">
                   <Image
                     src={portfolio.website_screenshot}
                     alt={`${portfolio.name} website screenshot`}
@@ -325,23 +277,18 @@ export default function PortfolioDetailPage() {
 
             {/* Projects Section */}
             {portfolio.projects && portfolio.projects.length > 0 && (
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <GlobeAltIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-white">Projects</h2>
-                </div>
-                <div className="grid gap-6">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+                <h2 className="text-lg font-heading font-semibold text-white mb-5">Projects</h2>
+                <div className="grid gap-4">
                   {portfolio.projects.map((project, index) => (
-                    <div key={index} className="bg-white/10 border-2 border-white/20 rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300">
-                      <h3 className="text-xl font-heading font-bold text-white mb-3">{project.title}</h3>
-                      <p className="text-white mb-4 leading-relaxed font-bold">{project.description}</p>
-                      <div className="flex flex-wrap gap-2 mb-4">
+                    <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/8 transition-colors duration-200">
+                      <h3 className="text-base font-heading font-semibold text-white mb-2">{project.title}</h3>
+                      <p className="text-gray-400 text-sm mb-3 leading-relaxed">{project.description}</p>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
                         {project.techStack?.map((tech: string, techIndex: number) => (
                           <span
                             key={techIndex}
-                            className="px-3 py-1 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg text-sm font-bold border border-gray-600 shadow-md"
+                            className="px-2 py-1 bg-slate-800 text-gray-300 rounded-md text-xs font-medium"
                           >
                             {tech}
                           </span>
@@ -351,10 +298,10 @@ export default function PortfolioDetailPage() {
                         href={project.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-white bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 font-bold transition-all duration-200 px-4 py-3 rounded-xl shadow-lg hover:shadow-xl"
+                        className="inline-flex items-center gap-1.5 text-brand-400 hover:text-brand-300 text-sm font-medium transition-colors"
                       >
                         View Project
-                        <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                        <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
                       </a>
                     </div>
                   ))}
@@ -364,30 +311,25 @@ export default function PortfolioDetailPage() {
 
             {/* Collaborations Section */}
             {portfolio.collaborations && portfolio.collaborations.length > 0 && (
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <UserGroupIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-heading font-bold text-white">Collaborations</h2>
-                </div>
-                <div className="grid gap-4">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+                <h2 className="text-lg font-heading font-semibold text-white mb-5">Collaborations</h2>
+                <div className="grid gap-3">
                   {portfolio.collaborations.map((collaboration, index) => (
-                    <div key={index} className="bg-white/10 border-2 border-white/20 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-heading font-bold text-white">{collaboration.collaborator_name}</h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-bold border shadow-md ${
-                          collaboration.status === 'accepted' 
-                            ? 'bg-emerald-500 text-white border-emerald-600' 
+                    <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/8 transition-colors duration-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sm font-medium text-white">{collaboration.collaborator_name}</h3>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          collaboration.status === 'accepted'
+                            ? 'bg-emerald-500/15 text-emerald-400'
                             : collaboration.status === 'declined'
-                            ? 'bg-red-500 text-white border-red-600'
-                            : 'bg-amber-500 text-white border-amber-600'
+                            ? 'bg-red-500/15 text-red-400'
+                            : 'bg-amber-500/15 text-amber-400'
                         }`}>
                           {collaboration.status}
                         </span>
                       </div>
-                      <p className="text-white mb-2 font-bold">{collaboration.project_title}</p>
-                      <p className="text-gray-200 text-sm font-semibold">Role: {collaboration.role}</p>
+                      <p className="text-gray-300 text-sm">{collaboration.project_title}</p>
+                      <p className="text-gray-500 text-xs mt-1">Role: {collaboration.role}</p>
                     </div>
                   ))}
                 </div>
@@ -398,20 +340,18 @@ export default function PortfolioDetailPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Contact Info */}
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-heading font-bold text-white mb-6">Contact</h3>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <h3 className="text-sm font-heading font-semibold text-gray-400 uppercase tracking-wide mb-4">Contact</h3>
               <div className="space-y-4">
                 {portfolio.website_url && (
                   <a
                     href={portfolio.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-white hover:text-brand-300 transition-colors duration-200 p-3 rounded-xl hover:bg-white/10 font-medium"
+                    className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-brand-600 to-brand-700 rounded-lg flex items-center justify-center shadow-lg">
-                      <GlobeAltIcon className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-semibold">Website</span>
+                    <GlobeAltIcon className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">Website</span>
                   </a>
                 )}
                 {portfolio.github_url && (
@@ -419,12 +359,10 @@ export default function PortfolioDetailPage() {
                     href={portfolio.github_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-white hover:text-brand-300 transition-colors duration-200 p-3 rounded-xl hover:bg-white/10 font-medium"
+                    className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex items-center justify-center shadow-lg">
-                      <CodeBracketIcon className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-semibold">GitHub</span>
+                    <CodeBracketIcon className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">GitHub</span>
                   </a>
                 )}
                 {portfolio.linkedin_url && (
@@ -432,12 +370,10 @@ export default function PortfolioDetailPage() {
                     href={portfolio.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-white hover:text-brand-300 transition-colors duration-200 p-3 rounded-xl hover:bg-white/10 font-medium"
+                    className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg">
-                      <UserGroupIcon className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-semibold">LinkedIn</span>
+                    <UserGroupIcon className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">LinkedIn</span>
                   </a>
                 )}
                 
@@ -453,12 +389,10 @@ export default function PortfolioDetailPage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-white hover:text-brand-300 transition-colors duration-200 p-3 rounded-xl hover:bg-white/10 font-medium"
+                            className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors p-2.5 rounded-lg hover:bg-white/5"
                           >
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-                              <ArrowTopRightOnSquareIcon className="w-4 h-4 text-white" />
-                            </div>
-                            <span className="font-semibold">{link.label}</span>
+                            <ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm">{link.label}</span>
                           </a>
                         ))}
                       </div>
@@ -470,62 +404,31 @@ export default function PortfolioDetailPage() {
 
             {/* Additional Information */}
             {(portfolio.location || portfolio.experience_level || (portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0) || portfolio.languages) && (
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-                <h3 className="text-xl font-heading font-bold text-white mb-6">Additional Information</h3>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <h3 className="text-sm font-heading font-semibold text-gray-400 uppercase tracking-wide mb-4">Details</h3>
                 <div className="space-y-4">
                   {portfolio.location && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-300">Location</p>
-                        <p className="text-white font-medium">{portfolio.location}</p>
-                      </div>
+                    <div className="py-2.5">
+                      <p className="text-xs text-gray-500">Location</p>
+                      <p className="text-gray-200 text-sm">{portfolio.location}</p>
                     </div>
                   )}
                   {portfolio.experience_level && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-300">Experience Level</p>
-                        <p className="text-white font-medium">{portfolio.experience_level}</p>
-                      </div>
+                    <div className="py-2.5 border-t border-white/5">
+                      <p className="text-xs text-gray-500">Experience</p>
+                      <p className="text-gray-200 text-sm">{portfolio.experience_level}</p>
                     </div>
                   )}
                   {portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0 && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-300">Preferred Work Type</p>
-                        <p className="text-white font-medium">
-                          {portfolio.preferred_work_type.join(", ")}
-                        </p>
-                      </div>
+                    <div className="py-2.5 border-t border-white/5">
+                      <p className="text-xs text-gray-500">Work Type</p>
+                      <p className="text-gray-200 text-sm">{portfolio.preferred_work_type.join(", ")}</p>
                     </div>
                   )}
                   {portfolio.languages && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-rose-600 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-300">Languages</p>
-                        <p className="text-white font-medium">{portfolio.languages}</p>
-                      </div>
+                    <div className="py-2.5 border-t border-white/5">
+                      <p className="text-xs text-gray-500">Languages</p>
+                      <p className="text-gray-200 text-sm">{portfolio.languages}</p>
                     </div>
                   )}
                 </div>
@@ -533,8 +436,8 @@ export default function PortfolioDetailPage() {
             )}
 
             {/* Share Portfolio */}
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-heading font-bold text-white mb-6">Share Portfolio</h3>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <h3 className="text-sm font-heading font-semibold text-gray-400 uppercase tracking-wide mb-4">Share</h3>
               <div className="space-y-4">
                 {portfolio.username && (
                   <div className="p-3 bg-white/5 rounded-xl border border-white/10">
@@ -552,7 +455,7 @@ export default function PortfolioDetailPage() {
                       setTimeout(() => setLinkCopied(false), 2000);
                     }
                   }}
-                  className="block w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl text-center font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="block w-full px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-center text-sm font-medium transition-colors"
                 >
                   {linkCopied ? "Link Copied!" : "Copy Link"}
                 </button>

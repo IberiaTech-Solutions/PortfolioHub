@@ -943,25 +943,14 @@ function HomeContent() {
                       <div className="mb-3">
                         <div className="flex flex-wrap gap-1">
                           {portfolio.skills &&
-                            portfolio.skills.slice(0, 3).map((skill, index) => {
-                              const colors = [
-                                'bg-brand-500 text-black border-brand-600',
-                                'bg-emerald-500 text-white border-emerald-600',
-                                'bg-amber-500 text-white border-amber-600',
-                                'bg-rose-500 text-white border-rose-600',
-                                'bg-blue-500 text-white border-blue-600',
-                                'bg-purple-500 text-white border-purple-600'
-                              ];
-                              const colorClass = colors[index % colors.length];
-                              return (
-                                <span
-                                  key={index}
-                                  className={`${colorClass} rounded-full px-1.5 py-0.5 text-xs font-medium border`}
-                                >
-                                  {skill}
-                                </span>
-                              );
-                            })}
+                            portfolio.skills.slice(0, 3).map((skill, index) => (
+                              <span
+                                key={index}
+                                className="bg-gray-100 text-gray-700 rounded-full px-2 py-0.5 text-xs font-medium"
+                              >
+                                {skill}
+                              </span>
+                            ))}
                           {portfolio.skills && portfolio.skills.length > 3 && (
                             <span className="bg-gray-100 text-gray-600 border border-gray-200 rounded-full px-1.5 py-0.5 text-xs font-medium">
                               +{portfolio.skills.length - 3} more

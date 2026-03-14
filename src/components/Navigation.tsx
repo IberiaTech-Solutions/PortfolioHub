@@ -21,6 +21,7 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hasPortfolio, setHasPortfolio] = useState(false);
+  const [userRole, setUserRole] = useState<string>("candidate");
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -45,15 +46,16 @@ export default function Navigation() {
           try {
             const { data: portfolio, error } = await supabase
               .from("portfolios")
-              .select("id")
+              .select("id, user_role")
               .eq("user_id", user.id)
               .maybeSingle();
-            
+
             if (error) {
               console.error('Error fetching portfolio:', error);
               setHasPortfolio(false);
             } else {
               setHasPortfolio(!!portfolio);
+              if (portfolio && 'user_role' in portfolio && typeof portfolio.user_role === 'string') setUserRole(portfolio.user_role);
             }
           } catch (portfolioError) {
             console.error('Error checking portfolio:', portfolioError);
@@ -84,15 +86,16 @@ export default function Navigation() {
         try {
           const { data: portfolio, error } = await supabase
             .from("portfolios")
-            .select("id")
+            .select("id, user_role")
             .eq("user_id", session.user.id)
             .maybeSingle();
-          
+
           if (error) {
             console.error('Error fetching portfolio in auth state change:', error);
             setHasPortfolio(false);
           } else {
             setHasPortfolio(!!portfolio);
+            if (portfolio && 'user_role' in portfolio && typeof portfolio.user_role === 'string') setUserRole(portfolio.user_role);
           }
         } catch (portfolioError) {
           console.error('Error checking portfolio in auth state change:', portfolioError);
@@ -213,46 +216,61 @@ export default function Navigation() {
               <div className="flex items-center space-x-1">
                 {mounted && !loading && user && (
                   <>
-                    <Link
-                      href="/#discover-talent"
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                        pathname === "/"
-                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                          : "text-gray-300 hover:text-white hover:bg-slate-800"
-                      }`}
-                    >
-                      Browse Portfolios
-                    </Link>
-                    <Link
-                      href="/create-portfolio"
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                        pathname === "/create-portfolio"
-                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                          : "text-gray-300 hover:text-white hover:bg-slate-800"
-                      }`}
-                    >
-                      {hasPortfolio ? "Edit Portfolio" : "Create Portfolio"}
-                    </Link>
-                    <Link
-                      href="/jobs"
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                        pathname === "/jobs"
-                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                          : "text-gray-300 hover:text-white hover:bg-slate-800"
-                      }`}
-                    >
-                      Jobs
-                    </Link>
-                    <Link
-                      href="/collaborations"
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                        pathname === "/collaborations"
-                          ? "bg-brand-600 text-white shadow-sm border-2 border-white/30"
-                          : "text-gray-300 hover:text-white hover:bg-slate-800"
-                      }`}
-                    >
-                      Collaborations
-                    </Link>
+                    {userRole === "candidate" ? (
+                      <>
+                        <Link
+                          href="/jobs"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/jobs" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Jobs
+                        </Link>
+                        <Link
+                          href="/create-portfolio"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/create-portfolio" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          {hasPortfolio ? "My Portfolio" : "Create Portfolio"}
+                        </Link>
+                        <Link
+                          href="/collaborations"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/collaborations" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Collaborations
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/#discover-talent"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Browse Talent
+                        </Link>
+                        <Link
+                          href="/jobs/post"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/jobs/post" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Post a Job
+                        </Link>
+                        <Link
+                          href="/jobs"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/jobs" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          My Jobs
+                        </Link>
+                      </>
+                    )}
                   </>
                 )}
                 {/* Show loading state for navigation links */}

@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import PrivacyToggle from "@/components/PrivacyToggle";
+import { useToast } from "@/components/Toast";
 
 // Lazy load heavy components
 const ProjectCards = dynamic(() => import("@/components/ProjectCards"), {
@@ -80,6 +81,7 @@ type Skill = {
 
 export default function CreatePortfolioPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
@@ -487,10 +489,10 @@ export default function CreatePortfolioPage() {
           if (result.data) {
             applyResumeData(result.data);
           } else {
-            alert(result.error || 'Failed to parse resume');
+            toast(result.error || 'Failed to parse resume', 'error');
           }
         } catch {
-          alert('Failed to parse resume. Try pasting the text instead.');
+          toast('Failed to parse resume. Try pasting the text instead.', 'error');
         } finally {
           setResumeParsing(false);
         }
@@ -501,7 +503,7 @@ export default function CreatePortfolioPage() {
 
     // Text paste mode
     if (!text || text.trim().length < 50) {
-      alert('Please paste your resume text (at least 50 characters)');
+      toast('Please paste your resume text (at least 50 characters)', 'error');
       return;
     }
 
@@ -519,10 +521,10 @@ export default function CreatePortfolioPage() {
       if (result.data) {
         applyResumeData(result.data);
       } else {
-        alert(result.error || 'Failed to parse resume');
+        toast(result.error || 'Failed to parse resume', 'error');
       }
     } catch {
-      alert('Failed to parse resume. Please try again.');
+      toast('Failed to parse resume. Please try again.', 'error');
     } finally {
       setResumeParsing(false);
     }
@@ -731,7 +733,7 @@ export default function CreatePortfolioPage() {
       }, 3000);
     } catch (error) {
       console.error("Error saving portfolio:", error);
-      alert(`Error saving portfolio: ${error instanceof Error ? error.message : 'Please try again.'}`);
+      toast(`Error saving portfolio: ${error instanceof Error ? error.message : 'Please try again.'}`, 'error');
       setLoading(false); // Make sure to reset loading state on error
       return; // Prevent navigation on error
     }
@@ -742,12 +744,12 @@ export default function CreatePortfolioPage() {
     e.stopPropagation();
 
     if (!supabase) {
-      alert("Database not configured");
+      toast("Database not configured", "error");
       return;
     }
 
     if (!newSkill.name || !newSkill.category) {
-      alert("Please fill in both skill name and category");
+      toast("Please fill in both skill name and category", "error");
       return;
     }
 
@@ -766,7 +768,7 @@ export default function CreatePortfolioPage() {
       }
 
       if (existingSkills && existingSkills.length > 0) {
-        alert("This skill already exists!");
+        toast("This skill already exists!", "error");
         setLoading(false);
         return;
       }
@@ -802,10 +804,10 @@ export default function CreatePortfolioPage() {
       setQuery("");
 
       // Show success message
-      alert("Skill added successfully!");
+      toast("Skill added successfully!", "success");
     } catch (error) {
       console.error("Error adding new skill:", error);
-      alert("Error adding new skill. Please try again.");
+      toast("Error adding new skill. Please try again.", "error");
     } finally {
       setLoading(false);
     }

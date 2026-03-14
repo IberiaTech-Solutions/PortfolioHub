@@ -5,6 +5,7 @@ import "./globals.css";
 // import { cookies } from "next/headers";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { ToastProvider } from "@/components/Toast";
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -62,11 +63,13 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${roboto.variable} ${poppins.variable} font-body antialiased`}
       >
-        <Suspense fallback={<div className="h-16 bg-slate-900"></div>}>
-          <Navigation />
-        </Suspense>
-        <main>{children}</main>
-        <Footer />
+        <ToastProvider>
+          <Suspense fallback={<div className="h-16 bg-slate-900"></div>}>
+            <Navigation />
+          </Suspense>
+          <main>{children}</main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );

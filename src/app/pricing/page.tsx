@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { supabase } from "@/utils/supabase";
 import {
   CheckIcon,
   SparklesIcon,
@@ -71,11 +73,72 @@ const tiers = [
 ];
 
 export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <PricingContent />
+    </Suspense>
+  );
+}
+
+function PricingContent() {
   const [annual, setAnnual] = useState(false);
+  const [checkingOut, setCheckingOut] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const success = searchParams.get("success");
+  const canceled = searchParams.get("canceled");
+
+  useEffect(() => {
+    const getUser = async () => {
+      if (!supabase) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        setUserEmail(user.email || null);
+      }
+    };
+    getUser();
+  }, []);
+
+  const handleCheckout = async (planKey: string) => {
+    if (!userId || !userEmail) {
+      window.location.href = `/auth?mode=signup&plan=${planKey}`;
+      return;
+    }
+    setCheckingOut(planKey);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planKey, userId, email: userEmail }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      // silent
+    } finally {
+      setCheckingOut(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        {/* Success/Cancel Banner */}
+        {success && (
+          <div className="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center">
+            <p className="text-emerald-300 font-bold">Payment successful! Your plan has been upgraded.</p>
+          </div>
+        )}
+        {canceled && (
+          <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-center">
+            <p className="text-amber-300 font-medium">Checkout canceled. No charges were made.</p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center px-4 py-2 bg-brand-500/10 border border-brand-500/30 rounded-full text-brand-300 text-sm font-bold mb-6">
@@ -155,16 +218,31 @@ export default function PricingPage() {
                   )}
                 </div>
 
-                <Link
-                  href={tier.ctaHref}
-                  className={`block w-full py-3 rounded-xl font-bold text-sm text-center transition-all duration-300 mb-6 ${
-                    tier.highlighted
-                      ? "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg hover:shadow-xl"
-                      : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                  }`}
-                >
-                  {tier.cta}
-                </Link>
+                {tier.price === 0 ? (
+                  <Link
+                    href={tier.ctaHref}
+                    className="block w-full py-3 rounded-xl font-bold text-sm text-center transition-all duration-300 mb-6 bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                  >
+                    {tier.cta}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => {
+                      const planKey = tier.name === "Pro"
+                        ? (annual ? "pro_annual" : "pro_monthly")
+                        : (annual ? "recruiter_annual" : "recruiter_monthly");
+                      handleCheckout(planKey);
+                    }}
+                    disabled={checkingOut !== null}
+                    className={`block w-full py-3 rounded-xl font-bold text-sm text-center transition-all duration-300 mb-6 disabled:opacity-50 ${
+                      tier.highlighted
+                        ? "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg hover:shadow-xl"
+                        : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                    }`}
+                  >
+                    {checkingOut ? "Redirecting..." : tier.cta}
+                  </button>
+                )}
 
                 <ul className="space-y-3">
                   {tier.features.map((feature, i) => (

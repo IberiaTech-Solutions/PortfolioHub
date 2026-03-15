@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentAgent</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 360px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    .header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .header .logo {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 14px;
+      color: #fff;
+    }
+    .content { padding: 16px; }
+    .status {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .status.info { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; }
+    .status.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+    .status.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    .score-ring {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px;
+    }
+    .result { text-align: center; padding: 8px 0; }
+    .result h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .result p { font-size: 12px; color: #94a3b8; }
+    .verdict { font-size: 14px; font-weight: 600; margin: 8px 0; }
+    .verdict.good { color: #6ee7b7; }
+    .verdict.ok { color: #fbbf24; }
+    .verdict.bad { color: #fca5a5; }
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tag {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tag.strength { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+    .tag.gap { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+    }
+    .footer a {
+      color: #818cf8;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .footer a:hover { color: #a5b4fc; }
+    #login-section { display: none; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">T</div>
+    <h1>TalentAgent</h1>
+  </div>
+
+  <div class="content">
+    <div id="loading" style="display:none;">
+      <div class="status info">
+        <span class="spinner"></span>
+        Analyzing job posting...
+      </div>
+    </div>
+
+    <div id="no-job" class="status info">
+      Navigate to a job posting on LinkedIn, Indeed, or Glassdoor, then click "Check My Fit".
+    </div>
+
+    <div id="result" style="display:none;"></div>
+
+    <button id="check-btn" class="btn btn-primary" disabled>
+      Check My Fit
+    </button>
+
+    <button id="open-app" class="btn btn-secondary" onclick="window.open('https://talentagent.com/check-fit', '_blank')">
+      Open Full App
+    </button>
+  </div>
+
+  <div class="footer">
+    <a href="https://talentagent.com" target="_blank">talentagent.com</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

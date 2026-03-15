@@ -197,7 +197,7 @@ Every feature we build reinforces one principle: **apply less, match better, was
 
 ### Smart Apply System
 - [x] **Quality-over-quantity mode** — "Quality Mode" toggle on jobs page. Limits to 5 applications per day. Shows remaining count. Apply button disabled when limit reached. Encourages focus on best matches.
-- [ ] **Browser extension** — Chrome extension that reads job descriptions from LinkedIn/Indeed pages and shows TalentAgent fit score inline.
+- [x] **Browser extension** — Chrome Manifest V3 extension in `/extension/` directory. Popup with fit score display, content script injects "Check Fit" button on LinkedIn/Indeed/Glassdoor job pages. Extracts job description from page DOM, calls TalentAgent API. Ready for Chrome Web Store submission.
 
 ### Cross-Border & Remote Intelligence
 - [x] **"Hires Globally" filter** — Toggle that filters to truly global remote jobs, excluding US-only/EU-only restricted remote postings.
@@ -240,7 +240,7 @@ Every feature we build reinforces one principle: **apply less, match better, was
 - [x] **Pricing page** (`/pricing`) — 3-tier pricing cards (Free/Pro $9/mo/Recruiter $49/mo) with annual toggle (20% discount), feature comparison, Featured Profile add-on ($19/week), FAQ section. Pricing link in nav for non-logged-in users.
 - [x] **Tier gating system** — `tierGating.ts` utility with per-tier limits (AI chats/day, fit assessments, job matches/week, vanity URL, analytics, API access, etc.). `canPerformAction()` helper returns allowed/denied with upgrade prompt.
 - [x] **Featured profiles** — `is_featured` + `featured_skills` fields on Portfolio type. Search results sort featured profiles to top. Featured Profile add-on card on pricing page.
-- [ ] **Stripe integration** — Connect Stripe for payment processing (Pro/Recruiter subscriptions + Featured Profile weekly billing).
+- [x] **Stripe integration** — Full Stripe setup: `/api/stripe/checkout` (creates checkout sessions), `/api/stripe/webhook` (handles subscription events, plan upgrades/downgrades, featured profile activation), `/api/stripe/portal` (customer billing portal). Pricing page wired to checkout. Webhook updates plan_tier in DB and sends notifications. `stripe` npm package installed.
 
 ---
 

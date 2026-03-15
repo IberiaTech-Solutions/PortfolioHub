@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import PrivacyToggle from "@/components/PrivacyToggle";
 
 interface StepPersonalInfoProps {
   formData: {
@@ -24,7 +23,6 @@ interface StepPersonalInfoProps {
   usernameAvailable: boolean | null;
   checkingUsername: boolean;
   checkUsername: (username: string) => void;
-  togglePrivateField: (fieldName: string, isPrivate: boolean) => void;
   debounceTimers: React.MutableRefObject<{ [key: string]: NodeJS.Timeout }>;
 }
 
@@ -39,7 +37,6 @@ export default function StepPersonalInfo({
   usernameAvailable,
   checkingUsername,
   checkUsername,
-  togglePrivateField,
   debounceTimers,
 }: StepPersonalInfoProps) {
   return (
@@ -56,7 +53,7 @@ export default function StepPersonalInfo({
           value={formData.name}
           onChange={handleChange}
           required
-          className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
+          className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
             !formData.name ? "border-red-400/50" : "border-white/20"
           }`}
           placeholder="John Doe"
@@ -67,10 +64,13 @@ export default function StepPersonalInfo({
       {/* Username */}
       <div className="space-y-1">
         <label htmlFor="username" className="block text-xs sm:text-sm font-semibold text-white">
-          Username <span className="text-gray-500 font-normal">(vanity URL)</span>
+          Choose Your Profile URL
         </label>
+        <p className="text-xs text-gray-500 mb-2">
+          This is your shareable link. Send it to recruiters instead of a resume.
+        </p>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">portfoliohub.com/</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">talentagent.com/</span>
           <input
             type="text"
             id="username"
@@ -177,11 +177,6 @@ export default function StepPersonalInfo({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label htmlFor="location" className="block text-sm font-medium text-white">Location</label>
-          <PrivacyToggle
-            fieldName="location"
-            isPrivate={formData.private_fields.includes("location")}
-            onToggle={togglePrivateField}
-          />
         </div>
         <input
           type="text"
@@ -189,7 +184,7 @@ export default function StepPersonalInfo({
           name="location"
           value={formData.location}
           onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
           placeholder="San Francisco, CA or Remote"
         />
       </div>
@@ -198,11 +193,6 @@ export default function StepPersonalInfo({
       <div className="space-y-2 sm:space-y-3">
         <div className="flex items-center justify-between">
           <label htmlFor="languages" className="block text-xs sm:text-sm font-medium text-white">Languages</label>
-          <PrivacyToggle
-            fieldName="languages"
-            isPrivate={formData.private_fields.includes("languages")}
-            onToggle={togglePrivateField}
-          />
         </div>
         <input
           type="text"
@@ -210,7 +200,7 @@ export default function StepPersonalInfo({
           name="languages"
           value={formData.languages}
           onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
           placeholder="English, Spanish, French"
         />
       </div>

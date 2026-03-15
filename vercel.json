@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/weeklyDigest",
-      "schedule": "0 9 * * 1"
-    }
-  ]
-}

@@ -88,47 +88,24 @@ export default function StepRoleResume({
 
   return (
     <div className="space-y-8">
-      {/* Role Selector */}
+      {/* Role badge — shows which role they signed up as, no need to re-select */}
       {!existingPortfolio && (
-        <div>
-          <p className="text-sm font-medium text-gray-300 mb-3">I am a...</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onClick={() => setFormData((prev: any) => ({ ...prev, user_role: "candidate" }))}
-              className={`p-4 rounded-xl border text-left transition-all ${
-                formData.user_role === "candidate"
-                  ? "bg-brand-600/15 border-brand-500/50 text-white"
-                  : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-              }`}
-            >
-              <div className="text-lg mb-1">
-                <svg className="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <p className="font-heading font-semibold text-sm">Candidate</p>
-              <p className="text-xs text-gray-500 mt-1">Looking for jobs, showcase my work</p>
-            </button>
-            <button
-              type="button"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onClick={() => setFormData((prev: any) => ({ ...prev, user_role: "recruiter" }))}
-              className={`p-4 rounded-xl border text-left transition-all ${
-                formData.user_role === "recruiter"
-                  ? "bg-brand-600/15 border-brand-500/50 text-white"
-                  : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-              }`}
-            >
-              <div className="text-lg mb-1">
-                <svg className="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <p className="font-heading font-semibold text-sm">Recruiter / Company</p>
-              <p className="text-xs text-gray-500 mt-1">Hiring talent, posting jobs</p>
-            </button>
+        <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+            formData.user_role === "recruiter" ? "bg-purple-500/20" : "bg-brand-500/20"
+          }`}>
+            <svg className={`w-5 h-5 ${formData.user_role === "recruiter" ? "text-purple-400" : "text-brand-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {formData.user_role === "recruiter"
+                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              }
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-heading font-bold text-white capitalize">{formData.user_role} Account</p>
+            <p className="text-xs text-gray-500">
+              {formData.user_role === "recruiter" ? "Set up your company profile to start hiring" : "Build your portfolio and let AI represent you"}
+            </p>
           </div>
         </div>
       )}
@@ -231,7 +208,7 @@ export default function StepRoleResume({
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    Upload File (.txt, .md)
+                    Upload File (.pdf, .docx, .txt)
                   </button>
                 </div>
               </div>

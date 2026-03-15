@@ -14,7 +14,6 @@ import {
   BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { LogoFull, LogoIcon } from "@/components/Logo";
-import NotificationBell from "@/components/NotificationBell";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -268,6 +267,14 @@ export default function Navigation() {
                     ) : userRole === "candidate" ? (
                       <>
                         <Link
+                          href="/check-fit"
+                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-bold transition-colors ${
+                            pathname === "/check-fit" ? "bg-brand-600 text-white" : "text-brand-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Check Fit
+                        </Link>
+                        <Link
                           href="/jobs"
                           className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             pathname === "/jobs" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
@@ -281,32 +288,7 @@ export default function Navigation() {
                             pathname === "/create-portfolio" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
                           }`}
                         >
-                          {hasPortfolio ? "My Portfolio" : "Create Portfolio"}
-                        </Link>
-                        <Link
-                          href="/check-fit"
-                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/check-fit" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          Check Fit
-                        </Link>
-                        <Link
-                          href="/applications"
-                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/applications" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          Applications
-                        </Link>
-                        <Link
-                          href="/collaborations"
-                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/collaborations" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          <span className="hidden lg:inline">Collaborations</span>
-                          <span className="lg:hidden">Collab</span>
+                          {hasPortfolio ? "My Profile" : "Profile"}
                         </Link>
                       </>
                     ) : (
@@ -356,11 +338,6 @@ export default function Navigation() {
                   </div>
                 )}
               </div>
-
-              {/* Notification Bell */}
-              {mounted && !loading && user && (
-                <NotificationBell userId={user.id} />
-              )}
 
               {/* User Avatar Dropdown */}
               {mounted && !loading && (
@@ -436,6 +413,22 @@ export default function Navigation() {
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
+                      <Link
+                        href="/check-fit"
+                        className={`px-3 py-2 rounded-md text-sm font-bold transition-colors ${
+                          pathname === "/check-fit" ? "bg-brand-600 text-white" : "text-brand-300 hover:text-white hover:bg-slate-800"
+                        }`}
+                      >
+                        Check Fit
+                      </Link>
+                      <Link
+                        href="/jobs"
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          pathname === "/jobs" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                        }`}
+                      >
+                        Jobs
+                      </Link>
                       <Link
                         href="/pricing"
                         className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${

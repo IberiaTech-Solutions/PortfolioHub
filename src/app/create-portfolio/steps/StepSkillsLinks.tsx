@@ -15,12 +15,7 @@ const ProjectCards = dynamic(() => import("@/components/ProjectCards"), {
   ssr: false,
 });
 
-const CollaborationManager = dynamic(() => import("@/components/CollaborationManager"), {
-  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-48"></div>,
-  ssr: false,
-});
-
-import { Project, Collaboration, Skill } from "@/types";
+import { Project, Skill } from "@/types";
 
 interface StepSkillsLinksProps {
   formData: {
@@ -49,10 +44,6 @@ interface StepSkillsLinksProps {
   detectedProjects: Project[];
   detectingProjects: boolean;
   removeProject: (index: number) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  existingPortfolio: any;
-  collaborations: Collaboration[];
-  setCollaborations: (c: Collaboration[]) => void;
 }
 
 export default function StepSkillsLinks({
@@ -76,9 +67,6 @@ export default function StepSkillsLinks({
   detectedProjects,
   detectingProjects,
   removeProject,
-  existingPortfolio,
-  collaborations,
-  setCollaborations,
 }: StepSkillsLinksProps) {
   const AddSkillModal = () => (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={(e) => e.stopPropagation()}>
@@ -91,7 +79,7 @@ export default function StepSkillsLinks({
               type="text"
               value={newSkill.name}
               onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
-              className="w-full px-4 py-2 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+              className="w-full px-4 py-2 border border-white/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
               placeholder="Enter skill name"
             />
           </div>
@@ -100,7 +88,7 @@ export default function StepSkillsLinks({
             <select
               value={newSkill.category}
               onChange={(e) => setNewSkill({ ...newSkill, category: e.target.value })}
-              className="w-full px-4 py-2 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
+              className="w-full px-4 py-2 border border-white/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -140,10 +128,10 @@ export default function StepSkillsLinks({
                     </span>
                   ))}
                   <Combobox.Input
-                    className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-white bg-transparent focus:ring-0 focus:outline-none placeholder-white"
-                    displayValue={(skill: string) => skill}
+                    className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-white bg-transparent focus:ring-0 focus:outline-none placeholder-gray-500"
+                    displayValue={() => ""}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Search or add skills..."
+                    placeholder={selectedSkills.length > 0 ? "Add more skills..." : "Search or add skills..."}
                   />
                   <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
                     <ChevronUpDownIcon className="h-5 w-5 text-gray-300" aria-hidden="true" />
@@ -215,8 +203,8 @@ export default function StepSkillsLinks({
             debouncedDetectProjects(formData.github_url, e.target.value);
             debouncedGenerateScreenshot(e.target.value);
           }}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-          placeholder="https://yourwebsite.com"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
+          placeholder="Your website (optional)"
         />
       </div>
 
@@ -238,8 +226,8 @@ export default function StepSkillsLinks({
             handleChange(e);
             debouncedDetectProjects(e.target.value, formData.website_url);
           }}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-          placeholder="https://github.com/yourusername"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
+          placeholder="GitHub profile (optional)"
         />
       </div>
 
@@ -252,8 +240,8 @@ export default function StepSkillsLinks({
           name="linkedin_url"
           value={formData.linkedin_url}
           onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
-          placeholder="https://linkedin.com/in/yourprofile"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+          placeholder="LinkedIn profile (optional)"
         />
       </div>
 
@@ -276,7 +264,7 @@ export default function StepSkillsLinks({
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   setFormData((prev: any) => ({ ...prev, additional_links: newLinks }));
                 }}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
               />
               <input
                 type="url"
@@ -288,7 +276,7 @@ export default function StepSkillsLinks({
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   setFormData((prev: any) => ({ ...prev, additional_links: newLinks }));
                 }}
-                className="flex-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
+                className="flex-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
               />
               <button
                 type="button"
@@ -331,12 +319,6 @@ export default function StepSkillsLinks({
         </div>
       )}
 
-      {/* Collaboration Manager */}
-      <CollaborationManager
-        portfolioId={existingPortfolio?.id || ""}
-        collaborations={collaborations}
-        onCollaborationsChange={setCollaborations}
-      />
     </div>
   );
 }

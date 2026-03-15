@@ -93,12 +93,13 @@ export default function JobsPage() {
   const [filterRemote, setFilterRemote] = useState<string>("");
   const [filterLevel, setFilterLevel] = useState<string>("");
   const [filterLocation, setFilterLocation] = useState<string>("");
-  const [filterCurrency, setFilterCurrency] = useState<string>("");
+  const [filterCurrency] = useState<string>("");
   const [filterGlobalRemote, setFilterGlobalRemote] = useState(false);
   const [filterEligibleOnly, setFilterEligibleOnly] = useState(false);
   const [filterHideGhostJobs, setFilterHideGhostJobs] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [reportedJobs, setReportedJobs] = useState<Set<string>>(new Set());
+  const [pendingConfirm, setPendingConfirm] = useState<string | null>(null);
   const [qualityMode, setQualityMode] = useState(false);
   const [dailyApplyCount, setDailyApplyCount] = useState(0);
   const [appliedJobs, setAppliedJobs] = useState<Set<string>>(new Set());
@@ -159,8 +160,13 @@ export default function JobsPage() {
     init();
   }, []);
 
-  const trackApplication = async (job: Job) => {
-    if (!supabase || !user) return;
+  const confirmApplication = async (jobId: string, didApply: boolean) => {
+    setPendingConfirm(null);
+    if (!didApply || !supabase || !user) return;
+
+    const job = [...(allJobs || [])].find((j) => j.id === jobId);
+    if (!job) return;
+
     const match = matches[job.id];
     try {
       await supabase.from("job_applications").insert({
@@ -174,9 +180,19 @@ export default function JobsPage() {
       });
       setAppliedJobs((prev) => new Set(prev).add(job.id));
     } catch {
-      // Silent — don't block the apply action
+      // Silent
     }
   };
+
+  // Listen for tab focus to show confirmation
+  useEffect(() => {
+    const handleFocus = () => {
+      // When user returns to tab after clicking Apply, show confirmation
+      // pendingConfirm is set when they click Apply
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, []);
 
   const getAIMatch = async (job: Job) => {
     if (!portfolio || matchingJobId) return;
@@ -207,9 +223,11 @@ export default function JobsPage() {
   };
 
   // Combine jobs based on active source
-  const allJobs = activeSource === "posted" ? jobs
+  // Tag internal jobs with source
+  const taggedJobs = jobs.map(j => ({ ...j, source: "talentagent" }));
+  const allJobs = activeSource === "posted" ? taggedJobs
     : activeSource === "external" ? externalJobs
-    : [...jobs, ...externalJobs];
+    : [...taggedJobs, ...externalJobs];
 
   // Extract unique locations and currencies from combined jobs
   const availableLocations = Array.from(
@@ -221,9 +239,8 @@ export default function JobsPage() {
     }).filter(Boolean))
   ).sort();
 
-  const availableCurrencies = Array.from(
-    new Set(allJobs.map((j) => j.salary_currency).filter(Boolean))
-  ).sort();
+  // Currency filter available but not shown in simplified UI
+  void filterCurrency;
 
   const filteredJobs = allJobs.filter((job) => {
     if (filterWorkType && job.work_type !== filterWorkType) return false;
@@ -277,8 +294,8 @@ export default function JobsPage() {
               ? "Browse jobs and let AI tell you honestly which ones are worth your time."
               : "Create a portfolio first to unlock AI-powered job matching."}
           </p>
-          <p className="text-xs text-gray-600">
-            Jobs aggregated from Adzuna, RemoteOK, Arbeitnow{externalJobs.length > 0 ? ` — ${externalJobs.length} external jobs loaded` : ""}
+          <p className="text-xs text-gray-400 mt-1">
+            Aggregated from multiple sources{externalJobs.length > 0 ? ` — ${externalJobs.length} jobs from Adzuna, RemoteOK, Arbeitnow` : ""}
           </p>
           {!user && (
             <Link
@@ -333,120 +350,106 @@ export default function JobsPage() {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-          <div className="flex items-center gap-2 text-gray-400 text-sm">
-            <FunnelIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">Filter:</span>
-          </div>
-          <select
-            value={filterWorkType}
-            onChange={(e) => setFilterWorkType(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
-          >
-            <option value="" className="bg-slate-800">All Types</option>
-            {Object.entries(workTypeLabel).map(([val, label]) => (
-              <option key={val} value={val} className="bg-slate-800">{label}</option>
-            ))}
-          </select>
-          <select
-            value={filterRemote}
-            onChange={(e) => setFilterRemote(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
-          >
-            <option value="" className="bg-slate-800">All Work Policy</option>
-            {Object.entries(remoteLabel).map(([val, label]) => (
-              <option key={val} value={val} className="bg-slate-800">{label}</option>
-            ))}
-          </select>
-          <select
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
-          >
-            <option value="" className="bg-slate-800">All Levels</option>
-            {Object.entries(levelLabel).map(([val, label]) => (
-              <option key={val} value={val} className="bg-slate-800">{label}</option>
-            ))}
-          </select>
-          <select
-            value={filterLocation}
-            onChange={(e) => setFilterLocation(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
-          >
-            <option value="" className="bg-slate-800">All Countries</option>
-            {availableLocations.map((loc) => (
-              <option key={loc} value={loc} className="bg-slate-800">{loc}</option>
-            ))}
-          </select>
-          <select
-            value={filterCurrency}
-            onChange={(e) => setFilterCurrency(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
-          >
-            <option value="" className="bg-slate-800">All Currencies</option>
-            {availableCurrencies.map((cur) => (
-              <option key={cur} value={cur} className="bg-slate-800">{cur}</option>
-            ))}
-          </select>
-          <span className="text-gray-500 text-sm">
-            {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"}
-          </span>
-        </div>
-
-        {/* Smart Filters */}
+        {/* Filters — single row */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-          {/* Quality Mode Toggle */}
-          {portfolio && (
-            <button
-              onClick={() => setQualityMode(!qualityMode)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
-                qualityMode
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
-              }`}
+          <FunnelIcon className="w-4 h-4 text-gray-500" />
+          {[
+            { value: filterWorkType, setter: setFilterWorkType, label: "Type", options: Object.entries(workTypeLabel) },
+            { value: filterRemote, setter: setFilterRemote, label: "Remote", options: Object.entries(remoteLabel) },
+            { value: filterLevel, setter: setFilterLevel, label: "Level", options: Object.entries(levelLabel) },
+          ].map(({ value, setter, label, options }) => (
+            <select
+              key={label}
+              value={value}
+              onChange={(e) => setter(e.target.value)}
+              className="bg-white/10 border border-white/20 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-              Quality Mode {qualityMode ? `(${DAILY_APPLY_LIMIT - dailyApplyCount} left today)` : ""}
-            </button>
+              <option value="" className="bg-slate-800">{label}</option>
+              {options.map(([val, lbl]) => (
+                <option key={val} value={val} className="bg-slate-800">{lbl}</option>
+              ))}
+            </select>
+          ))}
+          {availableLocations.length > 0 && (
+            <select
+              value={filterLocation}
+              onChange={(e) => setFilterLocation(e.target.value)}
+              className="bg-white/10 border border-white/20 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+            >
+              <option value="" className="bg-slate-800">Country</option>
+              {availableLocations.map((loc) => (
+                <option key={loc} value={loc} className="bg-slate-800">{loc}</option>
+              ))}
+            </select>
           )}
-          <span className="text-gray-500 text-xs font-medium mr-1">Smart:</span>
+          <span className="text-gray-600 mx-1">|</span>
           <button
             onClick={() => setFilterGlobalRemote(!filterGlobalRemote)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
               filterGlobalRemote
                 ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                 : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
             }`}
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            Hires Globally
+            Global
           </button>
-          {portfolio && (
-            <button
-              onClick={() => setFilterEligibleOnly(!filterEligibleOnly)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
-                filterEligibleOnly
-                  ? "bg-brand-500/20 text-brand-300 border-brand-500/40"
-                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
-              }`}
-            >
-              <CheckCircleIcon className="w-3.5 h-3.5" />
-              Eligible for Me
-            </button>
-          )}
           <button
             onClick={() => setFilterHideGhostJobs(!filterHideGhostJobs)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
               filterHideGhostJobs
                 ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
                 : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
             }`}
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-            Hide Ghost Jobs
+            No Ghost
           </button>
+          {portfolio && (
+            <button
+              onClick={() => setFilterEligibleOnly(!filterEligibleOnly)}
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                filterEligibleOnly
+                  ? "bg-brand-500/20 text-brand-300 border-brand-500/40"
+                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+              }`}
+            >
+              Eligible
+            </button>
+          )}
+          {portfolio && (
+            <button
+              onClick={() => setQualityMode(!qualityMode)}
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                qualityMode
+                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+              }`}
+            >
+              Quality{qualityMode ? ` (${DAILY_APPLY_LIMIT - dailyApplyCount})` : ""}
+            </button>
+          )}
+          <span className="text-gray-600 text-xs ml-1">
+            {filteredJobs.length} jobs
+          </span>
         </div>
+
+        {/* Profile incomplete banner */}
+        {user && !portfolio && !loading && (
+          <div className="mb-6 p-4 bg-brand-500/10 border border-brand-500/30 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <SparklesIcon className="w-5 h-5 text-brand-400 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-bold text-white">Complete your profile to unlock AI matching</p>
+                <p className="text-xs text-gray-400">Get fit scores, skill matching, and honest &quot;Don&apos;t Apply&quot; signals on every job.</p>
+              </div>
+            </div>
+            <Link
+              href="/create-portfolio"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl text-xs font-bold transition-all hover:shadow-lg whitespace-nowrap"
+            >
+              Create Profile — 30 seconds
+            </Link>
+          </div>
+        )}
 
         {/* Jobs List */}
         {loading ? (
@@ -532,9 +535,19 @@ export default function JobsPage() {
                             </h3>
                             <p className="text-brand-300 font-medium text-sm flex items-center gap-2">
                               {job.company}
-                              {"source" in job && job.source !== "posted" && (
-                                <span className="px-1.5 py-0.5 bg-white/10 text-gray-500 rounded text-[9px] font-medium">
-                                  via {String(job.source).replace("ok", "OK")}
+                              {"source" in job && (
+                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${
+                                  String(job.source) === "adzuna" ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
+                                  String(job.source) === "remoteok" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                  String(job.source) === "arbeitnow" ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                  String(job.source) === "jsearch" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
+                                  "bg-brand-500/10 text-brand-400 border-brand-500/20"
+                                }`}>
+                                  {String(job.source) === "adzuna" ? "Adzuna" :
+                                   String(job.source) === "remoteok" ? "RemoteOK" :
+                                   String(job.source) === "arbeitnow" ? "Arbeitnow" :
+                                   String(job.source) === "jsearch" ? "JSearch" :
+                                   "TalentAgent"}
                                 </span>
                               )}
                             </p>
@@ -710,6 +723,15 @@ export default function JobsPage() {
 
                         {/* Actions */}
                         <div className="flex items-center gap-3 mt-4">
+                          {!portfolio && user && (
+                            <Link
+                              href="/create-portfolio"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500/10 hover:bg-brand-500/20 text-brand-300 rounded-xl text-xs font-bold border border-brand-500/30 transition-colors"
+                            >
+                              <SparklesIcon className="w-3.5 h-3.5" />
+                              Complete profile for AI match
+                            </Link>
+                          )}
                           {portfolio && (
                             <button
                               onClick={() => getAIMatch(job)}
@@ -754,15 +776,28 @@ export default function JobsPage() {
                               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 text-gray-500 rounded-xl text-sm font-bold border border-white/10 cursor-not-allowed" title="Daily apply limit reached — Quality Mode keeps you focused on your best matches">
                                 Limit reached
                               </span>
+                            ) : pendingConfirm === job.id ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-400">Did you apply?</span>
+                                <button
+                                  onClick={() => { confirmApplication(job.id, true); if (qualityMode) setDailyApplyCount((c) => c + 1); }}
+                                  className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={() => confirmApplication(job.id, false)}
+                                  className="px-3 py-1.5 bg-white/10 text-gray-400 rounded-lg text-xs font-bold border border-white/10 hover:bg-white/20 transition-colors"
+                                >
+                                  No
+                                </button>
+                              </div>
                             ) : (
                               <a
                                 href={job.application_url || `mailto:${job.application_email}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                onClick={() => {
-                                  trackApplication(job);
-                                  if (qualityMode) setDailyApplyCount((c) => c + 1);
-                                }}
+                                onClick={() => setPendingConfirm(job.id)}
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-all duration-300 border border-white/20"
                               >
                                 Apply

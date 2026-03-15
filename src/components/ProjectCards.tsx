@@ -41,7 +41,11 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                   {project.title}
                 </h4>
                 <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                  {project.lastUpdated && `Updated ${formatDate(project.lastUpdated)}`}
+                  {project.lastUpdated && (
+                    project.lastUpdated.includes('—') || project.lastUpdated.includes('-') && project.lastUpdated.length < 30
+                      ? project.lastUpdated
+                      : `Updated ${formatDate(project.lastUpdated)}`
+                  )}
                 </p>
               </div>
               
@@ -102,15 +106,17 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                 )}
               </div>
               
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1 text-gray-600 hover:text-gray-900 transition-all duration-300 text-xs sm:text-sm font-semibold px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg sm:rounded-md w-full sm:w-auto hover:shadow-md hover:scale-105"
-              >
-                View Project
-                <ArrowTopRightOnSquareIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-              </a>
+              {project.url ? (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1 text-gray-600 hover:text-gray-900 transition-all duration-300 text-xs sm:text-sm font-semibold px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg sm:rounded-md w-full sm:w-auto hover:shadow-md hover:scale-105"
+                >
+                  View Project
+                  <ArrowTopRightOnSquareIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                </a>
+              ) : null}
             </div>
           </div>
         ))}

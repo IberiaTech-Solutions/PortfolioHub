@@ -67,7 +67,7 @@ export default function StepProfessional({
             debouncedAnalyze("title", e.target.value, "title");
           }}
           required
-          className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
+          className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
             !formData.title ? "border-red-400/50" : "border-white/20"
           }`}
           placeholder="Front-end Developer with 5 years experience"
@@ -104,7 +104,7 @@ export default function StepProfessional({
           value={formData.job_title}
           onChange={handleChange}
           required
-          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base ${
+          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base ${
             !formData.job_title ? "border-red-400/50" : "border-white/20"
           }`}
           placeholder="Senior Front-end Developer"
@@ -189,7 +189,7 @@ export default function StepProfessional({
           }}
           required
           rows={4}
-          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10 text-sm sm:text-base ${
+          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10 text-sm sm:text-base ${
             !formData.description ? "border-red-400/50" : "border-white/20"
           }`}
           placeholder="A brief description about yourself, your experience, and what you're looking for"

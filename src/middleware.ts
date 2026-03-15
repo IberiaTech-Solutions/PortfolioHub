@@ -2,14 +2,9 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Routes that require authentication
-const PROTECTED_ROUTES = ["/profile", "/applications", "/collaborations", "/create-portfolio", "/recruiter"];
-const ADMIN_ROUTES = ["/admin"];
-
 export async function middleware(req: NextRequest) {
   try {
     const res = NextResponse.next();
-    const pathname = req.nextUrl.pathname;
 
     // Check if Supabase environment variables are available
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -18,27 +13,10 @@ export async function middleware(req: NextRequest) {
 
     const supabase = createMiddlewareClient({ req, res });
 
-    // Refresh session if expired
-    const { data: { session } } = await supabase.auth.getSession();
+    // Refresh session if expired — this is the primary purpose of middleware
+    await supabase.auth.getSession();
 
-    // Protect authenticated routes
-    const isProtected = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
-    const isAdmin = ADMIN_ROUTES.some((route) => pathname.startsWith(route));
-
-    if ((isProtected || isAdmin) && !session) {
-      const redirectUrl = new URL("/auth", req.url);
-      redirectUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    // Admin routes: verify admin role from session metadata
-    if (isAdmin && session) {
-      const appMetadata = session.user?.app_metadata;
-      if (appMetadata?.role !== "admin") {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-    }
-
+    // Individual pages handle their own auth checks and redirects
     return res;
   } catch (error) {
     console.error('Middleware error:', error);

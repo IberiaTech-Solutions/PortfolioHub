@@ -96,17 +96,10 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Force white placeholder text for dark theme */
+/* Default placeholder text for dark theme — use Tailwind placeholder-* classes to override */
 input::placeholder,
 textarea::placeholder {
-  color: white !important;
-  opacity: 1;
-}
-
-/* Specific styling for create-portfolio page inputs */
-.bg-white\/10 input::placeholder,
-.bg-white\/10 textarea::placeholder {
-  color: white !important;
+  color: rgb(107, 114, 128); /* gray-500 */
   opacity: 1;
 }
 

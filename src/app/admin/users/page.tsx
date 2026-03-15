@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
 import { Portfolio } from "@/types";
-import { logAdminAction } from "@/utils/auditLog";
 import {
   UserGroupIcon,
   MagnifyingGlassIcon,
@@ -68,19 +67,9 @@ function UsersContent() {
     if (data) setUsers(data as Portfolio[]);
   };
 
-  const [adminId, setAdminId] = useState<string>("");
-
-  // Get admin ID on load (after auth check)
-  useEffect(() => {
-    if (authorized) {
-      supabase?.auth.getUser().then(({ data }) => { if (data.user) setAdminId(data.user.id); });
-    }
-  }, [authorized]);
-
   const updateRole = async (userId: string, newRole: string) => {
     if (!supabase) return;
     setUpdating(userId);
-    const oldUser = users.find((u) => u.user_id === userId);
     await supabase
       .from("portfolios")
       .update({ user_role: newRole })
@@ -88,14 +77,12 @@ function UsersContent() {
     setUsers((prev) =>
       prev.map((u) => (u.user_id === userId ? { ...u, user_role: newRole as Portfolio["user_role"] } : u))
     );
-    logAdminAction(adminId, "role_change", "user", userId, `Changed ${oldUser?.name || userId} role to ${newRole}`);
     setUpdating(null);
   };
 
   const toggleVerified = async (userId: string, current: boolean) => {
     if (!supabase) return;
     setUpdating(userId);
-    const targetUser = users.find((u) => u.user_id === userId);
     await supabase
       .from("portfolios")
       .update({ is_verified: !current })
@@ -103,7 +90,6 @@ function UsersContent() {
     setUsers((prev) =>
       prev.map((u) => (u.user_id === userId ? { ...u, is_verified: !current } : u))
     );
-    logAdminAction(adminId, "verify_toggle", "user", userId, `${!current ? "Verified" : "Unverified"} ${targetUser?.name || userId}`);
     setUpdating(null);
   };
 

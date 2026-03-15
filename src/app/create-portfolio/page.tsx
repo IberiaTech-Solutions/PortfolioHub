@@ -13,7 +13,7 @@ import StepPersonalInfo from "./steps/StepPersonalInfo";
 import StepProfessional from "./steps/StepProfessional";
 import StepSkillsLinks from "./steps/StepSkillsLinks";
 import StepReview from "./steps/StepReview";
-import { Portfolio, Project, Collaboration, Skill } from "@/types";
+import { Portfolio, Project, Skill } from "@/types";
 
 export default function CreatePortfolioPage() {
   const router = useRouter();
@@ -36,7 +36,6 @@ export default function CreatePortfolioPage() {
   const [websiteScreenshot, setWebsiteScreenshot] = useState<string>("");
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [heroImagePreview, setHeroImagePreview] = useState<string>("");
-  const [collaborations, setCollaborations] = useState<Collaboration[]>([]);
   
   // AI call tracking
   const [aiCallCount, setAiCallCount] = useState(0);
@@ -326,6 +325,13 @@ export default function CreatePortfolioPage() {
           return;
         }
 
+        // Auto-set role from signup metadata
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const signupRole = (user as any).user_metadata?.role;
+        if (signupRole === "candidate" || signupRole === "recruiter") {
+          setFormData((prev) => ({ ...prev, user_role: signupRole }));
+        }
+
         setUser(user);
 
         // Handle skills result
@@ -412,18 +418,23 @@ export default function CreatePortfolioPage() {
     if (source === 'file') {
       const input = document.createElement('input');
       input.type = 'file';
-      input.accept = '.txt,.md,.pdf';
+      input.accept = '.txt,.md,.pdf,.docx';
       input.onchange = async (e) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (!file) return;
 
         setResumeParsing(true);
         try {
-          // Read file as text
-          text = await file.text();
-
           const formDataPayload = new FormData();
-          formDataPayload.append('text', text);
+
+          if (file.name.endsWith('.pdf') || file.name.endsWith('.docx')) {
+            // Send PDF/DOCX as file — server will extract text
+            formDataPayload.append('resume', file);
+          } else {
+            // Read text files directly
+            text = await file.text();
+            formDataPayload.append('text', text);
+          }
 
           const res = await fetch('/api/parseResume', {
             method: 'POST',
@@ -480,14 +491,24 @@ export default function CreatePortfolioPage() {
     skills?: string[]; location?: string; experience_level?: string;
     preferred_work_type?: string[]; languages?: string;
     website_url?: string; github_url?: string; linkedin_url?: string;
+    certifications?: string[]; education?: string;
     projects?: Array<{ title: string; description: string; url: string; techStack: string[] }>;
   }) => {
+    // Append certifications to description if present
+    let fullDescription = data.description || '';
+    if (data.certifications?.length) {
+      fullDescription += `\n\nCertifications: ${data.certifications.join(', ')}`;
+    }
+    if (data.education) {
+      fullDescription += `\n\nEducation: ${data.education}`;
+    }
+
     setFormData((prev) => ({
       ...prev,
       name: data.name || prev.name,
       job_title: data.job_title || prev.job_title,
       title: data.title || prev.title,
-      description: data.description || prev.description,
+      description: fullDescription || prev.description,
       location: data.location || prev.location,
       experience_level: data.experience_level || prev.experience_level,
       preferred_work_type: data.preferred_work_type?.length ? data.preferred_work_type : prev.preferred_work_type,
@@ -500,10 +521,30 @@ export default function CreatePortfolioPage() {
       setSelectedSkills((prev) => [...new Set([...prev, ...data.skills!])]);
     }
     if (data.projects?.length) {
-      setDetectedProjects((prev) => [...prev, ...data.projects!.map(p => ({ ...p, lastUpdated: new Date().toISOString() }))]);
+      setDetectedProjects((prev) => [...prev, ...data.projects!.map(p => ({
+        title: p.title,
+        description: p.description,
+        url: p.url || '',
+        techStack: p.techStack || [],
+        lastUpdated: (p as { dates?: string }).dates || undefined,
+      }))]);
     }
     setShowResumeImport(false);
     setResumeText('');
+
+    // Count what was extracted
+    const filled = [data.name, data.job_title, data.title, data.description, data.location].filter(Boolean).length;
+    const skillCount = data.skills?.length || 0;
+    const projectCount = data.projects?.length || 0;
+    const linksFound = [data.website_url, data.github_url, data.linkedin_url].filter(Boolean).length;
+
+    toast(
+      `Resume parsed! ${filled} fields, ${skillCount} skills, ${projectCount} projects${linksFound > 0 ? `, ${linksFound} links` : ''} extracted. Review and edit in each step.`,
+      'success'
+    );
+
+    // Auto-advance to Step 2 so they can review
+    setTimeout(() => setCurrentStep(2), 500);
   };
 
   // Username availability check
@@ -513,24 +554,24 @@ export default function CreatePortfolioPage() {
       return;
     }
     setCheckingUsername(true);
-    const { data } = await supabase
-      .from("portfolios")
-      .select("id")
-      .eq("username", username)
-      .maybeSingle();
-    // Available if no result OR the result is the user's own portfolio
-    setUsernameAvailable(!data || data.id === existingPortfolio?.id);
-    setCheckingUsername(false);
+    try {
+      const { data, error } = await supabase
+        .from("portfolios")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle();
+      if (error) {
+        setUsernameAvailable(true); // Assume available if query fails
+      } else {
+        setUsernameAvailable(!data || data.id === existingPortfolio?.id);
+      }
+    } catch {
+      setUsernameAvailable(true); // Assume available on error
+    } finally {
+      setCheckingUsername(false);
+    }
   }, [existingPortfolio?.id]);
 
-  const togglePrivateField = (fieldName: string, isPrivate: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      private_fields: isPrivate
-        ? [...prev.private_fields, fieldName]
-        : prev.private_fields.filter((f) => f !== fieldName),
-    }));
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -875,7 +916,6 @@ export default function CreatePortfolioPage() {
                 usernameAvailable={usernameAvailable}
                 checkingUsername={checkingUsername}
                 checkUsername={checkUsername}
-                togglePrivateField={togglePrivateField}
                 debounceTimers={debounceTimers}
               />
             )}
@@ -920,9 +960,6 @@ export default function CreatePortfolioPage() {
                 detectedProjects={detectedProjects}
                 detectingProjects={detectingProjects}
                 removeProject={removeProject}
-                existingPortfolio={existingPortfolio}
-                collaborations={collaborations}
-                setCollaborations={setCollaborations}
               />
             )}
 

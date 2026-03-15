@@ -232,13 +232,13 @@ export default function Auth() {
           <div>
             <h2 className="text-3xl font-display font-bold text-white mb-3">
               {authMode === "signup"
-                ? "Your AI agent is waiting."
+                ? "Stop competing with 400 applicants."
                 : "Welcome back."}
             </h2>
             <p className="text-gray-300 text-lg max-w-md">
               {authMode === "signup"
-                ? "Import your resume, let AI represent you to recruiters, and get matched to jobs honestly."
-                : "Your AI agent has been working while you were away. Check your matches and analytics."}
+                ? "Paste any job description. Know if you should apply in 10 seconds. AI fit scoring, ghost job detection, and honest 'Don't Apply' signals."
+                : "Check your fit scores and browse new jobs matched to your skills."}
             </p>
           </div>
         </div>
@@ -254,10 +254,10 @@ export default function Auth() {
 
           <div className="mb-8">
             <h1 className="text-2xl font-heading font-bold text-gray-900 mb-1">
-              {authMode === "signin" ? "Sign in" : authMode === "signup" ? "Create account" : authMode === "reset_password" ? "Set new password" : "Reset password"}
+              {authMode === "signin" ? "Sign in" : authMode === "signup" ? "Get started — free" : authMode === "reset_password" ? "Set new password" : "Reset password"}
             </h1>
             <p className="text-gray-500 text-sm">
-              {authMode === "signin" ? "Enter your credentials to continue" : authMode === "signup" ? "Start building your AI-powered profile" : authMode === "reset_password" ? "Choose a strong new password" : "We'll send you a reset link"}
+              {authMode === "signin" ? "Check your fit scores and job matches" : authMode === "signup" ? "Free forever. No credit card needed." : authMode === "reset_password" ? "Choose a strong new password" : "We'll send you a reset link"}
             </p>
           </div>
 
@@ -295,7 +295,7 @@ export default function Auth() {
                 </button>
               </div>
               <p className="text-xs text-gray-400 text-center mt-2">
-                {selectedRole === "candidate" ? "Find jobs and let your AI agent showcase your work" : "Browse talent, post jobs, and evaluate candidates with AI"}
+                {selectedRole === "candidate" ? "Check fit scores, detect ghost jobs, get interview prep" : "Search candidates, post jobs, evaluate talent with AI"}
               </p>
             </div>
           )}

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabase";
 import { Job } from "@/types";
-import { logAdminAction } from "@/utils/auditLog";
 import { detectGhostJob } from "@/utils/jobIntelligence";
 import {
   BriefcaseIcon,
@@ -46,17 +45,8 @@ export default function AdminJobsPage() {
     init();
   }, [router]);
 
-  const [adminId, setAdminId] = useState("");
-
-  useEffect(() => {
-    if (authorized) {
-      supabase?.auth.getUser().then(({ data }) => { if (data.user) setAdminId(data.user.id); });
-    }
-  }, [authorized]);
-
   const toggleActive = async (jobId: string, current: boolean) => {
     if (!supabase) return;
-    const job = jobs.find((j) => j.id === jobId);
     await supabase
       .from("jobs")
       .update({ is_active: !current })
@@ -64,15 +54,12 @@ export default function AdminJobsPage() {
     setJobs((prev) =>
       prev.map((j) => (j.id === jobId ? { ...j, is_active: !current } : j))
     );
-    logAdminAction(adminId, "job_deactivate", "job", jobId, `${!current ? "Activated" : "Deactivated"} "${job?.title}"`);
   };
 
   const deleteJob = async (jobId: string) => {
     if (!supabase || !confirm("Delete this job permanently?")) return;
-    const job = jobs.find((j) => j.id === jobId);
     await supabase.from("jobs").delete().eq("id", jobId);
     setJobs((prev) => prev.filter((j) => j.id !== jobId));
-    logAdminAction(adminId, "job_delete", "job", jobId, `Deleted "${job?.title}" by ${job?.company}`);
   };
 
   if (loading || !authorized) {

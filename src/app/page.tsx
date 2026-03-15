@@ -681,6 +681,99 @@ function HomeContent() {
         </div>
       </div>
 
+      {/* Chrome Extension Section */}
+      <div className="bg-slate-900 py-16 sm:py-20 border-t border-white/5">
+        <FadeIn>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-br from-brand-500/10 to-purple-500/10 border border-brand-500/20 rounded-3xl p-8 sm:p-12 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            {/* Left: Icon + Text */}
+            <div className="flex-1 text-center lg:text-left">
+              <div className="inline-flex items-center px-3 py-1.5 bg-brand-500/20 border border-brand-500/30 rounded-full text-brand-300 text-xs font-bold mb-4">
+                <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Chrome Extension
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
+                Check Your Fit on Any Job Page
+              </h2>
+              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-6">
+                Get your AI fit score directly on LinkedIn, Indeed, and Glassdoor.
+                No more copy-pasting — one click tells you if you should apply.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center lg:justify-start">
+                <a
+                  href="https://chrome.google.com/webstore"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 rounded-xl font-heading font-bold text-sm transition-all hover:shadow-xl hover:scale-105"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M21.17 8H12" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M3.95 6.06L8.54 14" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M10.88 21.94L15.46 14" stroke="currentColor" strokeWidth="1.5"/>
+                  </svg>
+                  Add to Chrome — Free
+                </a>
+                <Link
+                  href="/check-fit"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                >
+                  Or try the web version
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: Browser Mockup */}
+            <div className="flex-shrink-0 w-full lg:w-72">
+              <div className="bg-slate-800 rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+                {/* Browser chrome */}
+                <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-700/50 border-b border-white/5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500/60"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/60"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60"></div>
+                  <div className="flex-1 mx-2 h-5 bg-white/10 rounded-md px-2 flex items-center">
+                    <span className="text-[9px] text-gray-500 truncate">linkedin.com/jobs/view/senior-react...</span>
+                  </div>
+                </div>
+                {/* Extension popup preview */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-brand-500 rounded-md flex items-center justify-center">
+                      <span className="text-white text-[10px] font-black">T</span>
+                    </div>
+                    <span className="text-white text-xs font-bold">TalentAgent</span>
+                  </div>
+                  {/* Score ring */}
+                  <div className="flex items-center gap-3">
+                    <svg width="48" height="48" viewBox="0 0 48 48" className="-rotate-90">
+                      <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3"/>
+                      <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeDasharray="100 126"/>
+                    </svg>
+                    <div>
+                      <p className="text-emerald-400 text-lg font-bold leading-none">87%</p>
+                      <p className="text-gray-500 text-[10px]">Strong Match</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    <span className="px-1.5 py-0.5 bg-emerald-500/15 text-emerald-400 text-[9px] font-bold rounded border border-emerald-500/30">+ React</span>
+                    <span className="px-1.5 py-0.5 bg-emerald-500/15 text-emerald-400 text-[9px] font-bold rounded border border-emerald-500/30">+ TypeScript</span>
+                    <span className="px-1.5 py-0.5 bg-amber-500/15 text-amber-400 text-[9px] font-bold rounded border border-amber-500/30">- GraphQL</span>
+                  </div>
+                  <p className="text-emerald-400 text-[10px] font-bold">You should apply</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </FadeIn>
+      </div>
+
       {/* CTA Section */}
       <div className="bg-gradient-to-br from-brand-600 via-brand-700 to-purple-800 py-16 sm:py-20">
         <FadeIn>

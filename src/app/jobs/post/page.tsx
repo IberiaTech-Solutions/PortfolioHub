@@ -197,7 +197,7 @@ export default function PostJobPage() {
 
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
             <BriefcaseIcon className="w-4 h-4 mr-2" />
             Post a Job
           </div>

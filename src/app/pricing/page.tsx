@@ -141,16 +141,16 @@ function PricingContent() {
 
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 bg-brand-500/10 border border-brand-500/30 rounded-full text-brand-300 text-sm font-bold mb-6">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
             <SparklesIcon className="w-4 h-4 mr-2" />
             Simple, Transparent Pricing
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
             Stop Competing Blind.
             <br />
             <span className="animate-gradient-text">Start Matching Smart.</span>
           </h1>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+          <p className="text-gray-400 max-w-2xl mx-auto">
             Free forever for candidates. Pay only when you need an unfair advantage.
           </p>
 

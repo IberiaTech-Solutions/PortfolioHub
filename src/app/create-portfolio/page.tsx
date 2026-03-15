@@ -813,12 +813,12 @@ export default function CreatePortfolioPage() {
 
       <div className="relative max-w-3xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs sm:text-sm font-medium mb-4 shadow-lg">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
             <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             AI-Powered Portfolio Builder
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-2 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
             {existingPortfolio ? "Edit Your" : "Create Your"}{" "}
             <span className="animate-gradient-text">Portfolio</span>
           </h1>

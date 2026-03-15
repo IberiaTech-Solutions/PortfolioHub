@@ -156,11 +156,11 @@ export default function CheckFitPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center px-4 py-2 bg-brand-500/10 border border-brand-500/30 rounded-full text-brand-300 text-sm font-bold mb-6">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
             <SparklesIcon className="w-4 h-4 mr-2" />
             AI-Powered Fit Assessment
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
             Check Your Fit
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">

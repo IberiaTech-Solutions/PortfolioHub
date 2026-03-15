@@ -263,11 +263,11 @@ export default function JobsPage() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white text-sm font-bold mb-6 shadow-lg">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
             <BriefcaseIcon className="w-4 h-4 mr-2" />
             AI-Powered Job Matching
           </div>
-          <h1 className="text-4xl sm:text-5xl font-display font-bold text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
             Find Your Perfect Role
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">

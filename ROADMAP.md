@@ -193,7 +193,7 @@ Every feature we build reinforces one principle: **apply less, match better, was
 - [x] **Competition score per job** — Estimated applicant count based on job age/remote/level + user percentile rank ("Top X%") based on skill match. Color-coded Low/Moderate/Competitive/Very competitive labels.
 
 ### Paste-and-Check Fit
-- [x] **"Check My Fit" page** (`/check-fit`) — Dedicated page: paste any job description from LinkedIn/Indeed/anywhere → AI returns fit score, strengths, gaps, advice, should-apply signal, and interview prep questions. Works with any job board. Added to nav for candidates (desktop + mobile).
+- [x] **"Check My Fit" page** (`/check-fit`) — Paste text OR paste URL (LinkedIn, Indeed, etc.). URL mode uses `/api/scrapeJob` to extract job description from any page. Falls back to text paste if scraping fails. AI returns fit score, strengths, gaps, advice, should-apply signal, and interview prep. Auto-detects URLs from clipboard. Added to nav for candidates (desktop + mobile).
 
 ### Smart Apply System
 - [x] **Quality-over-quantity mode** — "Quality Mode" toggle on jobs page. Limits to 5 applications per day. Shows remaining count. Apply button disabled when limit reached. Encourages focus on best matches.

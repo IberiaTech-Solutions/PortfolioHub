@@ -13,12 +13,16 @@ import {
 
 export default function CheckFitPage() {
   const [jobDescription, setJobDescription] = useState("");
+  const [jobUrl, setJobUrl] = useState("");
+  const [scraping, setScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState("");
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(false);
   const [assessment, setAssessment] = useState<FitAssessment | null>(null);
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [inputMode, setInputMode] = useState<"text" | "url">("text");
 
   useEffect(() => {
     const init = async () => {
@@ -39,6 +43,30 @@ export default function CheckFitPage() {
     };
     init();
   }, []);
+
+  const scrapeUrl = async () => {
+    if (!jobUrl.trim()) return;
+    setScraping(true);
+    setScrapeError("");
+    try {
+      const res = await fetch("/api/scrapeJob", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: jobUrl.trim() }),
+      });
+      const data = await res.json();
+      if (data.jobDescription) {
+        setJobDescription(data.jobDescription);
+        setInputMode("text"); // Switch to text view to show extracted content
+      } else {
+        setScrapeError(data.error || "Could not extract job description from this URL.");
+      }
+    } catch {
+      setScrapeError("Failed to fetch. Try pasting the job description text directly.");
+    } finally {
+      setScraping(false);
+    }
+  };
 
   const runAssessment = async () => {
     if (!jobDescription.trim() || !portfolio) return;
@@ -163,29 +191,101 @@ export default function CheckFitPage() {
           <div className="space-y-8">
             {/* Input */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-heading font-bold text-white">
-                  Paste Job Description
-                </label>
-                <button
-                  onClick={async () => {
-                    const text = await navigator.clipboard.readText();
-                    if (text) setJobDescription(text);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-300 rounded-lg text-xs font-medium transition-colors border border-white/10"
-                >
-                  <ClipboardDocumentIcon className="w-3.5 h-3.5" />
-                  Paste from clipboard
-                </button>
+              {/* Mode Toggle */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="inline-flex bg-white/5 border border-white/10 rounded-lg p-0.5">
+                  <button
+                    onClick={() => setInputMode("text")}
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                      inputMode === "text" ? "bg-brand-600 text-white" : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    Paste Text
+                  </button>
+                  <button
+                    onClick={() => setInputMode("url")}
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                      inputMode === "url" ? "bg-brand-600 text-white" : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    Paste URL
+                  </button>
+                </div>
+                {inputMode === "text" && (
+                  <button
+                    onClick={async () => {
+                      const text = await navigator.clipboard.readText();
+                      if (text) {
+                        // Auto-detect if it's a URL
+                        if (text.startsWith("http")) {
+                          setJobUrl(text);
+                          setInputMode("url");
+                        } else {
+                          setJobDescription(text);
+                        }
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-300 rounded-lg text-xs font-medium transition-colors border border-white/10"
+                  >
+                    <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                    Paste from clipboard
+                  </button>
+                )}
               </div>
-              <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                placeholder={"Copy & paste the full job description here...\n\nExample:\nSenior Frontend Engineer at Stripe\nWe're looking for an experienced React developer who..."}
-                rows={8}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-                disabled={loading}
-              />
+
+              {inputMode === "url" ? (
+                <>
+                  <div className="flex gap-3">
+                    <input
+                      type="url"
+                      value={jobUrl}
+                      onChange={(e) => { setJobUrl(e.target.value); setScrapeError(""); }}
+                      placeholder="https://www.linkedin.com/jobs/view/..."
+                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      disabled={scraping}
+                    />
+                    <button
+                      onClick={scrapeUrl}
+                      disabled={scraping || !jobUrl.trim()}
+                      className="px-5 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {scraping ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Fetching...
+                        </>
+                      ) : (
+                        "Extract Job"
+                      )}
+                    </button>
+                  </div>
+                  {scrapeError && (
+                    <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <p className="text-xs text-amber-300">{scrapeError}</p>
+                      <button
+                        onClick={() => setInputMode("text")}
+                        className="text-xs text-brand-400 hover:text-brand-300 mt-1 font-medium"
+                      >
+                        Switch to paste text instead
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-600 mt-3">
+                    Works with most job boards. LinkedIn may block some requests — if so, copy the job description text and paste it directly.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <textarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder={"Copy & paste the full job description here...\n\nExample:\nSenior Frontend Engineer at Stripe\nWe're looking for an experienced React developer who..."}
+                    rows={8}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+                    disabled={loading}
+                  />
+                </>
+              )}
               <div className="flex items-center justify-between mt-4">
                 <p className="text-xs text-gray-500">
                   {jobDescription.length > 0

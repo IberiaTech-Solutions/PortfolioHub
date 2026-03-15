@@ -27,6 +27,12 @@ interface GitHubRepo {
 
 export async function POST(request: NextRequest) {
   try {
+    // Basic auth check - verify request has auth cookie
+    const cookieHeader = request.headers.get("cookie") || "";
+    if (!cookieHeader.includes("sb-")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { githubUrl } = await request.json();
     if (!githubUrl) {
       return NextResponse.json({ error: "GitHub URL required" }, { status: 400 });

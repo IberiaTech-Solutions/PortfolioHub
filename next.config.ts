@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  experimental: {
+    optimizePackageImports: ["@heroicons/react", "@headlessui/react"],
+  },
   images: {
     remotePatterns: [
       {

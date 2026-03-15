@@ -5,6 +5,10 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+    }
+
     const { skill, difficulty } = await request.json();
 
     if (!skill) {
@@ -49,6 +53,10 @@ The question should be practical and testable — something that proves real-wor
 
 export async function PUT(request: NextRequest) {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+    }
+
     const { skill, question, answer, evaluationCriteria } = await request.json();
 
     if (!skill || !question || !answer) {

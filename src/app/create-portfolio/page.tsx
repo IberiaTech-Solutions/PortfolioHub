@@ -608,19 +608,14 @@ export default function CreatePortfolioPage() {
         user_id: user.id,
       };
 
-      console.log("Submitting portfolio data:", portfolioData);
-      
       // Validate required fields
       if (!portfolioData.title || !portfolioData.name || !portfolioData.job_title || !portfolioData.description) {
         throw new Error("Missing required fields: title, name, job_title, or description");
       }
       
-      console.log("Validation passed, proceeding with submission...");
-
       if (existingPortfolio) {
         // Update existing portfolio
-        console.log("Updating existing portfolio:", existingPortfolio.id);
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("portfolios")
           .update(portfolioData)
           .eq("id", existingPortfolio.id)
@@ -630,13 +625,8 @@ export default function CreatePortfolioPage() {
           console.error("Supabase update error:", error);
           throw error;
         }
-        
-        console.log("Portfolio updated successfully:", data);
       } else {
         // Create new portfolio
-        console.log("Creating new portfolio");
-        console.log("Portfolio data being inserted:", JSON.stringify(portfolioData, null, 2));
-        
         // Add timeout to detect hanging operations
         const insertPromise = supabase
           .from("portfolios")
@@ -648,9 +638,7 @@ export default function CreatePortfolioPage() {
         );
 
         const result = await Promise.race([insertPromise, timeoutPromise]);
-        const { data, error } = result as PostgrestResponse<Portfolio>;
-
-        console.log("Supabase response:", { data, error });
+        const { error } = result as PostgrestResponse<Portfolio>;
 
         if (error) {
           console.error("Supabase insert error:", error);
@@ -663,17 +651,12 @@ export default function CreatePortfolioPage() {
           throw error;
         }
         
-        console.log("Portfolio created successfully:", data);
       }
 
-      console.log("Portfolio saved successfully");
-      console.log("Navigating to profile page...");
       router.push("/profile");
-      console.log("Navigation initiated");
-      
+
       // Fallback: reset loading state after a timeout in case navigation fails
       setTimeout(() => {
-        console.log("Timeout reached, resetting loading state");
         setLoading(false);
       }, 3000);
     } catch (error) {

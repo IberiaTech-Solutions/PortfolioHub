@@ -40,9 +40,6 @@ export default function CollaborationManager({
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('Adding collaboration:', { portfolioId, newCollaboration });
-    console.log('PortfolioId type:', typeof portfolioId, 'Length:', portfolioId?.length);
-    
     if (!newCollaboration.collaboratorName || !newCollaboration.collaboratorEmail || 
         !newCollaboration.projectTitle || !newCollaboration.role) {
       toast('Please fill in all required fields', 'error');
@@ -51,7 +48,6 @@ export default function CollaborationManager({
 
     if (!portfolioId || portfolioId.trim() === '') {
       // For new portfolios, we'll store collaborations locally until portfolio is saved
-      console.log('No portfolio ID - storing collaboration locally');
       const tempCollaboration = {
         id: `temp-${Date.now()}`,
         collaborator_name: newCollaboration.collaboratorName,
@@ -79,11 +75,6 @@ export default function CollaborationManager({
 
     setLoading(true);
     try {
-      console.log('Sending request to API with:', {
-        portfolioId,
-        ...newCollaboration
-      });
-      
       const response = await fetch('/api/collaborations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,11 +84,8 @@ export default function CollaborationManager({
         })
       });
 
-      console.log('API Response status:', response.status);
-      
       if (response.ok) {
         const { collaboration } = await response.json();
-        console.log('Collaboration added successfully:', collaboration);
         onCollaborationsChange([...collaborations, collaboration]);
         setNewCollaboration({
           collaboratorName: '',
@@ -170,7 +158,6 @@ export default function CollaborationManager({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Add Collaboration button clicked');
             setIsAdding(true);
           }}
           className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-xs sm:text-sm border border-white/20 w-full sm:w-auto"

@@ -23,13 +23,14 @@ export default function NotificationBell({ userId }: { userId: string }) {
     if (!supabase || !userId) return;
 
     const fetchNotifications = async () => {
-      const { data } = await supabase!
+      const { data, error } = await supabase!
         .from("notifications")
         .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(20);
 
+      if (error) { console.error("Failed to fetch notifications:", error.message); return; }
       if (data) {
         setNotifications(data as Notification[]);
         setUnreadCount((data as Notification[]).filter((n) => !n.read).length);

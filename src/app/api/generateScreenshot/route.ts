@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
+    // Basic auth check - verify request has auth cookie
+    const cookieHeader = request.headers.get("cookie") || "";
+    if (!cookieHeader.includes("sb-")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { url } = await request.json();
 
     if (!url) {

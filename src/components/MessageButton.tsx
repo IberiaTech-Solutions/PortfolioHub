@@ -27,18 +27,19 @@ export default function MessageButton({
 
     try {
       // Find or create conversation
-      const { data: existing } = await supabase
+      const { data: existing, error: existingError } = await supabase
         .from("conversations")
         .select("id")
         .or(
           `and(participant_1.eq.${currentUserId},participant_2.eq.${targetUserId}),and(participant_1.eq.${targetUserId},participant_2.eq.${currentUserId})`
         )
         .maybeSingle();
+      if (existingError) throw new Error(existingError.message);
 
       let conversationId = existing?.id;
 
       if (!conversationId) {
-        const { data: newConv } = await supabase
+        const { data: newConv, error: newConvError } = await supabase
           .from("conversations")
           .insert({
             participant_1: currentUserId,
@@ -46,6 +47,7 @@ export default function MessageButton({
           })
           .select("id")
           .single();
+        if (newConvError) throw new Error(newConvError.message);
 
         conversationId = newConv?.id;
       }
@@ -53,11 +55,12 @@ export default function MessageButton({
       if (!conversationId) throw new Error("Failed to create conversation");
 
       // Send message
-      await supabase.from("messages").insert({
+      const { error: messageError } = await supabase.from("messages").insert({
         conversation_id: conversationId,
         sender_id: currentUserId,
         content: message.trim(),
       });
+      if (messageError) throw new Error(messageError.message);
 
       // Update conversation last message
       await supabase

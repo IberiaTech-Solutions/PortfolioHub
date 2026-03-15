@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 // Works best with public job pages; LinkedIn may block some requests
 export async function POST(request: NextRequest) {
   try {
+    // Basic auth check - verify request has auth cookie
+    const cookieHeader = request.headers.get("cookie") || "";
+    if (!cookieHeader.includes("sb-")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { url } = await request.json();
     if (!url) {
       return NextResponse.json({ error: "URL required" }, { status: 400 });

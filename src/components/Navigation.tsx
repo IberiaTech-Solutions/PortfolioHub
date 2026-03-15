@@ -129,25 +129,22 @@ export default function Navigation() {
   }, []);
 
   const handleSignOut = async () => {
-    console.log('Sign out clicked');
     setIsDropdownOpen(false);
-    
+
     if (!supabase) {
       console.warn('Supabase not configured');
       router.push("/");
       return;
     }
-    
+
     try {
-      console.log('Attempting to sign out...');
       const { error } = await supabase.auth.signOut();
-      
+
       if (error) {
         console.error('Sign out error:', error);
         return;
       }
-      
-      console.log('Sign out successful');
+
       router.push("/");
     } catch (error) {
       console.error('Sign out error:', error);
@@ -392,6 +389,15 @@ export default function Navigation() {
                             <p className="text-xs text-gray-300 truncate">
                               {user.email}
                             </p>
+                            <span className={`inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              userRole === "admin"
+                                ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                                : userRole === "recruiter"
+                                ? "bg-purple-500/15 text-purple-400 border border-purple-500/30"
+                                : "bg-brand-500/15 text-brand-400 border border-brand-500/30"
+                            }`}>
+                              {userRole}
+                            </span>
                           </div>
                           
                           <Link

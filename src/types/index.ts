@@ -185,17 +185,6 @@ export type GitHubRepo = {
   size: number;
 };
 
-export type Notification = {
-  id: string;
-  user_id: string;
-  type: "profile_view" | "ai_chat" | "job_match" | "assessment" | "collaboration";
-  title: string;
-  message: string;
-  link?: string;
-  read: boolean;
-  created_at: string;
-};
-
 export type GitHubUser = {
   public_repos: number;
   followers: number;

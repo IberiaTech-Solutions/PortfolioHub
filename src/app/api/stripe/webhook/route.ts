@@ -51,17 +51,7 @@ export async function POST(request: NextRequest) {
               .eq("user_id", userId);
           }
 
-          // Send notification
-          await supabase.from("notifications").insert({
-            user_id: userId,
-            type: "assessment",
-            title: plan === "featured_weekly" ? "Featured Profile Activated!" : `Upgraded to ${tier.charAt(0).toUpperCase() + tier.slice(1)}!`,
-            message: plan === "featured_weekly"
-              ? "Your profile will appear at the top of search results for 7 days."
-              : `You now have access to all ${tier} features.`,
-            link: "/profile",
-            read: false,
-          });
+          // Notification removed — table dropped in tool-first pivot
         }
         break;
       }
@@ -105,14 +95,6 @@ export async function POST(request: NextRequest) {
             .update({ plan_tier: "free", stripe_subscription_id: null })
             .eq("user_id", (portfolio as { user_id: string }).user_id);
 
-          await supabase.from("notifications").insert({
-            user_id: (portfolio as { user_id: string }).user_id,
-            type: "assessment",
-            title: "Subscription Canceled",
-            message: "Your plan has been downgraded to Free. Your portfolio and data are safe.",
-            link: "/pricing",
-            read: false,
-          });
         }
         break;
       }

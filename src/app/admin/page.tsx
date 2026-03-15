@@ -8,7 +8,6 @@ import {
   UserGroupIcon,
   BriefcaseIcon,
   ChartBarIcon,
-  FlagIcon,
   ShieldCheckIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
@@ -28,22 +27,12 @@ interface PlatformStats {
   recruiterTier: number;
 }
 
-interface AuditEntry {
-  id: string;
-  admin_id: string;
-  action: string;
-  target_type: string;
-  target_id: string;
-  details: string;
-  created_at: string;
-}
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [stats, setStats] = useState<PlatformStats | null>(null);
-  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -87,17 +76,7 @@ export default function AdminDashboard() {
         supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("plan_tier", "recruiter"),
       ]);
 
-      // Audit log (last 20 entries)
-      try {
-        const { data: logs } = await supabase
-          .from("audit_log")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(20);
-        if (logs) setAuditLog(logs as unknown as AuditEntry[]);
-      } catch {
-        // Table may not exist yet
-      }
+      // Audit log removed in tool-first pivot
 
       setStats({
         totalUsers: portfolioRes.count ?? 0,
@@ -197,14 +176,6 @@ export default function AdminDashboard() {
             <h3 className="text-lg font-heading font-bold text-white mb-1">Job Moderation</h3>
             <p className="text-sm text-gray-400">Review posted jobs, deactivate scams, manage reported listings.</p>
           </Link>
-          <Link
-            href="/admin/reports"
-            className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-amber-500/30 transition-all group"
-          >
-            <FlagIcon className="w-8 h-8 text-amber-400 mb-3" />
-            <h3 className="text-lg font-heading font-bold text-white mb-1">Reported Content</h3>
-            <p className="text-sm text-gray-400">Review user-flagged jobs and suspicious activity.</p>
-          </Link>
         </div>
 
         {/* AI Usage + Subscriptions Row */}
@@ -260,32 +231,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Audit Log */}
-        {auditLog.length > 0 && (
-          <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-6">
-            <h3 className="text-sm font-heading font-bold text-white mb-4 flex items-center gap-2">
-              <ShieldCheckIcon className="w-4 h-4 text-rose-400" />
-              Recent Admin Actions
-            </h3>
-            <div className="space-y-2">
-              {auditLog.map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                  <div>
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold mr-2 ${
-                      entry.action.includes("delete") ? "bg-rose-500/15 text-rose-400" :
-                      entry.action.includes("verify") ? "bg-emerald-500/15 text-emerald-400" :
-                      "bg-brand-500/15 text-brand-400"
-                    }`}>
-                      {entry.action}
-                    </span>
-                    <span className="text-xs text-gray-300">{entry.details}</span>
-                  </div>
-                  <span className="text-[10px] text-gray-600">{new Date(entry.created_at).toLocaleString()}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

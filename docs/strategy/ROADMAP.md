@@ -133,11 +133,5 @@ These were built but removed in the tool-first pivot. Code exists in git history
 | `predefined_skills` | 70+ categorized skills for the combobox in onboarding |
 | `job_applications` | Tracks confirmed applications ("Did you apply?" flow) |
 
-### Dormant (exist but unused after tool pivot)
-| Table | Was used by | Can drop? |
-|-------|-----------|-----------|
-| `notifications` | NotificationBell component (removed) | Yes |
-| `conversations` | MessageButton component (removed) | Yes |
-| `messages` | MessageButton component (removed) | Yes |
-| `reports` | Admin reports page (removed) | Yes |
-| `audit_log` | Admin audit logging (removed) | Yes |
+### Dropped
+`notifications`, `conversations`, `messages`, `reports`, `audit_log` — all dropped from DB and removed from codebase.

@@ -24,20 +24,6 @@ CREATE INDEX IF NOT EXISTS idx_job_applications_user_id ON job_applications(user
 CREATE INDEX IF NOT EXISTS idx_job_applications_job_id ON job_applications(job_id);
 CREATE INDEX IF NOT EXISTS idx_job_applications_applied_at ON job_applications(applied_at DESC);
 
--- notifications table (if exists)
-CREATE INDEX IF NOT EXISTS idx_notifications_user_id_created ON notifications(user_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read) WHERE read = false;
-
--- conversations table (if exists)
-CREATE INDEX IF NOT EXISTS idx_conversations_participant_1 ON conversations(participant_1);
-CREATE INDEX IF NOT EXISTS idx_conversations_participant_2 ON conversations(participant_2);
-
--- messages table (if exists)
-CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id, created_at DESC);
-
--- audit_log table (if exists)
-CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at DESC);
-
 -- Update the user_role constraint to include admin
 ALTER TABLE portfolios DROP CONSTRAINT IF EXISTS user_role_valid;
 ALTER TABLE portfolios ADD CONSTRAINT user_role_valid CHECK (user_role IN ('candidate', 'recruiter', 'admin'));

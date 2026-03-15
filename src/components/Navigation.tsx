@@ -44,25 +44,32 @@ export default function Navigation() {
         } = await supabase.auth.getUser();
         setUser(user);
         
-        // Check if user has a portfolio
+        // Check role: admin from auth metadata, candidate/recruiter from portfolio
         if (user) {
-          try {
-            const { data: portfolio, error } = await supabase
-              .from("portfolios")
-              .select("id, user_role")
-              .eq("user_id", user.id)
-              .maybeSingle();
-
-            if (error) {
-              console.error('Error fetching portfolio:', error);
-              setHasPortfolio(false);
-            } else {
-              setHasPortfolio(!!portfolio);
-              if (portfolio && 'user_role' in portfolio && typeof portfolio.user_role === 'string') setUserRole(portfolio.user_role);
-            }
-          } catch (portfolioError) {
-            console.error('Error checking portfolio:', portfolioError);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const authRole = (user as any).app_metadata?.role;
+          if (authRole === "admin") {
+            setUserRole("admin");
             setHasPortfolio(false);
+          } else {
+            try {
+              const { data: portfolio, error } = await supabase
+                .from("portfolios")
+                .select("id, user_role")
+                .eq("user_id", user.id)
+                .maybeSingle();
+
+              if (error) {
+                console.error('Error fetching portfolio:', error);
+                setHasPortfolio(false);
+              } else {
+                setHasPortfolio(!!portfolio);
+                if (portfolio && 'user_role' in portfolio && typeof portfolio.user_role === 'string') setUserRole(portfolio.user_role);
+              }
+            } catch (portfolioError) {
+              console.error('Error checking portfolio:', portfolioError);
+              setHasPortfolio(false);
+            }
           }
         }
       } catch (error) {
@@ -84,8 +91,15 @@ export default function Navigation() {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       
-      // Check portfolio when user changes
+      // Check role when user changes
       if (session?.user && supabase) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const authRole = (session.user as any).app_metadata?.role;
+        if (authRole === "admin") {
+          setUserRole("admin");
+          setHasPortfolio(false);
+          return;
+        }
         try {
           const { data: portfolio, error } = await supabase
             .from("portfolios")
@@ -219,7 +233,42 @@ export default function Navigation() {
               <div className="flex items-center space-x-0.5 lg:space-x-1">
                 {mounted && !loading && user && (
                   <>
-                    {userRole === "candidate" ? (
+                    {userRole === "admin" ? (
+                      <>
+                        <Link
+                          href="/admin"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/admin" ? "bg-rose-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/admin/users"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/admin/users" ? "bg-rose-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Users
+                        </Link>
+                        <Link
+                          href="/admin/jobs"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/admin/jobs" ? "bg-rose-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Jobs
+                        </Link>
+                        <Link
+                          href="/admin/reports"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            pathname === "/admin/reports" ? "bg-rose-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          Reports
+                        </Link>
+                      </>
+                    ) : userRole === "candidate" ? (
                       <>
                         <Link
                           href="/jobs"
@@ -298,17 +347,6 @@ export default function Navigation() {
                           My Jobs
                         </Link>
                       </>
-                    )}
-                    {/* Admin link for admin users */}
-                    {userRole === "admin" && (
-                      <Link
-                        href="/admin"
-                        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                          pathname.startsWith("/admin") ? "bg-rose-600 text-white" : "text-rose-400 hover:text-white hover:bg-slate-800"
-                        }`}
-                      >
-                        Admin
-                      </Link>
                     )}
                   </>
                 )}

@@ -251,9 +251,9 @@ Every feature we build reinforces one principle: **apply less, match better, was
 - [x] **User management** (`/admin/users`) — Full user table with search, role filter (candidate/recruiter/admin). Change user roles via dropdown. Toggle verified badge. View portfolio link.
 - [x] **Job moderation** (`/admin/jobs`) — All jobs with ghost risk score, active/inactive toggle, delete. Sorted by newest.
 - [x] **Reported content** (`/admin/reports`) — Review queue for flagged jobs/profiles/messages. Mark as reviewed or dismiss. Requires `reports` table in Supabase.
-- [ ] **Subscription management** — View Stripe subscriptions, revenue metrics, plan distribution
-- [ ] **AI usage monitoring** — Track OpenAI API spend per user/route
-- [ ] **Audit log** — Track admin actions (role changes, verifications, deletions)
+- [x] **Subscription management** — Plan distribution (Free/Pro/Recruiter counts) + MRR calculation on admin dashboard.
+- [x] **AI usage monitoring** — AI chats + fit assessments counts (7-day) + estimated OpenAI cost on admin dashboard. `/api/admin/aiUsage` endpoint with admin auth.
+- [x] **Audit log** — `auditLog.ts` utility logs role changes, verified toggles, job deactivations/deletions, report reviews. Recent actions displayed on admin dashboard. Requires `audit_log` table in Supabase.
 
 ---
 
@@ -283,3 +283,4 @@ Every feature we build reinforces one principle: **apply less, match better, was
 | `messages` | Individual messages within conversations |
 | `job_applications` | Application tracking (user, job, status, fit score, dates) |
 | `reports` | User-flagged content (jobs, profiles, messages) for admin review |
+| `audit_log` | Admin action history (role changes, verifications, deletions) |

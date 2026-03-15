@@ -27,6 +27,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid event type' }, { status: 400 });
     }
 
+    // Validate portfolio_id is a valid UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(portfolio_id)) {
+      return NextResponse.json({ error: 'Invalid portfolio ID' }, { status: 400 });
+    }
+
+    // Verify portfolio exists before inserting
+    const { data: exists } = await supabase
+      .from('portfolios')
+      .select('id')
+      .eq('id', portfolio_id)
+      .maybeSingle();
+
+    if (!exists) {
+      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    }
+
     await supabase.from('portfolio_analytics').insert({
       portfolio_id,
       event_type,

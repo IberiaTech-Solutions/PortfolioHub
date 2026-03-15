@@ -34,13 +34,9 @@ export default function AdminReportsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth?redirect=/admin/reports"); return; }
 
-      const { data: portfolio } = await supabase
-        .from("portfolios")
-        .select("user_role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!portfolio || (portfolio as { user_role?: string }).user_role !== "admin") {
+      // Check admin role from auth metadata (admins don't need a portfolio)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((user as any).app_metadata?.role !== "admin") {
         router.push("/");
         return;
       }

@@ -10,6 +10,7 @@ import {
   ChartBarIcon,
   FlagIcon,
   ShieldCheckIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 
 interface PlatformStats {
@@ -20,6 +21,21 @@ interface PlatformStats {
   totalRecruiters: number;
   totalAdmins: number;
   recentSignups: number;
+  aiChats7d: number;
+  aiAssessments7d: number;
+  freeTier: number;
+  proTier: number;
+  recruiterTier: number;
+}
+
+interface AuditEntry {
+  id: string;
+  admin_id: string;
+  action: string;
+  target_type: string;
+  target_id: string;
+  details: string;
+  created_at: string;
 }
 
 export default function AdminDashboard() {
@@ -27,6 +43,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [stats, setStats] = useState<PlatformStats | null>(null);
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -35,14 +52,9 @@ export default function AdminDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth?redirect=/admin"); return; }
 
-      // Check admin role
-      const { data: portfolio } = await supabase
-        .from("portfolios")
-        .select("user_role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!portfolio || (portfolio as { user_role?: string }).user_role !== "admin") {
+      // Check admin role from auth metadata (admins don't need a portfolio)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((user as any).app_metadata?.role !== "admin") {
         router.push("/");
         return;
       }
@@ -65,6 +77,28 @@ export default function AdminDashboard() {
         .select("*", { count: "exact", head: true })
         .gte("created_at", weekAgo);
 
+      // AI usage (last 7 days)
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const [chats7d, assessments7d, freeCount, proCount, recruiterCount] = await Promise.all([
+        supabase.from("portfolio_analytics").select("*", { count: "exact", head: true }).eq("event_type", "chat").gte("created_at", sevenDaysAgo),
+        supabase.from("portfolio_analytics").select("*", { count: "exact", head: true }).eq("event_type", "fit_assessment").gte("created_at", sevenDaysAgo),
+        supabase.from("portfolios").select("*", { count: "exact", head: true }).or("plan_tier.is.null,plan_tier.eq.free"),
+        supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("plan_tier", "pro"),
+        supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("plan_tier", "recruiter"),
+      ]);
+
+      // Audit log (last 20 entries)
+      try {
+        const { data: logs } = await supabase
+          .from("audit_log")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(20);
+        if (logs) setAuditLog(logs as unknown as AuditEntry[]);
+      } catch {
+        // Table may not exist yet
+      }
+
       setStats({
         totalUsers: portfolioRes.count ?? 0,
         totalPortfolios: portfolioRes.count ?? 0,
@@ -73,6 +107,11 @@ export default function AdminDashboard() {
         totalRecruiters: recruitersRes.count ?? 0,
         totalAdmins: adminsRes.count ?? 0,
         recentSignups: recentSignups ?? 0,
+        aiChats7d: chats7d.count ?? 0,
+        aiAssessments7d: assessments7d.count ?? 0,
+        freeTier: freeCount.count ?? 0,
+        proTier: proCount.count ?? 0,
+        recruiterTier: recruiterCount.count ?? 0,
       });
 
       setLoading(false);
@@ -167,6 +206,86 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-400">Review user-flagged jobs and suspicious activity.</p>
           </Link>
         </div>
+
+        {/* AI Usage + Subscriptions Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+          {/* AI Usage */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h3 className="text-sm font-heading font-bold text-white mb-4 flex items-center gap-2">
+              <SparklesIcon className="w-4 h-4 text-purple-400" />
+              AI Usage (Last 7 Days)
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.aiChats7d ?? 0}</p>
+                <p className="text-[10px] text-gray-500 uppercase">AI Chats</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.aiAssessments7d ?? 0}</p>
+                <p className="text-[10px] text-gray-500 uppercase">Fit Assessments</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">
+                  ${(((stats?.aiChats7d ?? 0) + (stats?.aiAssessments7d ?? 0)) * 0.001).toFixed(2)}
+                </p>
+                <p className="text-[10px] text-gray-500 uppercase">Est. Cost</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-600 mt-3">Model: gpt-4o-mini (~$0.001/call)</p>
+          </div>
+
+          {/* Subscriptions */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h3 className="text-sm font-heading font-bold text-white mb-4 flex items-center gap-2">
+              <ChartBarIcon className="w-4 h-4 text-emerald-400" />
+              Plan Distribution
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.freeTier ?? 0}</p>
+                <p className="text-[10px] text-gray-500 uppercase">Free</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-brand-400">{stats?.proTier ?? 0}</p>
+                <p className="text-[10px] text-gray-500 uppercase">Pro</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-purple-400">{stats?.recruiterTier ?? 0}</p>
+                <p className="text-[10px] text-gray-500 uppercase">Recruiter</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-600 mt-3">
+              MRR: ${((stats?.proTier ?? 0) * 9 + (stats?.recruiterTier ?? 0) * 49).toLocaleString()}/mo
+            </p>
+          </div>
+        </div>
+
+        {/* Audit Log */}
+        {auditLog.length > 0 && (
+          <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h3 className="text-sm font-heading font-bold text-white mb-4 flex items-center gap-2">
+              <ShieldCheckIcon className="w-4 h-4 text-rose-400" />
+              Recent Admin Actions
+            </h3>
+            <div className="space-y-2">
+              {auditLog.map((entry) => (
+                <div key={entry.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                  <div>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold mr-2 ${
+                      entry.action.includes("delete") ? "bg-rose-500/15 text-rose-400" :
+                      entry.action.includes("verify") ? "bg-emerald-500/15 text-emerald-400" :
+                      "bg-brand-500/15 text-brand-400"
+                    }`}>
+                      {entry.action}
+                    </span>
+                    <span className="text-xs text-gray-300">{entry.details}</span>
+                  </div>
+                  <span className="text-[10px] text-gray-600">{new Date(entry.created_at).toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

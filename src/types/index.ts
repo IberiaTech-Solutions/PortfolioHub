@@ -62,6 +62,10 @@ export type Portfolio = {
   collaborations?: CollaborationSummary[];
   created_at: string;
   updated_at?: string;
+  plan_tier?: "free" | "pro" | "recruiter";
+  is_featured?: boolean;
+  featured_skills?: string[];
+  video_intro_url?: string;
 };
 
 export type PortfolioData = {

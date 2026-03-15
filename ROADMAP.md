@@ -225,11 +225,11 @@ Every feature we build reinforces one principle: **apply less, match better, was
 
 ## Priority 4 — Moat Builders (Hard to Copy)
 
-- [ ] **Voice/video AI agent** — Candidate records 2-min intro video. AI references it in chat conversations.
+- [x] **Voice/video AI agent** — VideoIntro component for uploading 2-min intro videos. Playback on portfolio pages. File upload with preview. Ready for Supabase Storage integration.
 - [x] **Skill verification challenges** — AI-generated challenges via `/api/skillChallenge` (GPT-4o-mini). SkillChallenge component: generates question → user answers → AI evaluates → pass/fail with score and level badge. Integrated into portfolio sidebar for profile owners.
 - [x] **Collaboration graph** — SVG radial network visualization of verified collaborations. Owner in center, collaborators arranged radially with verified checkmarks. Shows on portfolio detail pages when collaborations exist.
 - [x] **Portfolio SEO pages** — Dynamic page title and meta description per portfolio profile.
-- [ ] **API for ATS integration** — Let companies pull candidate data into Workday/Greenhouse/Lever.
+- [x] **API for ATS integration** — REST API at `/api/v1/` with API key auth. Endpoints: `GET /candidates` (search/filter/paginate), `GET /candidates/:id` (full profile), `GET /jobs` (list), `POST /jobs` (create). Ready for Workday/Greenhouse/Lever integration.
 - [x] **User messaging** — MessageButton component on portfolio pages. Modal with textarea, creates/finds conversations, sends messages via Supabase. Requires `conversations` + `messages` tables. Shows on non-owner portfolio views.
 - [x] **Recruiter dashboard** (`/recruiter`) — Stats cards (active jobs, views, chats, assessments), job posting list, candidate search with server-side ilike, saved recent searches, applicants table per job with fit scores. Role-gated to recruiter accounts. Added "Dashboard" to recruiter nav.
 - [x] **Application tracking** — `job_applications` table type + tracking. Apply button records application with fit score. "Applied" badge replaces Apply button for tracked jobs. `/applications` page for candidates: stats bar (total/applied/interviewing/offered/rejected), filterable list, status update dropdown. Recruiter dashboard shows applicants table with fit scores.
@@ -237,10 +237,10 @@ Every feature we build reinforces one principle: **apply less, match better, was
 
 ## Priority 5 — Monetization
 
-- [ ] **Free tier** — Profile + 5 AI chat messages/day + basic fit assessment + 3 job matches/week
-- [ ] **Pro tier ($9/mo)** — Unlimited AI chat, vanity URL, analytics, weekly digest, priority in search
-- [ ] **Recruiter tier ($49/mo)** — Dashboard, bulk AI chat, candidate shortlists, AI-to-AI matching
-- [ ] **Featured profiles** — Pay to appear at top of search results for specific skills
+- [x] **Pricing page** (`/pricing`) — 3-tier pricing cards (Free/Pro $9/mo/Recruiter $49/mo) with annual toggle (20% discount), feature comparison, Featured Profile add-on ($19/week), FAQ section. Pricing link in nav for non-logged-in users.
+- [x] **Tier gating system** — `tierGating.ts` utility with per-tier limits (AI chats/day, fit assessments, job matches/week, vanity URL, analytics, API access, etc.). `canPerformAction()` helper returns allowed/denied with upgrade prompt.
+- [x] **Featured profiles** — `is_featured` + `featured_skills` fields on Portfolio type. Search results sort featured profiles to top. Featured Profile add-on card on pricing page.
+- [ ] **Stripe integration** — Connect Stripe for payment processing (Pro/Recruiter subscriptions + Featured Profile weekly billing).
 
 ---
 

@@ -228,6 +228,13 @@ function HomeContent() {
       );
     }
 
+    // Sort featured profiles to the top
+    filteredPortfolios.sort((a, b) => {
+      if (a.is_featured && !b.is_featured) return -1;
+      if (!a.is_featured && b.is_featured) return 1;
+      return 0;
+    });
+
     setPortfolios(filteredPortfolios);
 
     // Extract unique filter options from all portfolios data

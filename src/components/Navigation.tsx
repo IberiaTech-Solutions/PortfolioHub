@@ -381,6 +381,14 @@ export default function Navigation() {
                   ) : (
                     <div className="flex items-center space-x-2">
                       <Link
+                        href="/pricing"
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          pathname === "/pricing" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
+                        }`}
+                      >
+                        Pricing
+                      </Link>
+                      <Link
                         href="/auth?mode=signin"
                         className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                           pathname === "/auth" && searchParams.get("mode") === "signin"

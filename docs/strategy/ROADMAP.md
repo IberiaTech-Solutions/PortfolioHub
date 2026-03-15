@@ -124,15 +124,20 @@ These were built but removed in the tool-first pivot. Code exists in git history
 
 ## Database Tables
 
+### Active
 | Table | Purpose |
 |-------|---------|
-| `portfolios` | User profiles with skills, projects |
-| `jobs` | Job listings (internal) |
-| `portfolio_analytics` | View/chat/assessment tracking |
-| `predefined_skills` | 70+ categorized skills for selection |
-| `notifications` | In-app notifications |
-| `job_applications` | Application tracking |
-| `audit_log` | Admin action history |
-| `reports` | Flagged content |
-| `conversations` | DM threads (dormant) |
-| `messages` | Messages (dormant) |
+| `portfolios` | User profiles — skills, projects, experience, AI chat context |
+| `jobs` | Internal job listings (most jobs come from Adzuna/RemoteOK APIs) |
+| `portfolio_analytics` | Tracks views, AI chats, fit assessments per portfolio |
+| `predefined_skills` | 70+ categorized skills for the combobox in onboarding |
+| `job_applications` | Tracks confirmed applications ("Did you apply?" flow) |
+
+### Dormant (exist but unused after tool pivot)
+| Table | Was used by | Can drop? |
+|-------|-----------|-----------|
+| `notifications` | NotificationBell component (removed) | Yes |
+| `conversations` | MessageButton component (removed) | Yes |
+| `messages` | MessageButton component (removed) | Yes |
+| `reports` | Admin reports page (removed) | Yes |
+| `audit_log` | Admin audit logging (removed) | Yes |

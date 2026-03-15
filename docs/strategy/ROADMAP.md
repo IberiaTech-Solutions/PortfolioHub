@@ -124,14 +124,12 @@ These were built but removed in the tool-first pivot. Code exists in git history
 
 ## Database Tables
 
-### Active
 | Table | Purpose |
 |-------|---------|
 | `portfolios` | User profiles — skills, projects, experience, AI chat context |
 | `jobs` | Internal job listings (most jobs come from Adzuna/RemoteOK APIs) |
 | `portfolio_analytics` | Tracks views, AI chats, fit assessments per portfolio |
-| `predefined_skills` | 70+ categorized skills for the combobox in onboarding |
+| `predefined_skills` | 70+ categorized skills for onboarding combobox |
 | `job_applications` | Tracks confirmed applications ("Did you apply?" flow) |
 
-### Dropped
-`notifications`, `conversations`, `messages`, `reports`, `audit_log` — all dropped from DB and removed from codebase.
+5 tables. Everything else was dropped in the tool-first pivot.

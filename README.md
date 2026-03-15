@@ -1,92 +1,55 @@
-# PortfolioHub
+# TalentAgent
 
-A platform for developers, designers, and other professionals to showcase their portfolios and be discovered by potential employers or clients.
+**AI career tool for job seekers.** Paste any job → know if you should apply in 10 seconds.
 
-## Features
+## What it does
 
-- User authentication (sign up, sign in)
-- Create and edit your portfolio
-- Showcase your skills and projects
-- Search for professionals by skills or job titles
-- Browse through portfolios of talented individuals
+- **Check My Fit** — Paste a job description from LinkedIn, Indeed, or anywhere. AI gives you a fit score (0-100), strengths, gaps, and honest "Don't Apply" signals.
+- **Smart Job Browse** — Jobs from Adzuna, RemoteOK, and Arbeitnow with ghost job detection, eligibility badges, competition scores, and timing signals.
+- **AI Portfolio Agent** — Import your resume (PDF, DOCX, text) or GitHub profile. Your AI agent answers questions about your experience in depth.
+- **Interview Prep** — AI generates role-specific questions with tips based on your fit assessment.
+- **Chrome Extension** — Check fit scores directly on LinkedIn/Indeed/Glassdoor job pages.
 
 ## Tech Stack
 
-- Next.js 15
-- React 19
-- TypeScript
-- Supabase (Authentication & Database)
-- Tailwind CSS
+- **Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes, Supabase (PostgreSQL)
+- **AI:** OpenAI GPT-4o-mini
+- **Jobs:** Adzuna API, RemoteOK API, Arbeitnow API
+- **Auth:** Supabase Auth
+- **Payments:** Stripe (ready, not live)
+- **Deployment:** Vercel
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18+ installed
-- A Supabase account and project
-
-### Setup
-
-1. Clone the repository:
-
 ```bash
-git clone <repository-url>
-cd portfoliohub
-```
-
-2. Install dependencies:
-
-```bash
+git clone <repo-url>
+cd PortfolioHub
 npm install
-```
-
-3. Create a `.env.local` file in the root directory with your Supabase credentials:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-project-url.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
-
-4. Set up your Supabase database schema:
-
-   - Go to your Supabase project dashboard
-   - Navigate to the SQL Editor
-   - Copy the contents of `supabase/schema.sql`
-   - Run the SQL to create the necessary tables and policies
-
-5. Start the development server:
-
-```bash
+cp .env.example .env.local  # Add your API keys
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+### Required Environment Variables
 
-## Database Structure
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+ADZUNA_APP_ID=
+ADZUNA_APP_KEY=
+```
 
-The application uses a single main table:
+### Optional
 
-### portfolios
+```
+JSEARCH_API_KEY=        # Legacy job source
+STRIPE_SECRET_KEY=      # For payments
+STRIPE_WEBHOOK_SECRET=  # For Stripe webhooks
+ATS_API_KEY=            # For v1 API auth
+```
 
-- `id`: UUID - Primary key
-- `user_id`: UUID - Foreign key to Supabase auth.users
-- `title`: Text - Portfolio headline
-- `name`: Text - User's full name
-- `job_title`: Text - Current job title
-- `description`: Text - About section
-- `website_url`: Text - Link to personal website
-- `skills`: Text Array - List of skills
-- `created_at`: Timestamp
-- `updated_at`: Timestamp
+## Strategy
 
-## Deployment
-
-This project can be easily deployed on Vercel:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-username%2Fportfoliohub)
-
-Make sure to add your environment variables in the Vercel project settings.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+See [docs/strategy/ROADMAP.md](docs/strategy/ROADMAP.md) for the product roadmap and [docs/strategy/nate-b-jones-transcript.md](docs/strategy/nate-b-jones-transcript.md) for the research that shaped our tool-first approach.

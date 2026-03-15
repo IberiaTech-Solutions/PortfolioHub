@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { LogoFull } from "@/components/Logo";
 import { useToast } from "@/components/Toast";
 
@@ -217,16 +216,11 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex bg-white">
-      {/* Left side - Image */}
+      {/* Left side */}
       <div className="hidden lg:block lg:w-1/2 relative">
-        <div className="absolute inset-0 bg-slate-900"></div>
-        <Image
-          src="/Portfolio.jpg"
-          alt="TalentAgent"
-          fill
-          sizes="50vw"
-          className="object-cover opacity-40"
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-brand-500/10 rounded-full blur-3xl"></div>
+        </div>
         <div className="absolute inset-0 flex flex-col justify-between p-10">
           <LogoFull />
           <div>

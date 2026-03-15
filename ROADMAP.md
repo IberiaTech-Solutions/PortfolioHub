@@ -139,15 +139,17 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [ ] **Quality-over-quantity mode** — Optional daily limit (e.g., 5 apps/day). Each application auto-attaches AI agent summary + fit score. Recruiter sees depth, not another resume in a pile of 400.
 
 ### Cross-Border & Remote Intelligence
-- [ ] **Visa/sponsorship filter** — Tag jobs that sponsor visas or hire via EOR (Deel, Remote.com, etc.). Filter: "Hires internationally."
-- [ ] **Truly global remote filter** — Distinguish "remote (US only)" from "remote (anywhere)". Show which companies are known global-remote employers.
+- [x] **"Hires Globally" filter** — Toggle that filters to truly global remote jobs, excluding US-only/EU-only restricted remote postings.
+- [x] **"Eligible for Me" filter** — Toggle that hides jobs where user's location doesn't match requirements.
+- [x] **"Hide Ghost Jobs" filter** — Toggle that removes stale/suspicious listings from results.
+- [ ] **Visa/sponsorship tagging** — Tag jobs that sponsor visas or hire via EOR (Deel, Remote.com, etc.).
 
 ### Existing Differentiators
 - [x] **AI-to-AI matching** — API auto-scores all candidates against a job, returns ranked top 10 matches with skills analysis.
 - [x] **"Don't Apply" honest signal** — Red "Skip" badge + icon on job cards where match score < 30.
 - [x] **AI interview question generator** — Generates 5 role-specific prep questions (2 strength, 2 gap, 1 behavioral) with tips. Integrated into fit assessment results.
-- [ ] **Shareable fit assessment cards** — Shareable image/link: "Luis scored 87% for Senior Frontend at Stripe." Free social distribution.
-- [ ] **In-app notifications** — Alerts when someone chats with your AI, views your profile, or a matching job is posted.
+- [x] **Shareable fit assessment cards** — Share button on fit results using Web Share API (with clipboard fallback). Shares score, verdict, and portfolio URL.
+- [x] **In-app notifications** — NotificationBell component in nav with real-time Supabase subscriptions. Shows profile views, AI chats, job matches, assessments, collaborations. Unread badge count, mark all read, click-through links. Requires `notifications` table in Supabase.
 
 ## Priority 3 — Moat Builders (Hard to Copy)
 

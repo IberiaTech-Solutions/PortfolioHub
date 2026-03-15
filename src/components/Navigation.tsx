@@ -12,6 +12,7 @@ import {
   ArrowRightEndOnRectangleIcon
 } from "@heroicons/react/24/outline";
 import { LogoFull, LogoIcon } from "@/components/Logo";
+import NotificationBell from "@/components/NotificationBell";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -282,6 +283,11 @@ export default function Navigation() {
                   </div>
                 )}
               </div>
+
+              {/* Notification Bell */}
+              {mounted && !loading && user && (
+                <NotificationBell userId={user.id} />
+              )}
 
               {/* User Avatar Dropdown */}
               {mounted && !loading && (

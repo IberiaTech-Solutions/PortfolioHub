@@ -39,6 +39,9 @@ export default function JobsPage() {
   const [filterLevel, setFilterLevel] = useState<string>("");
   const [filterLocation, setFilterLocation] = useState<string>("");
   const [filterCurrency, setFilterCurrency] = useState<string>("");
+  const [filterGlobalRemote, setFilterGlobalRemote] = useState(false);
+  const [filterEligibleOnly, setFilterEligibleOnly] = useState(false);
+  const [filterHideGhostJobs, setFilterHideGhostJobs] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
@@ -183,6 +186,21 @@ export default function JobsPage() {
     if (filterLevel && job.experience_level !== filterLevel) return false;
     if (filterLocation && !(job.location || "").toLowerCase().includes(filterLocation.toLowerCase())) return false;
     if (filterCurrency && job.salary_currency !== filterCurrency) return false;
+    if (filterGlobalRemote) {
+      // Only show truly remote jobs without country restrictions
+      if (job.remote_policy !== "remote") return false;
+      const loc = (job.location || "").toLowerCase();
+      const restricted = ["us only", "us-based", "united states only", "eu only", "uk only"];
+      if (restricted.some((r) => loc.includes(r))) return false;
+    }
+    if (filterEligibleOnly && portfolio) {
+      const elig = checkEligibility(job, portfolio);
+      if (elig.level !== "eligible") return false;
+    }
+    if (filterHideGhostJobs) {
+      const ghost = detectGhostJob(job);
+      if (ghost.risk === "high" || ghost.risk === "medium") return false;
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const searchable = `${job.title} ${job.company} ${job.description} ${job.skills?.join(" ")} ${job.location}`.toLowerCase();
@@ -332,6 +350,46 @@ export default function JobsPage() {
           <span className="text-gray-500 text-sm">
             {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"}
           </span>
+        </div>
+
+        {/* Smart Filters */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <span className="text-gray-500 text-xs font-medium mr-1">Smart:</span>
+          <button
+            onClick={() => setFilterGlobalRemote(!filterGlobalRemote)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
+              filterGlobalRemote
+                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Hires Globally
+          </button>
+          {portfolio && (
+            <button
+              onClick={() => setFilterEligibleOnly(!filterEligibleOnly)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
+                filterEligibleOnly
+                  ? "bg-brand-500/20 text-brand-300 border-brand-500/40"
+                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+              }`}
+            >
+              <CheckCircleIcon className="w-3.5 h-3.5" />
+              Eligible for Me
+            </button>
+          )}
+          <button
+            onClick={() => setFilterHideGhostJobs(!filterHideGhostJobs)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
+              filterHideGhostJobs
+                ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+            Hide Ghost Jobs
+          </button>
         </div>
 
         {/* Jobs List */}

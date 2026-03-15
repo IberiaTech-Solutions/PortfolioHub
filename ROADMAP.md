@@ -244,6 +244,19 @@ Every feature we build reinforces one principle: **apply less, match better, was
 
 ---
 
+## Priority 6 — Admin & Operations
+
+- [x] **Admin role** — `admin` user_role type. Admin check utility (`adminAuth.ts`). Navigation shows "Admin" link in red for admin users.
+- [x] **Admin dashboard** (`/admin`) — Platform stats (total users, candidates, recruiters, admins, active jobs, 7-day signups). Quick links to user/job/report management.
+- [x] **User management** (`/admin/users`) — Full user table with search, role filter (candidate/recruiter/admin). Change user roles via dropdown. Toggle verified badge. View portfolio link.
+- [x] **Job moderation** (`/admin/jobs`) — All jobs with ghost risk score, active/inactive toggle, delete. Sorted by newest.
+- [x] **Reported content** (`/admin/reports`) — Review queue for flagged jobs/profiles/messages. Mark as reviewed or dismiss. Requires `reports` table in Supabase.
+- [ ] **Subscription management** — View Stripe subscriptions, revenue metrics, plan distribution
+- [ ] **AI usage monitoring** — Track OpenAI API spend per user/route
+- [ ] **Audit log** — Track admin actions (role changes, verifications, deletions)
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -269,3 +282,4 @@ Every feature we build reinforces one principle: **apply less, match better, was
 | `conversations` | DM conversation threads between two users |
 | `messages` | Individual messages within conversations |
 | `job_applications` | Application tracking (user, job, status, fit score, dates) |
+| `reports` | User-flagged content (jobs, profiles, messages) for admin review |

@@ -53,7 +53,6 @@ export type Portfolio = {
   languages?: string;
   is_verified?: boolean;
   private_fields?: string[];
-  user_role?: string;
   company_name?: string;
   company_logo?: string;
   additional_links?: Array<{ label: string; url: string }>;
@@ -63,6 +62,7 @@ export type Portfolio = {
   created_at: string;
   updated_at?: string;
   plan_tier?: "free" | "pro" | "recruiter";
+  user_role?: "candidate" | "recruiter" | "admin";
   is_featured?: boolean;
   featured_skills?: string[];
   video_intro_url?: string;

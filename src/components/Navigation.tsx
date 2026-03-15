@@ -299,6 +299,17 @@ export default function Navigation() {
                         </Link>
                       </>
                     )}
+                    {/* Admin link for admin users */}
+                    {userRole === "admin" && (
+                      <Link
+                        href="/admin"
+                        className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          pathname.startsWith("/admin") ? "bg-rose-600 text-white" : "text-rose-400 hover:text-white hover:bg-slate-800"
+                        }`}
+                      >
+                        Admin
+                      </Link>
+                    )}
                   </>
                 )}
                 {/* Show loading state for navigation links */}

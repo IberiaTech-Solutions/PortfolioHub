@@ -86,6 +86,7 @@ export default function SkillChallenge({
       <button
         onClick={generateChallenge}
         disabled={loading}
+        aria-label={`Verify skill: ${skill}`}
         className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 rounded-lg text-xs font-bold border border-purple-500/30 transition-all"
       >
         {loading ? (

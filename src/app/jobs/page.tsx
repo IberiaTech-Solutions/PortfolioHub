@@ -25,6 +25,59 @@ import {
   FunnelIcon,
 } from "@heroicons/react/24/outline";
 
+const getScoreColor = (score: number) => {
+  if (score >= 75) return "from-emerald-500 to-emerald-600";
+  if (score >= 50) return "from-amber-500 to-amber-600";
+  return "from-rose-500 to-rose-600";
+};
+
+const getScoreBg = (score: number) => {
+  if (score >= 75) return "bg-emerald-500/10 border-emerald-500/30";
+  if (score >= 50) return "bg-amber-500/10 border-amber-500/30";
+  return "bg-rose-500/10 border-rose-500/30";
+};
+
+const formatSalary = (min?: number, max?: number, currency = "USD") => {
+  if (!min && !max) return null;
+  const fmt = (n: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(n);
+  if (min && max) return `${fmt(min)} - ${fmt(max)}`;
+  if (min) return `From ${fmt(min)}`;
+  return `Up to ${fmt(max!)}`;
+};
+
+const workTypeLabel: Record<string, string> = {
+  "full-time": "Full-time",
+  "part-time": "Part-time",
+  contract: "Contract",
+  freelance: "Freelance",
+};
+
+const remoteLabel: Record<string, string> = {
+  remote: "Remote",
+  hybrid: "Hybrid",
+  onsite: "On-site",
+};
+
+const levelLabel: Record<string, string> = {
+  junior: "Junior",
+  mid: "Mid-level",
+  senior: "Senior",
+  lead: "Lead",
+};
+
+const timeAgo = (date: string) => {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return new Date(date).toLocaleDateString();
+};
+
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [externalJobs, setExternalJobs] = useState<Job[]>([]);
@@ -153,51 +206,6 @@ export default function JobsPage() {
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 75) return "from-emerald-500 to-emerald-600";
-    if (score >= 50) return "from-amber-500 to-amber-600";
-    return "from-rose-500 to-rose-600";
-  };
-
-  const getScoreBg = (score: number) => {
-    if (score >= 75) return "bg-emerald-500/10 border-emerald-500/30";
-    if (score >= 50) return "bg-amber-500/10 border-amber-500/30";
-    return "bg-rose-500/10 border-rose-500/30";
-  };
-
-  const formatSalary = (min?: number, max?: number, currency = "USD") => {
-    if (!min && !max) return null;
-    const fmt = (n: number) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 0,
-      }).format(n);
-    if (min && max) return `${fmt(min)} - ${fmt(max)}`;
-    if (min) return `From ${fmt(min)}`;
-    return `Up to ${fmt(max!)}`;
-  };
-
-  const workTypeLabel: Record<string, string> = {
-    "full-time": "Full-time",
-    "part-time": "Part-time",
-    contract: "Contract",
-    freelance: "Freelance",
-  };
-
-  const remoteLabel: Record<string, string> = {
-    remote: "Remote",
-    hybrid: "Hybrid",
-    onsite: "On-site",
-  };
-
-  const levelLabel: Record<string, string> = {
-    junior: "Junior",
-    mid: "Mid-level",
-    senior: "Senior",
-    lead: "Lead",
-  };
-
   // Combine jobs based on active source
   const allJobs = activeSource === "posted" ? jobs
     : activeSource === "external" ? externalJobs
@@ -246,13 +254,7 @@ export default function JobsPage() {
     return true;
   });
 
-  const timeAgo = (date: string) => {
-    const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-    return new Date(date).toLocaleDateString();
-  };
+  const portfolioSkillsLower = new Set((portfolio?.skills || []).map(s => s.toLowerCase()));
 
   return (
     <div className="min-h-screen bg-slate-900 relative">
@@ -299,7 +301,7 @@ export default function JobsPage() {
             <button
               key={source}
               onClick={() => setActiveSource(source)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 border ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 border focus:ring-2 focus:ring-brand-500 focus:outline-none ${
                 activeSource === source
                   ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-500 shadow-lg"
                   : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white"
@@ -675,9 +677,7 @@ export default function JobsPage() {
                         {job.skills && job.skills.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-3">
                             {job.skills.slice(0, 6).map((skill, i) => {
-                              const isMatch = portfolio?.skills?.some(
-                                (s) => s.toLowerCase() === skill.toLowerCase()
-                              );
+                              const isMatch = portfolioSkillsLower.has(skill.toLowerCase());
                               return (
                                 <span
                                   key={i}

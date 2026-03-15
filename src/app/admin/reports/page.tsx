@@ -102,7 +102,7 @@ export default function AdminReportsPage() {
         ) : (
           <div className="space-y-3">
             {reports.map((report) => (
-              <div key={report.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start justify-between gap-4">
+              <div key={report.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col sm:flex-row items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${

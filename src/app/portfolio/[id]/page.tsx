@@ -12,7 +12,8 @@ import {
   ArrowTopRightOnSquareIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
-import PortfolioChat from "@/components/PortfolioChat";
+import dynamic from "next/dynamic";
+const PortfolioChat = dynamic(() => import("@/components/PortfolioChat"), { ssr: false });
 import VerifiedBadge from "@/components/VerifiedBadge";
 import MessageButton from "@/components/MessageButton";
 import TrustBadge from "@/components/TrustBadge";
@@ -233,7 +234,7 @@ export default function PortfolioDetailPage() {
             )}
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-6 leading-tight">
             {portfolio.name}
             {portfolio.is_verified && (
               <span className="inline-block ml-3 align-middle">
@@ -241,7 +242,7 @@ export default function PortfolioDetailPage() {
               </span>
             )}
           </h1>
-          <p className="text-2xl text-gray-200 mb-4">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-200 mb-4">
             {portfolio.job_title}
           </p>
           <p className="text-xl text-gray-300 mb-4">

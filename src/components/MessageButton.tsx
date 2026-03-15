@@ -96,15 +96,22 @@ export default function MessageButton({
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="message-dialog-title"
+          onKeyDown={(e) => { if (e.key === 'Escape') setIsOpen(false); }}
+        >
           <div className="bg-slate-800 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <h3 className="text-white font-heading font-bold text-sm">
+              <h3 id="message-dialog-title" className="text-white font-heading font-bold text-sm">
                 Message {targetName}
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Close message dialog"
+                className="text-gray-400 hover:text-white transition-colors focus:ring-2 focus:ring-brand-500 focus:outline-none rounded"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -126,6 +133,7 @@ export default function MessageButton({
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    aria-label="Write a message"
                     placeholder={`Write a message to ${targetName}...`}
                     rows={4}
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"

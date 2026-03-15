@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ toast: addToast }}>
       {children}
 
-      <div className="fixed top-20 right-4 z-[100] space-y-3 pointer-events-none">
+      <div className="fixed top-20 right-4 z-[100] space-y-3 pointer-events-none" role="status" aria-live="polite" aria-atomic="true">
         {toasts.map((t) => (
           <div
             key={t.id}
@@ -63,7 +63,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <p className="text-white text-sm font-medium flex-1">{t.message}</p>
             <button
               onClick={() => removeToast(t.id)}
-              className="text-gray-500 hover:text-white transition-colors flex-shrink-0"
+              aria-label="Dismiss notification"
+              className="text-gray-500 hover:text-white transition-colors flex-shrink-0 focus:ring-2 focus:ring-brand-500 focus:outline-none rounded"
             >
               <XMarkIcon className="w-4 h-4" />
             </button>

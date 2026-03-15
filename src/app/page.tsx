@@ -108,8 +108,8 @@ function HomeContent() {
     const fetchStats = async () => {
       if (!supabase) return;
       const [portfolioRes, jobRes] = await Promise.all([
-        supabase.from("portfolios").select("*", { count: "exact", head: true }),
-        supabase.from("jobs").select("*", { count: "exact", head: true }),
+        supabase.from("portfolios").select("id", { count: "exact", head: true }),
+        supabase.from("jobs").select("id", { count: "exact", head: true }),
       ]);
       setPortfolioCount(portfolioRes.count ?? 0);
       setJobCount(jobRes.count ?? 0);

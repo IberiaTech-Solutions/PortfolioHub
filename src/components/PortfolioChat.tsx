@@ -164,7 +164,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
             : "translate-y-8 opacity-0 scale-95 pointer-events-none"
         }`}
       >
-        <div className="bg-slate-900/98 backdrop-blur-xl border border-white/20 sm:rounded-2xl shadow-2xl flex flex-col h-[100dvh] sm:h-[600px] overflow-hidden">
+        <div className="bg-slate-900/98 backdrop-blur-xl border border-white/20 sm:rounded-2xl shadow-2xl flex flex-col h-[100dvh] sm:h-[600px] overflow-hidden" role="dialog" aria-label="AI Chat">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/10">
             <div className="flex items-center gap-3">
@@ -185,7 +185,8 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+              aria-label="Close chat panel"
+              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -195,7 +196,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
           <div className="flex border-b border-white/10">
             <button
               onClick={() => setActiveTab("chat")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold transition-all duration-300 ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold transition-all duration-300 focus:ring-2 focus:ring-brand-500 focus:outline-none ${
                 activeTab === "chat"
                   ? "text-brand-400 border-b-2 border-brand-400 bg-white/5"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -206,7 +207,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
             </button>
             <button
               onClick={() => setActiveTab("fit")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold transition-all duration-300 ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold transition-all duration-300 focus:ring-2 focus:ring-brand-500 focus:outline-none ${
                 activeTab === "fit"
                   ? "text-brand-400 border-b-2 border-brand-400 bg-white/5"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -296,6 +297,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
                         <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                         <div className="w-2 h-2 bg-brand-400 rounded-full animate-bounce"></div>
                       </div>
+                      <span className="sr-only">Loading response...</span>
                     </div>
                   </div>
                 )}
@@ -317,6 +319,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
+                    aria-label="Type your message"
                     placeholder={`Ask about ${portfolio.name}...`}
                     className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
                     disabled={isLoading}

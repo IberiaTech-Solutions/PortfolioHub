@@ -365,9 +365,9 @@ export default function RecruiterDashboard() {
                     <tr className="border-b border-white/10">
                       <th className="text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Job</th>
                       <th className="text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Applicant</th>
-                      <th className="text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fit Score</th>
+                      <th className="hidden sm:table-cell text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fit Score</th>
                       <th className="text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                      <th className="hidden sm:table-cell text-left py-2 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -386,7 +386,7 @@ export default function RecruiterDashboard() {
                             <span className="text-gray-400 text-xs">{app.applicant_name || "Anonymous"}</span>
                           )}
                         </td>
-                        <td className="py-3 px-3">
+                        <td className="hidden sm:table-cell py-3 px-3">
                           {app.fit_score != null ? (
                             <span className={`px-2 py-0.5 rounded text-xs font-bold ${
                               app.fit_score >= 75 ? "bg-emerald-500/15 text-emerald-400" :
@@ -402,7 +402,7 @@ export default function RecruiterDashboard() {
                         <td className="py-3 px-3">
                           <span className="text-gray-400 text-xs capitalize">{app.status}</span>
                         </td>
-                        <td className="py-3 px-3">
+                        <td className="hidden sm:table-cell py-3 px-3">
                           <span className="text-gray-600 text-xs">{new Date(app.applied_at).toLocaleDateString()}</span>
                         </td>
                       </tr>

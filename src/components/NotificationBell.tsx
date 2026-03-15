@@ -97,7 +97,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
   };
 
   return (
-    <div ref={panelRef} className="relative">
+    <div ref={panelRef} className="relative" onKeyDown={(e) => { if (e.key === 'Escape') setIsOpen(false); }}>
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -123,6 +123,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
+                aria-label="Mark all notifications as read"
                 className="text-xs text-brand-400 hover:text-brand-300 font-medium"
               >
                 Mark all read

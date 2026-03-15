@@ -196,7 +196,7 @@ export default function CheckFitPage() {
                 <div className="inline-flex bg-white/5 border border-white/10 rounded-lg p-0.5">
                   <button
                     onClick={() => setInputMode("text")}
-                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all focus:ring-2 focus:ring-brand-500 focus:outline-none ${
                       inputMode === "text" ? "bg-brand-600 text-white" : "text-gray-400 hover:text-white"
                     }`}
                   >
@@ -204,7 +204,7 @@ export default function CheckFitPage() {
                   </button>
                   <button
                     onClick={() => setInputMode("url")}
-                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all focus:ring-2 focus:ring-brand-500 focus:outline-none ${
                       inputMode === "url" ? "bg-brand-600 text-white" : "text-gray-400 hover:text-white"
                     }`}
                   >

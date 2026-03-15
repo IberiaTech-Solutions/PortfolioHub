@@ -30,23 +30,29 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "TalentAgent - AI-Powered Talent Platform",
-  description: "Control your narrative. Let AI agents represent your work. Get matched to jobs honestly. The platform where depth beats keywords.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://talentagent.com"),
+  title: {
+    default: "TalentAgent — AI-Powered Talent Platform",
+    template: "%s | TalentAgent",
+  },
+  description: "Stop competing with 400 applicants. Your AI agent showcases your depth, matches you to jobs honestly, and controls your narrative.",
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: "TalentAgent - AI-Powered Talent Platform",
+    title: "TalentAgent — AI-Powered Talent Platform",
     description: "Stop competing with 400 applicants. Your AI agent showcases your depth, matches you to jobs honestly, and controls your narrative.",
     siteName: "TalentAgent",
     type: "website",
+    images: [{ url: "/favicon.svg", width: 64, height: 64, alt: "TalentAgent" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "TalentAgent - AI-Powered Talent Platform",
+    title: "TalentAgent — AI-Powered Talent Platform",
     description: "Stop competing with 400 applicants. Your AI agent showcases your depth, matches you to jobs honestly, and controls your narrative.",
+    images: ["/favicon.svg"],
   },
 };
 

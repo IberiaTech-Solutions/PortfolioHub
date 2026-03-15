@@ -1,31 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-type JSearchJob = {
-  job_id: string;
-  employer_name: string;
-  employer_logo: string | null;
-  job_title: string;
-  job_description: string;
-  job_city: string;
-  job_state: string;
-  job_country: string;
-  job_apply_link: string;
-  job_employment_type: string;
-  job_is_remote: boolean;
-  job_min_salary: number | null;
-  job_max_salary: number | null;
-  job_salary_currency: string | null;
-  job_salary_period: string | null;
-  job_required_skills: string[] | null;
-  job_required_experience: {
-    no_experience_required: boolean;
-    required_experience_in_months: number | null;
-    experience_mentioned: boolean;
-  } | null;
-  job_posted_at_datetime_utc: string;
-};
+// Multi-source job aggregator: Adzuna + RemoteOK + Arbeitnow
+// All free APIs — no paid subscriptions required
 
-// Simple in-memory cache to avoid burning API limits
+// In-memory cache
 const cache: { data: unknown; timestamp: number; query: string } = {
   data: null,
   timestamp: 0,
@@ -33,149 +11,284 @@ const cache: { data: unknown; timestamp: number; query: string } = {
 };
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
-function mapEmploymentType(type: string): string {
-  const map: Record<string, string> = {
-    FULLTIME: 'full-time',
-    PARTTIME: 'part-time',
-    CONTRACTOR: 'contract',
-    INTERN: 'internship',
-    FREELANCE: 'freelance',
-  };
-  return map[type] || 'full-time';
-}
+// Skill extraction from description
+const SKILL_PATTERNS = [
+  'react', 'angular', 'vue', 'next.js', 'node.js', 'python', 'java', 'go',
+  'rust', 'typescript', 'javascript', 'swift', 'kotlin', 'ruby', 'php',
+  'postgresql', 'mongodb', 'mysql', 'redis', 'elasticsearch',
+  'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform',
+  'figma', 'sketch', 'adobe', 'photoshop',
+  'machine learning', 'deep learning', 'nlp', 'pytorch', 'tensorflow',
+  'graphql', 'rest api', 'microservices', 'ci/cd', 'agile', 'scrum',
+  'git', 'linux', 'sql', 'nosql', 'html', 'css', 'tailwind',
+];
 
-function estimateLevel(job: JSearchJob): string {
-  const title = job.job_title.toLowerCase();
-  const desc = job.job_description?.toLowerCase() || '';
-  const months = job.job_required_experience?.required_experience_in_months || 0;
-
-  if (title.includes('lead') || title.includes('principal') || title.includes('staff') || title.includes('director')) return 'lead';
-  if (title.includes('senior') || title.includes('sr.') || title.includes('sr ') || months >= 60) return 'senior';
-  if (title.includes('junior') || title.includes('jr.') || title.includes('jr ') || title.includes('entry') || job.job_required_experience?.no_experience_required) return 'junior';
-  if (months > 0 && months < 36) return 'junior';
-  if (desc.includes('5+ years') || desc.includes('7+ years') || desc.includes('8+ years')) return 'senior';
-  return 'mid';
-}
-
-function extractSkills(job: JSearchJob): string[] {
-  if (job.job_required_skills && job.job_required_skills.length > 0) {
-    return job.job_required_skills.slice(0, 10);
-  }
-
-  // Fallback: extract common skills from description
-  const desc = job.job_description?.toLowerCase() || '';
-  const title = job.job_title?.toLowerCase() || '';
-  const combined = `${title} ${desc}`;
-
-  const skillPatterns = [
-    'react', 'angular', 'vue', 'next.js', 'node.js', 'python', 'java', 'go',
-    'rust', 'typescript', 'javascript', 'swift', 'kotlin', 'ruby', 'php',
-    'postgresql', 'mongodb', 'mysql', 'redis', 'elasticsearch',
-    'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform',
-    'figma', 'sketch', 'adobe', 'photoshop',
-    'machine learning', 'deep learning', 'nlp', 'pytorch', 'tensorflow',
-    'graphql', 'rest api', 'microservices', 'ci/cd', 'agile', 'scrum',
-    'git', 'linux', 'sql', 'nosql', 'html', 'css', 'tailwind',
-  ];
-
-  return skillPatterns
-    .filter((skill) => combined.includes(skill))
+function extractSkills(text: string): string[] {
+  const lower = text.toLowerCase();
+  return SKILL_PATTERNS
+    .filter((skill) => lower.includes(skill))
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .slice(0, 8);
 }
 
+function estimateLevelFromTitle(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('lead') || t.includes('principal') || t.includes('staff') || t.includes('director') || t.includes('head of')) return 'lead';
+  if (t.includes('senior') || t.includes('sr.') || t.includes('sr ')) return 'senior';
+  if (t.includes('junior') || t.includes('jr.') || t.includes('jr ') || t.includes('entry') || t.includes('intern') || t.includes('graduate')) return 'junior';
+  return 'mid';
+}
+
+// --- Adzuna ---
+async function fetchAdzuna(query: string, location: string): Promise<Array<Record<string, unknown>>> {
+  const appId = process.env.ADZUNA_APP_ID;
+  const appKey = process.env.ADZUNA_APP_KEY;
+  if (!appId || !appKey) return [];
+
+  try {
+    const country = 'us'; // Default to US
+    const params = new URLSearchParams({
+      app_id: appId,
+      app_key: appKey,
+      results_per_page: '20',
+      what: query,
+      content_type: 'application/json',
+      max_days_old: '30',
+    });
+    if (location) params.set('where', location);
+
+    const res = await fetch(`https://api.adzuna.com/v1/api/jobs/${country}/search/1?${params}`);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return (data.results || []).map((job: {
+      id: string;
+      title: string;
+      company?: { display_name: string };
+      description: string;
+      location?: { display_name: string; area?: string[] };
+      redirect_url: string;
+      contract_type?: string;
+      contract_time?: string;
+      salary_min?: number;
+      salary_max?: number;
+      created: string;
+      category?: { label: string };
+    }) => ({
+      id: `adzuna-${job.id}`,
+      title: job.title,
+      company: job.company?.display_name || 'Unknown',
+      company_logo: null,
+      description: (job.description || '').slice(0, 500),
+      location: job.location?.display_name || 'Not specified',
+      work_type: job.contract_time === 'part_time' ? 'part-time' : 'full-time',
+      remote_policy: (job.title + ' ' + job.description).toLowerCase().includes('remote') ? 'remote' : 'onsite',
+      experience_level: estimateLevelFromTitle(job.title),
+      salary_min: job.salary_min || null,
+      salary_max: job.salary_max || null,
+      salary_currency: 'USD',
+      skills: extractSkills(job.title + ' ' + job.description),
+      application_url: job.redirect_url,
+      is_active: true,
+      created_at: job.created || new Date().toISOString(),
+      source: 'adzuna',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// --- RemoteOK ---
+async function fetchRemoteOK(): Promise<Array<Record<string, unknown>>> {
+  try {
+    const res = await fetch('https://remoteok.com/api', {
+      headers: { 'User-Agent': 'TalentAgent/1.0' },
+    });
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    // First element is metadata, skip it
+    const jobs = Array.isArray(data) ? data.slice(1) : [];
+
+    return jobs.slice(0, 20).map((job: {
+      id: string;
+      position: string;
+      company: string;
+      company_logo: string;
+      description: string;
+      location: string;
+      tags: string[];
+      url: string;
+      salary_min?: number;
+      salary_max?: number;
+      date: string;
+    }) => ({
+      id: `remoteok-${job.id}`,
+      title: job.position || 'Untitled',
+      company: job.company || 'Unknown',
+      company_logo: job.company_logo || null,
+      description: (job.description || '').replace(/<[^>]+>/g, '').slice(0, 500),
+      location: job.location || 'Remote',
+      work_type: 'full-time',
+      remote_policy: 'remote',
+      experience_level: estimateLevelFromTitle(job.position || ''),
+      salary_min: job.salary_min || null,
+      salary_max: job.salary_max || null,
+      salary_currency: 'USD',
+      skills: (job.tags || []).slice(0, 8).map((t: string) => t.charAt(0).toUpperCase() + t.slice(1)),
+      application_url: job.url,
+      is_active: true,
+      created_at: job.date || new Date().toISOString(),
+      source: 'remoteok',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// --- Arbeitnow ---
+async function fetchArbeitnow(): Promise<Array<Record<string, unknown>>> {
+  try {
+    const res = await fetch('https://www.arbeitnow.com/api/job-board-api');
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    const jobs = data.data || [];
+
+    return jobs.slice(0, 20).map((job: {
+      slug: string;
+      title: string;
+      company_name: string;
+      description: string;
+      location: string;
+      remote: boolean;
+      tags: string[];
+      url: string;
+      created_at: number;
+    }) => ({
+      id: `arbeitnow-${job.slug}`,
+      title: job.title,
+      company: job.company_name || 'Unknown',
+      company_logo: null,
+      description: (job.description || '').replace(/<[^>]+>/g, '').slice(0, 500),
+      location: job.location || (job.remote ? 'Remote' : 'Not specified'),
+      work_type: 'full-time',
+      remote_policy: job.remote ? 'remote' : 'onsite',
+      experience_level: estimateLevelFromTitle(job.title),
+      salary_min: null,
+      salary_max: null,
+      salary_currency: 'USD',
+      skills: (job.tags || []).slice(0, 8),
+      application_url: job.url,
+      is_active: true,
+      created_at: job.created_at ? new Date(job.created_at * 1000).toISOString() : new Date().toISOString(),
+      source: 'arbeitnow',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// --- JSearch (legacy, if API key still works) ---
+async function fetchJSearch(query: string, location: string, remote: string): Promise<Array<Record<string, unknown>>> {
+  const apiKey = process.env.JSEARCH_API_KEY;
+  if (!apiKey) return [];
+
+  try {
+    const apiHost = process.env.JSEARCH_API_HOST || 'jsearch27.p.rapidapi.com';
+    const params = new URLSearchParams({
+      query: location ? `${query} in ${location}` : query,
+      page: '1',
+      num_pages: '1',
+      date_posted: 'month',
+    });
+    if (remote === 'true') params.set('remote_jobs_only', 'true');
+
+    const res = await fetch(`https://${apiHost}/search?${params}`, {
+      headers: {
+        'X-RapidAPI-Key': apiKey,
+        'X-RapidAPI-Host': apiHost,
+      },
+    });
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return (data.data || []).map((job: {
+      job_id: string; job_title: string; employer_name: string; employer_logo: string | null;
+      job_description: string; job_city: string; job_state: string; job_country: string;
+      job_apply_link: string; job_employment_type: string; job_is_remote: boolean;
+      job_min_salary: number | null; job_max_salary: number | null; job_salary_currency: string | null;
+      job_required_skills: string[] | null; job_posted_at_datetime_utc: string;
+    }) => ({
+      id: `jsearch-${job.job_id}`,
+      title: job.job_title,
+      company: job.employer_name,
+      company_logo: job.employer_logo,
+      description: (job.job_description || '').slice(0, 500),
+      location: [job.job_city, job.job_state, job.job_country].filter(Boolean).join(', ') || 'Not specified',
+      work_type: 'full-time',
+      remote_policy: job.job_is_remote ? 'remote' : 'onsite',
+      experience_level: estimateLevelFromTitle(job.job_title),
+      salary_min: job.job_min_salary,
+      salary_max: job.job_max_salary,
+      salary_currency: job.job_salary_currency || 'USD',
+      skills: job.job_required_skills?.slice(0, 8) || extractSkills(job.job_title + ' ' + job.job_description),
+      application_url: job.job_apply_link,
+      is_active: true,
+      created_at: job.job_posted_at_datetime_utc || new Date().toISOString(),
+      source: 'jsearch',
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const apiKey = process.env.JSEARCH_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'Job search API not configured', jobs: [] },
-        { status: 200 } // Return 200 with empty jobs so UI doesn't break
-      );
-    }
-
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query') || 'software developer';
-    const page = searchParams.get('page') || '1';
-    const remote = searchParams.get('remote_only') || 'false';
     const location = searchParams.get('location') || '';
-    const employment = searchParams.get('employment_type') || '';
+    const remote = searchParams.get('remote_only') || 'false';
 
-    // Build cache key
-    const cacheKey = `${query}-${page}-${remote}-${location}-${employment}`;
+    const cacheKey = `${query}-${location}-${remote}`;
 
     // Check cache
     if (cache.data && cache.query === cacheKey && Date.now() - cache.timestamp < CACHE_TTL) {
       return NextResponse.json(cache.data);
     }
 
-    // Build JSearch query params
-    const params = new URLSearchParams({
-      query: location ? `${query} in ${location}` : query,
-      page,
-      num_pages: '1',
-      date_posted: 'month',
-    });
+    // Fetch from ALL sources in parallel
+    const [adzunaJobs, remoteOKJobs, arbeitnowJobs, jsearchJobs] = await Promise.all([
+      fetchAdzuna(query, location),
+      fetchRemoteOK(),
+      fetchArbeitnow(),
+      fetchJSearch(query, location, remote),
+    ]);
 
-    if (remote === 'true') {
-      params.set('remote_jobs_only', 'true');
-    }
+    // Combine and deduplicate (by title + company)
+    const seen = new Set<string>();
+    const allJobs: Array<Record<string, unknown>> = [];
 
-    if (employment) {
-      params.set('employment_types', employment.toUpperCase());
-    }
-
-    const apiHost = process.env.JSEARCH_API_HOST || 'jsearch27.p.rapidapi.com';
-
-    const response = await fetch(
-      `https://${apiHost}/search?${params.toString()}`,
-      {
-        headers: {
-          'X-RapidAPI-Key': apiKey,
-          'X-RapidAPI-Host': apiHost,
-          'Content-Type': 'application/json',
-        },
+    for (const job of [...adzunaJobs, ...jsearchJobs, ...remoteOKJobs, ...arbeitnowJobs]) {
+      const key = `${(job.title as string).toLowerCase()}-${(job.company as string).toLowerCase()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        allJobs.push(job);
       }
-    );
-
-    if (!response.ok) {
-      console.error('JSearch API error:', response.status, await response.text());
-      return NextResponse.json({ error: 'Failed to fetch jobs', jobs: [] });
     }
 
-    const data = await response.json();
-    const jsearchJobs: JSearchJob[] = data.data || [];
+    const result = {
+      jobs: allJobs,
+      total: allJobs.length,
+      sources: {
+        adzuna: adzunaJobs.length,
+        remoteok: remoteOKJobs.length,
+        arbeitnow: arbeitnowJobs.length,
+        jsearch: jsearchJobs.length,
+      },
+    };
 
-    // Transform to our job format
-    const jobs = jsearchJobs.map((job) => {
-      const locationStr = [job.job_city, job.job_state, job.job_country]
-        .filter(Boolean)
-        .join(', ');
-
-      return {
-        id: job.job_id,
-        title: job.job_title,
-        company: job.employer_name,
-        company_logo: job.employer_logo,
-        description: job.job_description?.slice(0, 500) + (job.job_description?.length > 500 ? '...' : ''),
-        location: locationStr || (job.job_is_remote ? 'Remote' : 'Not specified'),
-        work_type: mapEmploymentType(job.job_employment_type),
-        remote_policy: job.job_is_remote ? 'remote' : 'onsite',
-        experience_level: estimateLevel(job),
-        salary_min: job.job_min_salary,
-        salary_max: job.job_max_salary,
-        salary_currency: job.job_salary_currency || 'USD',
-        skills: extractSkills(job),
-        application_url: job.job_apply_link,
-        is_active: true,
-        created_at: job.job_posted_at_datetime_utc || new Date().toISOString(),
-        source: 'external',
-      };
-    });
-
-    const result = { jobs, total: data.total || jobs.length };
-
-    // Update cache
+    // Cache
     cache.data = result;
     cache.timestamp = Date.now();
     cache.query = cacheKey;
@@ -183,6 +296,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Fetch jobs error:', error);
-    return NextResponse.json({ error: 'Failed to fetch jobs', jobs: [] });
+    return NextResponse.json({ error: 'Failed to fetch jobs', jobs: [], sources: {} });
   }
 }

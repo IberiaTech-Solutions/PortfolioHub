@@ -272,10 +272,13 @@ export default function JobsPage() {
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
             Find Your Perfect Role
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-3">
             {portfolio
               ? "Browse jobs and let AI tell you honestly which ones are worth your time."
               : "Create a portfolio first to unlock AI-powered job matching."}
+          </p>
+          <p className="text-xs text-gray-600">
+            Jobs aggregated from Adzuna, RemoteOK, Arbeitnow{externalJobs.length > 0 ? ` — ${externalJobs.length} external jobs loaded` : ""}
           </p>
           {!user && (
             <Link
@@ -527,8 +530,13 @@ export default function JobsPage() {
                             <h3 className="text-lg font-heading font-bold text-white mb-1">
                               {job.title}
                             </h3>
-                            <p className="text-brand-300 font-medium text-sm">
+                            <p className="text-brand-300 font-medium text-sm flex items-center gap-2">
                               {job.company}
+                              {"source" in job && job.source !== "posted" && (
+                                <span className="px-1.5 py-0.5 bg-white/10 text-gray-500 rounded text-[9px] font-medium">
+                                  via {String(job.source).replace("ok", "OK")}
+                                </span>
+                              )}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">

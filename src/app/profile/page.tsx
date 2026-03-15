@@ -111,7 +111,7 @@ export default function ProfilePage() {
 
       <div className="relative max-w-6xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6 space-y-8 sm:space-y-10 lg:space-y-12">
         {/* Profile Header */}
-        <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl overflow-hidden">
+        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
           <div className="relative">
             {portfolio?.hero_image ? (
               <div className="h-32 sm:h-40 relative overflow-hidden">
@@ -135,7 +135,7 @@ export default function ProfilePage() {
             )}
             <div className="absolute -bottom-10 sm:-bottom-12 left-4 sm:left-8">
               {portfolio?.profile_image ? (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border-3 sm:border-4 border-white">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shadow-xl border-3 sm:border-4 border-white">
                   <Image
                     src={portfolio.profile_image}
                     alt={`${portfolio.name} profile`}
@@ -155,7 +155,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
               ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl sm:rounded-2xl shadow-xl flex items-center justify-center border-3 sm:border-4 border-white">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-xl flex items-center justify-center border-3 sm:border-4 border-white">
                   <span className="text-white font-bold text-2xl">
                     {portfolio?.name?.charAt(0).toUpperCase() || user?.email?.split("@")[0]?.charAt(0).toUpperCase() || "U"}
                   </span>
@@ -342,7 +342,7 @@ export default function ProfilePage() {
 
         {/* Portfolio Section */}
         {portfolio ? (
-          <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 sm:mb-8 gap-4 sm:gap-0">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-1 sm:mb-2">
@@ -362,7 +362,7 @@ export default function ProfilePage() {
 
             <div className="space-y-6 sm:space-y-8">
               {/* Basic Information */}
-              <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
+              <div className="p-4 sm:p-6 bg-white/5 rounded-2xl border border-white/10">
                 <h3 className="text-xl sm:text-2xl font-heading font-bold text-white mb-3 sm:mb-4">Basic Information</h3>
                 <div className="space-y-3 sm:space-y-4">
                   <div>
@@ -381,7 +381,7 @@ export default function ProfilePage() {
 
               {/* Additional Information */}
               {(portfolio.location || portfolio.experience_level || (portfolio.preferred_work_type && portfolio.preferred_work_type.length > 0) || portfolio.languages) && (
-                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Additional Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {portfolio.location && (
@@ -445,7 +445,7 @@ export default function ProfilePage() {
 
               {/* Contact Information */}
               {(portfolio.website_url || portfolio.github_url || portfolio.linkedin_url || (portfolio.additional_links?.length ?? 0) > 0) && (
-                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Contact Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {portfolio.website_url && (
@@ -514,7 +514,7 @@ export default function ProfilePage() {
 
               {/* Skills */}
               {portfolio.skills && portfolio.skills.length > 0 && (
-                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-2xl border border-white/10">
                   <h3 className="text-base font-heading font-semibold text-white mb-4">Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {portfolio.skills.map((skill, index) => (
@@ -531,7 +531,7 @@ export default function ProfilePage() {
 
               {/* Projects */}
               {portfolio.projects && portfolio.projects.length > 0 && (
-                <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
+                <div className="p-4 sm:p-6 bg-white/5 rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Featured Projects</h3>
                   <div className="grid gap-3 sm:gap-4">
                     {portfolio.projects.map((project, index) => (
@@ -569,9 +569,9 @@ export default function ProfilePage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-12">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 lg:p-12">
             <div className="text-center max-w-lg mx-auto">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-brand-500/20 to-brand-600/20 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-lg">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-brand-500/20 to-brand-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-8 w-8 sm:h-10 sm:w-10 text-brand-300"

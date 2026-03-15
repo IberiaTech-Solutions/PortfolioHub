@@ -3,7 +3,7 @@
   "name": "TalentAgent — AI Job Fit Checker",
   "version": "1.0.0",
   "description": "Check your fit score for any job posting on LinkedIn, Indeed, or Glassdoor. Powered by TalentAgent AI.",
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "scripting"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

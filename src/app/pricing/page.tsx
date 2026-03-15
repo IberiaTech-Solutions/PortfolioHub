@@ -261,7 +261,7 @@ function PricingContent() {
 
         {/* Featured Profiles Add-on */}
         <div className="mt-16 max-w-3xl mx-auto">
-          <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-2xl p-8 text-center">
+          <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-2xl p-5 sm:p-8 text-center">
             <h3 className="text-xl font-display font-bold text-white mb-2">
               Featured Profile
             </h3>
@@ -302,7 +302,7 @@ function PricingContent() {
                 a: "Your profile appears at the top of search results when recruiters search for your selected skills. Average featured profiles get 10x more views.",
               },
             ].map((faq, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5">
                 <h4 className="text-sm font-heading font-bold text-white mb-2">{faq.q}</h4>
                 <p className="text-sm text-gray-400 leading-relaxed">{faq.a}</p>
               </div>

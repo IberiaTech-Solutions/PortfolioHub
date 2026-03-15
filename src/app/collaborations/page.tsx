@@ -152,7 +152,7 @@ export default function CollaborationVerification() {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
           {collaborations.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -186,11 +186,11 @@ export default function CollaborationVerification() {
                           </h3>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                             <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold border ${
-                              collaboration.status === 'accepted' 
-                                ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
+                              collaboration.status === 'accepted'
+                                ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                                 : collaboration.status === 'declined'
-                                ? 'bg-red-100 text-red-700 border-red-200'
-                                : 'bg-amber-100 text-amber-700 border-amber-200'
+                                ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+                                : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                             }`}>
                               {getStatusIcon(collaboration.status)}
                               <span>{getStatusText(collaboration.status)}</span>

@@ -17,6 +17,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
     }
 
+    // SSRF protection — block internal/private IPs
+    const blockedHosts = ["localhost", "127.0.0.1", "0.0.0.0", "169.254", "10.", "172.16", "192.168"];
+    if (blockedHosts.some((h) => parsed.hostname.includes(h)) || parsed.protocol !== "https:") {
+      return NextResponse.json({ error: "URL not allowed" }, { status: 400 });
+    }
+
     // Attempt to fetch the page
     const response = await fetch(parsed.toString(), {
       headers: {

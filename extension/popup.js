@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const loadingEl = document.getElementById("loading");
   const noJobEl = document.getElementById("no-job");
   const resultEl = document.getElementById("result");
+  const openAppBtn = document.getElementById("open-app");
+
+  // Open Full App button
+  openAppBtn.addEventListener("click", () => {
+    chrome.tabs.create({ url: `${API_BASE}/check-fit` });
+  });
 
   // Check if we're on a supported job page
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

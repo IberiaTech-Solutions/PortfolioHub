@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe, PRICE_IDS, PlanKey } from "@/utils/stripe";
 import { createClient } from "@supabase/supabase-js";
+import { getAuthUser } from "@/utils/authCheck";
 
-const supabase = createClient(
+const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.SUPABASE_SERVICE_ROLE_KEY || ""
 );
 
 export async function POST(request: NextRequest) {
   try {
-    const { plan, userId, email } = (await request.json()) as {
-      plan: PlanKey;
-      userId: string;
-      email: string;
-    };
+    // Verify authenticated user
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!plan || !userId || !email) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    const { plan } = (await request.json()) as { plan: PlanKey };
+    const userId = authUser.id;
+    const email = authUser.email || "";
+
+    if (!plan) {
+      return NextResponse.json({ error: "Missing plan" }, { status: 400 });
     }
 
     const priceId = PRICE_IDS[plan];
@@ -25,8 +28,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has a Stripe customer ID
-    const { data: portfolio } = await supabase
-      .from("portfolios")
+    const { data: portfolio } = await supabaseAdmin
+      .from("portfolios") // Using admin client to bypass RLS for billing
       .select("stripe_customer_id")
       .eq("user_id", userId)
       .maybeSingle();
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
       customerId = customer.id;
 
       // Save customer ID
-      await supabase
+      await supabaseAdmin
         .from("portfolios")
         .update({ stripe_customer_id: customerId })
         .eq("user_id", userId);

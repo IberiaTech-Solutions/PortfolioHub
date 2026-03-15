@@ -235,7 +235,7 @@ export default function CheckFitPage() {
 
               {inputMode === "url" ? (
                 <>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <input
                       type="url"
                       value={jobUrl}
@@ -316,9 +316,9 @@ export default function CheckFitPage() {
             {assessment && (
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
                 {/* Score Header */}
-                <div className="flex items-center gap-6">
-                  <div className="relative w-24 h-24 flex-shrink-0">
-                    <svg className="w-24 h-24 -rotate-90" viewBox="0 0 120 120">
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
+                    <svg className="w-20 h-20 sm:w-24 sm:h-24 -rotate-90" viewBox="0 0 120 120">
                       <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
                       <circle
                         cx="60" cy="60" r="52" fill="none"

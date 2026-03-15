@@ -134,19 +134,20 @@ export default function RecruiterDashboard() {
     <div className="min-h-screen bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold text-white">
-              Recruiter Dashboard
-            </h1>
-            <p className="text-gray-400 text-sm mt-1">
-              {portfolio?.company_name ? `${portfolio.company_name} — ` : ""}
-              Manage jobs, find talent, track engagement
-            </p>
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
+            <ChartBarIcon className="w-4 h-4 mr-2" />
+            {portfolio?.company_name || "Recruiter"} Dashboard
           </div>
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
+            Manage Talent Pipeline
+          </h1>
+          <p className="text-gray-400 mb-6">
+            Post jobs, search candidates, and track engagement — all in one place.
+          </p>
           <Link
             href="/jobs/post"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-bold text-sm transition-all hover:shadow-xl"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-bold text-sm transition-all hover:shadow-xl"
           >
             <BriefcaseIcon className="w-4 h-4" />
             Post a Job
@@ -154,8 +155,8 @@ export default function RecruiterDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-brand-500/20 rounded-lg flex items-center justify-center">
                 <BriefcaseIcon className="w-5 h-5 text-brand-400" />
@@ -166,7 +167,7 @@ export default function RecruiterDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
                 <EyeIcon className="w-5 h-5 text-emerald-400" />
@@ -177,7 +178,7 @@ export default function RecruiterDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
                 <ChatBubbleLeftRightIcon className="w-5 h-5 text-purple-400" />
@@ -188,7 +189,7 @@ export default function RecruiterDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
                 <ChartBarIcon className="w-5 h-5 text-amber-400" />

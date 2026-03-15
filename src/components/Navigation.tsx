@@ -216,14 +216,14 @@ export default function Navigation() {
             {/* Desktop Navigation & User Menu */}
             <div className="hidden md:flex items-center space-x-4">
               {/* Desktop Navigation Links */}
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-0.5 lg:space-x-1">
                 {mounted && !loading && user && (
                   <>
                     {userRole === "candidate" ? (
                       <>
                         <Link
                           href="/jobs"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             pathname === "/jobs" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
                           }`}
                         >
@@ -231,7 +231,7 @@ export default function Navigation() {
                         </Link>
                         <Link
                           href="/create-portfolio"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             pathname === "/create-portfolio" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
                           }`}
                         >
@@ -239,7 +239,7 @@ export default function Navigation() {
                         </Link>
                         <Link
                           href="/check-fit"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             pathname === "/check-fit" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
                           }`}
                         >
@@ -247,7 +247,7 @@ export default function Navigation() {
                         </Link>
                         <Link
                           href="/applications"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             pathname === "/applications" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
                           }`}
                         >
@@ -255,11 +255,12 @@ export default function Navigation() {
                         </Link>
                         <Link
                           href="/collaborations"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          className={`px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             pathname === "/collaborations" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
                           }`}
                         >
-                          Collaborations
+                          <span className="hidden lg:inline">Collaborations</span>
+                          <span className="lg:hidden">Collab</span>
                         </Link>
                       </>
                     ) : (

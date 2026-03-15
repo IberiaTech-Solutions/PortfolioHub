@@ -860,7 +860,7 @@ export default function CreatePortfolioPage() {
         </div>
 
         {/* Step Content */}
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6">
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6">
           <form onSubmit={handleSubmit}>
             {currentStep === 1 && (
               <StepRoleResume

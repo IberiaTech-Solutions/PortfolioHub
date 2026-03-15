@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/utils/stripe";
 import { createClient } from "@supabase/supabase-js";
+import { getAuthUser } from "@/utils/authCheck";
 
-const supabase = createClient(
+const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.SUPABASE_SERVICE_ROLE_KEY || ""
 );
@@ -10,16 +11,14 @@ const supabase = createClient(
 // Creates a Stripe Customer Portal session for managing subscriptions
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = (await request.json()) as { userId: string };
+    // Verify authenticated user
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!userId) {
-      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
-    }
-
-    const { data: portfolio } = await supabase
+    const { data: portfolio } = await supabaseAdmin
       .from("portfolios")
       .select("stripe_customer_id")
-      .eq("user_id", userId)
+      .eq("user_id", authUser.id)
       .maybeSingle();
 
     const customerId = (portfolio as { stripe_customer_id?: string } | null)?.stripe_customer_id;

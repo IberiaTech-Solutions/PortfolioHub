@@ -81,11 +81,15 @@ export default function ApplicationsPage() {
     <div className="min-h-screen bg-slate-900">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-white mb-2">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-400 text-sm font-bold mb-6">
+            <BriefcaseIcon className="w-4 h-4 mr-2" />
+            Application Tracker
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
             My Applications
           </h1>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400">
             Track every job you&apos;ve applied to. Update status as you progress.
           </p>
         </div>
@@ -168,7 +172,7 @@ export default function ApplicationsPage() {
               return (
                 <div
                   key={app.id}
-                  className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 hover:border-white/20 transition-all"
+                  className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 hover:border-white/20 transition-all"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -202,7 +206,7 @@ export default function ApplicationsPage() {
                     <select
                       value={app.status}
                       onChange={(e) => updateStatus(app.id, e.target.value as JobApplication["status"])}
-                      className="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
+                      className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 sm:py-1.5 text-white text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer"
                     >
                       <option value="applied" className="bg-slate-800">Applied</option>
                       <option value="viewed" className="bg-slate-800">Viewed</option>

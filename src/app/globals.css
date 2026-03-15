@@ -110,6 +110,29 @@ textarea::placeholder {
   opacity: 1;
 }
 
+/* Typography Scale Reference
+ * Display: text-4xl sm:text-5xl lg:text-7xl font-display font-bold
+ * Section: text-3xl sm:text-4xl lg:text-5xl font-display font-bold
+ * Card:    text-lg sm:text-xl font-heading font-bold
+ * Body:    text-base font-body
+ * Label:   text-sm font-heading font-semibold
+ * Badge:   text-xs font-heading font-bold
+ */
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient-text {
+  background: linear-gradient(270deg, #818cf8, #a78bfa, #c084fc, #818cf8);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 6s ease infinite;
+}
+
 /* Toast slide-in animation */
 @keyframes slideIn {
   from {

@@ -1,16 +1,6 @@
 import React from 'react';
 import { ArrowTopRightOnSquareIcon, StarIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
-
-interface Project {
-  title: string;
-  description: string;
-  url: string;
-  techStack: string[];
-  stars?: number;
-  forks?: number;
-  language?: string;
-  lastUpdated: string;
-}
+import { Project } from "@/types";
 
 interface ProjectCardsProps {
   projects: Project[];
@@ -51,7 +41,7 @@ export default function ProjectCards({ projects, onRemoveProject, editable = fal
                   {project.title}
                 </h4>
                 <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                  Updated {formatDate(project.lastUpdated)}
+                  {project.lastUpdated && `Updated ${formatDate(project.lastUpdated)}`}
                 </p>
               </div>
               

@@ -6,40 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { User } from "@supabase/supabase-js";
-
-type Portfolio = {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  website_url: string;
-  website_screenshot: string;
-  profile_image?: string;
-  hero_image?: string;
-  github_url: string;
-  linkedin_url: string;
-  location?: string;
-  experience_level?: string;
-  preferred_work_type?: string[];
-  languages?: string;
-  additional_links: Array<{label: string, url: string}>;
-  skills: string[];
-  projects: Array<{
-    title: string;
-    description: string;
-    url: string;
-    techStack: string[];
-  }>;
-  job_title: string;
-  created_at: string;
-  name: string;
-};
-
-type Analytics = {
-  views: number;
-  chats: number;
-  assessments: number;
-};
+import { Portfolio, Analytics } from "@/types";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -477,7 +444,7 @@ export default function ProfilePage() {
               )}
 
               {/* Contact Information */}
-              {(portfolio.website_url || portfolio.github_url || portfolio.linkedin_url || portfolio.additional_links?.length > 0) && (
+              {(portfolio.website_url || portfolio.github_url || portfolio.linkedin_url || (portfolio.additional_links?.length ?? 0) > 0) && (
                 <div className="p-4 sm:p-6 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10">
                   <h3 className="text-lg sm:text-xl font-heading font-bold text-white mb-4 sm:mb-6">Contact Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

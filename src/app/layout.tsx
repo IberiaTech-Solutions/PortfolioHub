@@ -6,6 +6,7 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { ToastProvider } from "@/components/Toast";
+import PageTransition from "@/components/PageTransition";
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -67,7 +68,7 @@ export default async function RootLayout({
           <Suspense fallback={<div className="h-16 bg-slate-900"></div>}>
             <Navigation />
           </Suspense>
-          <main>{children}</main>
+          <main><PageTransition>{children}</PageTransition></main>
           <Footer />
         </ToastProvider>
       </body>

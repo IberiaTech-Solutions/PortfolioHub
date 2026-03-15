@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -10,27 +10,8 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import SearchBar from "@/components/SearchBar";
-
-type Portfolio = {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  website_url: string;
-  website_screenshot?: string;
-  profile_image?: string;
-  hero_image?: string;
-  github_url: string;
-  linkedin_url: string;
-  location?: string;
-  experience_level?: string;
-  preferred_work_type?: string[];
-  languages?: string;
-  skills: string[];
-  job_title: string;
-  created_at: string;
-  name: string;
-};
+import FadeIn, { useCountUp } from "@/components/FadeIn";
+import { Portfolio } from "@/types";
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -50,6 +31,10 @@ function HomeContent() {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [portfolioCount, setPortfolioCount] = useState(0);
+  const [jobCount, setJobCount] = useState(0);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const [statsVisible, setStatsVisible] = useState(false);
 
   // Rotating search examples
   const searchExamples = [
@@ -118,6 +103,36 @@ function HomeContent() {
     }
   }, []);
 
+  // Fetch social proof stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!supabase) return;
+      const [portfolioRes, jobRes] = await Promise.all([
+        supabase.from("portfolios").select("*", { count: "exact", head: true }),
+        supabase.from("jobs").select("*", { count: "exact", head: true }),
+      ]);
+      setPortfolioCount(portfolioRes.count ?? 0);
+      setJobCount(jobRes.count ?? 0);
+    };
+    fetchStats();
+  }, []);
+
+  // Observe stats section visibility for count-up
+  useEffect(() => {
+    const el = statsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStatsVisible(true); obs.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const portfolioCountUp = useCountUp(portfolioCount, statsVisible);
+  const jobCountUp = useCountUp(jobCount, statsVisible);
+  const aiChatCountUp = useCountUp(1200, statsVisible);
+
   useEffect(() => {
     // Fetch available skills and job titles
     const fetchFilterOptions = async () => {
@@ -133,8 +148,7 @@ function HomeContent() {
       if (portfoliosData) {
         // Extract unique skills
         const skills = new Set<string>();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (portfoliosData as unknown as any[]).forEach((portfolio) => {
+        (portfoliosData as Portfolio[]).forEach((portfolio) => {
           if (portfolio.skills) {
             portfolio.skills.forEach((skill: string) => skills.add(skill));
           }
@@ -143,8 +157,7 @@ function HomeContent() {
 
         // Extract unique job titles
         const jobTitles = new Set<string>();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (portfoliosData as unknown as any[]).forEach((portfolio) => {
+        (portfoliosData as Portfolio[]).forEach((portfolio) => {
           if (portfolio.job_title) {
             jobTitles.add(portfolio.job_title);
           }
@@ -178,10 +191,20 @@ function HomeContent() {
       return;
     }
 
-    const { data: portfoliosData, error } = await supabase
+    let supabaseQuery = supabase
       .from("portfolios")
-      .select("*")
-      .limit(50);
+      .select("*");
+
+    // Server-side text search using Supabase ilike for now
+    // Full-text search requires a tsvector column which may not exist
+    if (query && query.trim()) {
+      const searchTerm = `%${query.trim()}%`;
+      supabaseQuery = supabaseQuery.or(
+        `title.ilike.${searchTerm},description.ilike.${searchTerm},job_title.ilike.${searchTerm},name.ilike.${searchTerm}`
+      );
+    }
+
+    const { data: portfoliosData, error } = await supabaseQuery.limit(50);
 
     if (error) {
       console.error("Error fetching portfolios:", error);
@@ -189,31 +212,9 @@ function HomeContent() {
       return;
     }
 
-    // Filter portfolios based on the search query and selected filters
-    let filteredPortfolios = portfoliosData as Portfolio[];
+    let filteredPortfolios = (portfoliosData || []) as Portfolio[];
 
-    // Apply text search
-    if (query) {
-      const searchTerms = query
-        .toLowerCase()
-        .split(" ")
-        .filter((term) => term.length > 0);
-
-      filteredPortfolios = filteredPortfolios.filter((portfolio) =>
-        searchTerms.every(
-          (term) =>
-            portfolio.title?.toLowerCase().includes(term) ||
-            portfolio.description?.toLowerCase().includes(term) ||
-            portfolio.job_title?.toLowerCase().includes(term) ||
-            portfolio.name?.toLowerCase().includes(term) ||
-            portfolio.skills?.some((skill) =>
-              skill.toLowerCase().includes(term)
-            )
-        )
-      );
-    }
-
-    // Apply skill filters
+    // Apply skill filters (client-side since skills is a jsonb array)
     if (selectedSkills.length > 0) {
       filteredPortfolios = filteredPortfolios.filter((portfolio) =>
         selectedSkills.every((skill) => portfolio.skills?.includes(skill))
@@ -227,34 +228,29 @@ function HomeContent() {
       );
     }
 
-    setPortfolios(filteredPortfolios || []);
+    setPortfolios(filteredPortfolios);
 
     // Extract unique filter options from all portfolios data
-    const allPortfolios = portfoliosData as Portfolio[];
-    
-    // Extract unique job titles/roles
+    const allPortfolios = (portfoliosData || []) as Portfolio[];
+
     const uniqueRoles = Array.from(new Set(
       allPortfolios
         .map(p => p.job_title)
         .filter(title => title && title.trim() !== '')
     )).sort();
-    
-    // Extract unique experience levels (if we have experience data)
+
     const uniqueExperience = Array.from(new Set(
       allPortfolios
         .map(p => p.experience_level)
         .filter((exp): exp is string => exp != null && exp.trim() !== '')
     )).sort();
-    
-    // Extract unique locations
+
     const uniqueLocations = Array.from(new Set(
       allPortfolios
         .map(p => p.location)
         .filter((loc): loc is string => loc != null && loc.trim() !== '')
     )).sort();
-    
-    
-    // Extract unique skills
+
     const allSkills = allPortfolios
       .flatMap(p => p.skills || [])
       .filter(skill => skill && skill.trim() !== '');
@@ -264,7 +260,7 @@ function HomeContent() {
     setAvailableExperience(uniqueExperience);
     setAvailableLocations(uniqueLocations);
     setAvailableSkills(uniqueSkills);
-    setAvailableJobTitles(uniqueRoles); // Job titles are the same as roles
+    setAvailableJobTitles(uniqueRoles);
 
     setLoading(false);
   };
@@ -280,39 +276,9 @@ function HomeContent() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 opacity-10">
-          {/* Floating Gradient Waves */}
-          <div className="absolute top-20 left-10 w-32 h-32 bg-brand-400 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 bg-purple-400 rounded-full blur-2xl animate-bounce" style={{animationDuration: '3s'}}></div>
-          <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-blue-400 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-emerald-400 rounded-full blur-2xl animate-bounce" style={{animationDuration: '4s', animationDelay: '2s'}}></div>
-          
-          {/* Floating Avatar Dots */}
-          <div className="absolute top-1/4 left-1/5 w-3 h-3 bg-white rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
-          <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-brand-300 rounded-full animate-ping" style={{animationDelay: '1.5s'}}></div>
-          <div className="absolute bottom-1/3 left-1/3 w-2.5 h-2.5 bg-purple-300 rounded-full animate-ping" style={{animationDelay: '2.5s'}}></div>
-          <div className="absolute top-2/3 right-1/5 w-2 h-2 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '3.5s'}}></div>
-          
-          {/* Animated Network Lines */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" fill="none">
-            <path d="M100 200 L300 150 L500 250 L700 180 L900 220" stroke="rgba(99, 102, 241, 0.3)" strokeWidth="2" fill="none" className="animate-pulse"/>
-            <path d="M150 400 L350 350 L550 450 L750 380 L850 420" stroke="rgba(139, 92, 246, 0.3)" strokeWidth="2" fill="none" className="animate-pulse" style={{animationDelay: '1s'}}/>
-            <path d="M200 600 L400 550 L600 650 L800 580 L950 620" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="2" fill="none" className="animate-pulse" style={{animationDelay: '2s'}}/>
-            
-            {/* Animated Network Nodes */}
-            <circle cx="100" cy="200" r="4" fill="rgba(99, 102, 241, 0.6)" className="animate-ping"/>
-            <circle cx="300" cy="150" r="4" fill="rgba(99, 102, 241, 0.6)" className="animate-ping" style={{animationDelay: '0.5s'}}/>
-            <circle cx="500" cy="250" r="4" fill="rgba(99, 102, 241, 0.6)" className="animate-ping" style={{animationDelay: '1s'}}/>
-            <circle cx="700" cy="180" r="4" fill="rgba(99, 102, 241, 0.6)" className="animate-ping" style={{animationDelay: '1.5s'}}/>
-            <circle cx="900" cy="220" r="4" fill="rgba(99, 102, 241, 0.6)" className="animate-ping" style={{animationDelay: '2s'}}/>
-            
-            <circle cx="150" cy="400" r="4" fill="rgba(139, 92, 246, 0.6)" className="animate-ping" style={{animationDelay: '0.3s'}}/>
-            <circle cx="350" cy="350" r="4" fill="rgba(139, 92, 246, 0.6)" className="animate-ping" style={{animationDelay: '0.8s'}}/>
-            <circle cx="550" cy="450" r="4" fill="rgba(139, 92, 246, 0.6)" className="animate-ping" style={{animationDelay: '1.3s'}}/>
-            <circle cx="750" cy="380" r="4" fill="rgba(139, 92, 246, 0.6)" className="animate-ping" style={{animationDelay: '1.8s'}}/>
-            <circle cx="850" cy="420" r="4" fill="rgba(139, 92, 246, 0.6)" className="animate-ping" style={{animationDelay: '2.3s'}}/>
-          </svg>
+        {/* Subtle Background Orb */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-500/10 rounded-full blur-3xl animate-pulse"></div>
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 w-full">
@@ -322,13 +288,13 @@ function HomeContent() {
                 <>
                   Welcome Back,
                   <br />
-                  <span className="font-light text-slate-200">Your AI Agent is Live</span>
+                  <span className="font-light animate-gradient-text">Your AI Agent is Live</span>
                 </>
               ) : (
                 <>
                   Your AI Agent.
                   <br />
-                  <span className="font-light text-slate-200">Your Career. Your Terms.</span>
+                  <span className="font-light animate-gradient-text">Your Career. Your Terms.</span>
                 </>
               )}
             </h1>
@@ -480,6 +446,7 @@ function HomeContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {/* Step 1 */}
+            <FadeIn delay={0}>
             <div className="relative text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -493,8 +460,10 @@ function HomeContent() {
                 Paste your resume or upload a file. AI extracts your skills, experience, and projects in 30 seconds.
               </p>
             </div>
+            </FadeIn>
 
             {/* Step 2 */}
+            <FadeIn delay={150}>
             <div className="relative text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -508,8 +477,10 @@ function HomeContent() {
                 An AI agent trained on your work answers questions from recruiters 24/7. It demonstrates depth that resumes can&apos;t.
               </p>
             </div>
+            </FadeIn>
 
             {/* Step 3 */}
+            <FadeIn delay={300}>
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -522,6 +493,7 @@ function HomeContent() {
                 AI scores your fit for every job. It tells you when to apply — and when not to. No more wasting time on dead ends.
               </p>
             </div>
+            </FadeIn>
           </div>
         </div>
       </div>
@@ -546,6 +518,7 @@ function HomeContent() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Feature 1 */}
+            <FadeIn delay={0}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-brand-500/30 transition-all duration-500 group">
               <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -557,8 +530,10 @@ function HomeContent() {
                 Recruiters chat with your AI agent to understand your experience in depth. No more 6-second resume scans.
               </p>
             </div>
+            </FadeIn>
 
             {/* Feature 2 */}
+            <FadeIn delay={100}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-500 group">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -570,8 +545,10 @@ function HomeContent() {
                 AI scores your fit 0-100 for every job. It tells you &quot;don&apos;t apply&quot; when the match is weak. Trust beats false hope.
               </p>
             </div>
+            </FadeIn>
 
             {/* Feature 3 */}
+            <FadeIn delay={200}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-500 group">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -583,8 +560,10 @@ function HomeContent() {
                 Jobs from LinkedIn, Indeed, and Glassdoor — matched to your skills in real-time. No more scrolling through 500 irrelevant posts.
               </p>
             </div>
+            </FadeIn>
 
             {/* Feature 4 */}
+            <FadeIn delay={300}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-amber-500/30 transition-all duration-500 group">
               <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -596,8 +575,10 @@ function HomeContent() {
                 Paste your resume, AI fills your entire profile in 30 seconds. Skills, projects, experience — all extracted automatically.
               </p>
             </div>
+            </FadeIn>
 
             {/* Feature 5 */}
+            <FadeIn delay={400}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-rose-500/30 transition-all duration-500 group">
               <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -610,8 +591,10 @@ function HomeContent() {
                 See who viewed your profile, chatted with your AI, and ran fit assessments. Know your market value in real-time.
               </p>
             </div>
+            </FadeIn>
 
             {/* Feature 6 */}
+            <FadeIn delay={500}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-500 group">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -623,12 +606,14 @@ function HomeContent() {
                 Get a vanity URL like talentagent.com/yourname. Share it in emails, LinkedIn, and applications instead of a PDF resume.
               </p>
             </div>
+            </FadeIn>
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
       <div className="bg-gradient-to-br from-brand-600 via-brand-700 to-purple-800 py-16 sm:py-20">
+        <FadeIn>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-6">
             Ready to Stop Playing the Resume Game?
@@ -654,6 +639,39 @@ function HomeContent() {
             </Link>
           </div>
           <p className="text-white/50 text-sm mt-6">No credit card required. Free forever for candidates.</p>
+        </div>
+        </FadeIn>
+      </div>
+
+      {/* Social Proof Section */}
+      <div className="bg-white py-16 sm:py-20 border-b border-gray-100">
+        <div ref={statsRef} className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <FadeIn delay={0}>
+              <div>
+                <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900">
+                  {portfolioCountUp}+
+                </p>
+                <p className="text-gray-500 font-heading font-medium mt-2">Portfolios Created</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={150}>
+              <div>
+                <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900">
+                  {jobCountUp}+
+                </p>
+                <p className="text-gray-500 font-heading font-medium mt-2">Jobs Matched</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={300}>
+              <div>
+                <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900">
+                  {aiChatCountUp}+
+                </p>
+                <p className="text-gray-500 font-heading font-medium mt-2">AI Chats This Week</p>
+              </div>
+            </FadeIn>
+          </div>
         </div>
       </div>
 

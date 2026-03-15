@@ -4,20 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import { User } from '@supabase/supabase-js';
 import { CheckIcon, XMarkIcon, ClockIcon } from '@heroicons/react/24/outline';
-
-interface Collaboration {
-  id: string;
-  portfolio_id: string;
-  collaborator_user_id: string;
-  collaborator_name: string;
-  collaborator_email: string;
-  project_title: string;
-  project_description?: string;
-  role: string;
-  status: 'pending' | 'accepted' | 'declined';
-  verified_at?: string;
-  created_at: string;
-}
+import { Collaboration } from "@/types";
 
 export default function CollaborationVerification() {
   const [user, setUser] = useState<User | null>(null);
@@ -58,7 +45,7 @@ export default function CollaborationVerification() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCollaborations((data as unknown as Collaboration[]) || []);
+      setCollaborations((data as Collaboration[]) || []);
     } catch (error) {
       console.error('Error fetching collaborations:', error);
     } finally {

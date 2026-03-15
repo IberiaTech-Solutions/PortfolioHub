@@ -12,62 +12,14 @@ import {
   XCircleIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
-
-type Portfolio = {
-  id: string;
-  name: string;
-  job_title: string;
-  title: string;
-  description: string;
-  skills: string[];
-  projects: Array<{
-    title: string;
-    description: string;
-    url: string;
-    techStack: string[];
-  }>;
-  location?: string;
-  experience_level?: string;
-  preferred_work_type?: string[];
-  languages?: string;
-  website_url?: string;
-  github_url?: string;
-  linkedin_url?: string;
-  collaborations?: Array<{
-    collaborator_name: string;
-    project_title: string;
-    role: string;
-    status: string;
-  }>;
-};
-
-type Message = {
-  role: "user" | "assistant";
-  content: string;
-};
-
-type FitAssessment = {
-  score: number;
-  verdict: string;
-  summary: string;
-  strengths: string[];
-  gaps: string[];
-  advice: string;
-  shouldApply: boolean;
-};
-
-type InterviewQuestion = {
-  question: string;
-  type: "strength" | "gap" | "behavioral";
-  tip: string;
-};
+import { PortfolioData, FitAssessment, InterviewQuestion, ChatMessage } from "@/types";
 
 type Tab = "chat" | "fit";
 
-export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
+export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("chat");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
@@ -105,7 +57,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
     if (!messageText || isLoading) return;
 
     setHasInteracted(true);
-    const userMessage: Message = { role: "user", content: messageText };
+    const userMessage: ChatMessage = { role: "user", content: messageText };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -117,7 +69,6 @@ export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
         body: JSON.stringify({
           message: messageText,
           portfolio,
-          portfolioId: portfolio.id,
           history: messages,
         }),
       });
@@ -158,7 +109,6 @@ export default function PortfolioChat({ portfolio }: { portfolio: Portfolio }) {
         body: JSON.stringify({
           jobDescription: jobDescription.trim(),
           portfolio,
-          portfolioId: portfolio.id,
         }),
       });
 

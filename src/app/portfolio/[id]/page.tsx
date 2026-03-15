@@ -14,45 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import PortfolioChat from "@/components/PortfolioChat";
 import VerifiedBadge from "@/components/VerifiedBadge";
-
-type Portfolio = {
-  id: string;
-  user_id: string;
-  title: string;
-  name: string;
-  job_title: string;
-  description: string;
-  website_url: string;
-  website_screenshot: string;
-  profile_image?: string;
-  hero_image?: string;
-  github_url: string;
-  linkedin_url: string;
-  location?: string;
-  experience_level?: string;
-  preferred_work_type?: string[];
-  languages?: string;
-  username?: string;
-  is_verified?: boolean;
-  private_fields?: string[];
-  additional_links: Array<{label: string, url: string}>;
-  skills: string[];
-  projects: Array<{
-    title: string;
-    description: string;
-    url: string;
-    techStack: string[];
-  }>;
-  collaborations: Array<{
-    id: string;
-    collaborator_name: string;
-    project_title: string;
-    role: string;
-    status: string;
-  }>;
-  created_at: string;
-  updated_at: string;
-};
+import { Portfolio } from "@/types";
 
 export default function PortfolioDetailPage() {
   const params = useParams();
@@ -270,7 +232,7 @@ export default function PortfolioDetailPage() {
           <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
             <span>Portfolio created {new Date(portfolio.created_at).toLocaleDateString()}</span>
             <span>•</span>
-            <span>Last updated {new Date(portfolio.updated_at).toLocaleDateString()}</span>
+            {portfolio.updated_at && <span>Last updated {new Date(portfolio.updated_at).toLocaleDateString()}</span>}
           </div>
         </div>
 

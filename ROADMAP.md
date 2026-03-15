@@ -91,27 +91,31 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] **Feature showcase** — 6 feature cards (AI Chat, Fit Scores, Job Matching, Resume Import, Analytics, Shareable Profile)
 - [x] **CTA section** — Gradient banner with "Get Started Free" + "Browse Jobs First" dual CTAs
 - [x] **Discover Talent section** — Updated copy to reflect AI platform positioning
-- [ ] **Social proof section** — User count, testimonials, "X jobs matched this week" live counter
-- [ ] **Hero animation** — Animated gradient text, floating UI mockup preview
+- [x] **Social proof section** — 3-column stats (Portfolios Created, Jobs Matched, AI Chats This Week) with count-up animation, real Supabase counts
+- [x] **Hero animation** — Animated gradient text on subtitle, simplified hero background to single subtle gradient orb
 
 ### Onboarding Wizard
-- [ ] Step-by-step flow replacing the massive form: (1) Import resume or start fresh (2) Review extracted data (3) Add skills (4) Upload photo (5) Your AI agent is live
-- [ ] Progress bar showing completion percentage
-- [ ] Skip options for non-essential fields
+- [x] 5-step wizard replacing massive single-page form: (1) Role & Resume (2) Personal Info (3) Professional (4) Skills & Links (5) Review & Publish
+- [x] Gradient progress bar with step X of 5 label and clickable step indicators
+- [x] Next/Back/Skip navigation (Skip available on steps 2-4 for optional fields)
+- [x] Edit mode loads existing portfolio data and starts at Step 5 (Review)
+- [x] Review step shows summary of all fields with per-section Edit buttons
+- [x] All form state + AI handlers remain in parent, passed as props to step components
+- [x] Sidebar removed (progress bar replaces it)
 
 ### Micro-interactions & Polish
 - [x] Skeleton loaders on portfolio detail, profile, and jobs pages
 - [x] Empty states cleaned up (collaborations, jobs — simpler icons, actionable text)
-- [ ] Page transition animations (fade/slide between routes)
-- [ ] Element entrance animations (stagger cards, fade-in sections on scroll)
+- [x] Page transition animations (fade on route change via PageTransition component wrapping layout children)
+- [x] Element entrance animations (FadeIn component with Intersection Observer — stagger on How it Works, Features, CTA, Social Proof sections)
 
 ### Design System Consistency
 - [x] Consistent card styles across portfolio detail, profile, jobs, collaborations
 - [x] Removed hover:scale-105 from non-CTA elements
 - [x] Consistent skill/tag styling across all pages
-- [ ] Global typography scale (display/h1/h2/h3/body/caption with consistent sizes)
-- [ ] Consistent button variants (primary/secondary/ghost/danger) as shared component
-- [ ] Dark/light section alternation pattern on landing page
+- [x] Global typography scale reference in globals.css (Display/Section/Card/Body/Label/Badge sizes)
+- [x] Consistent button variants (primary/secondary/ghost/danger) as shared `Button.tsx` component with sm/md/lg sizes, href→Link support, loading/disabled states
+- [x] Dark/light section alternation pattern on landing page (Hero→dark, Partners→dark, How it Works→white, Features→dark, CTA→gradient, Social Proof→white, Discover→gray-50)
 
 ---
 
@@ -120,17 +124,29 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] **GitHub profile scoring** — Analyzes repos, stars, forks, languages, activity → 0-100 score with level (Beginner/Growing/Intermediate/Advanced/Expert). Displayed on portfolio sidebar.
 - [x] **Suggested jobs on profile page** — "Jobs For You" section with skill-matched link.
 - [x] **Privacy field enforcement** — Private fields hidden from non-owners, visible to owner.
-- [ ] **Fix portfolio search** — PostgreSQL full-text search replacing basic text matching.
-- [ ] **Proper TypeScript types** — Shared type definitions replacing `as unknown as` casts.
+- [x] **Fix portfolio search** — Server-side Supabase `ilike` search on title, description, job_title, name columns (replaces client-side filtering). Skills/job title filters remain client-side for JSONB arrays.
+- [x] **Proper TypeScript types** — Shared `src/types/index.ts` with Portfolio, PortfolioData, Job, JobMatch, Collaboration, Project, Skill, FitAssessment, InterviewQuestion, Analytics, ChatMessage, GitHubRepo, GitHubUser types. Replaced local type definitions in 8+ files.
 
-## Priority 2 — Differentiators (What Nobody Else Has)
+## Priority 2 — Smart Job Intelligence (Stop Wasting Time)
 
+### Job Eligibility & Transparency
+- [x] **"Can You Apply?" eligibility badges** — Green (eligible), Yellow (restricted), Red (unlikely) per job based on user location vs job requirements. Detects US-only, EU-only remote restrictions. Shows reason on hover.
+- [x] **Ghost job detection** — Flags stale listings (30+ days old, no salary, vague/short descriptions). Badges: "May be inactive" / "Possibly stale" with reasons on hover.
+- [x] **Apply timing signal** — Hot/Warm/Neutral/Cold badges based on post age. "Apply now — first-batch applicants get 4x more interviews." Orange pulse animation for fresh posts.
+- [ ] **Competition score per job** — Show estimated applicant count + user's percentile: "You're in the top 15% of applicants for this role."
+
+### Smart Apply System
+- [ ] **Quality-over-quantity mode** — Optional daily limit (e.g., 5 apps/day). Each application auto-attaches AI agent summary + fit score. Recruiter sees depth, not another resume in a pile of 400.
+
+### Cross-Border & Remote Intelligence
+- [ ] **Visa/sponsorship filter** — Tag jobs that sponsor visas or hire via EOR (Deel, Remote.com, etc.). Filter: "Hires internationally."
+- [ ] **Truly global remote filter** — Distinguish "remote (US only)" from "remote (anywhere)". Show which companies are known global-remote employers.
+
+### Existing Differentiators
 - [x] **AI-to-AI matching** — API auto-scores all candidates against a job, returns ranked top 10 matches with skills analysis.
 - [x] **"Don't Apply" honest signal** — Red "Skip" badge + icon on job cards where match score < 30.
 - [x] **AI interview question generator** — Generates 5 role-specific prep questions (2 strength, 2 gap, 1 behavioral) with tips. Integrated into fit assessment results.
 - [ ] **Shareable fit assessment cards** — Shareable image/link: "Luis scored 87% for Senior Frontend at Stripe." Free social distribution.
-- [ ] **Recruiter dashboard** — Saved searches, candidate shortlists, bulk AI chat, outreach tools.
-- [ ] **Weekly AI career digest email** — "3 new jobs match your profile this week. Top match: Senior Dev at Acme (92%)."
 - [ ] **In-app notifications** — Alerts when someone chats with your AI, views your profile, or a matching job is posted.
 
 ## Priority 3 — Moat Builders (Hard to Copy)
@@ -141,6 +157,8 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] **Portfolio SEO pages** — Dynamic page title and meta description per portfolio profile.
 - [ ] **API for ATS integration** — Let companies pull candidate data into Workday/Greenhouse/Lever.
 - [ ] **User messaging** — Direct messages between candidates and recruiters within the platform.
+- [ ] **Recruiter dashboard** — Saved searches, candidate shortlists, bulk AI chat, outreach tools.
+- [ ] **Weekly AI career digest email** — "3 new jobs match your profile this week. Top match: Senior Dev at Acme (92%)."
 
 ## Priority 4 — Monetization
 

@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
+import { Portfolio, Job, JobMatch } from "@/types";
+import {
+  detectGhostJob,
+  getTimingSignal,
+  checkEligibility,
+} from "@/utils/jobIntelligence";
 import {
   BriefcaseIcon,
   MapPinIcon,
@@ -16,57 +22,6 @@ import {
   XCircleIcon,
   FunnelIcon,
 } from "@heroicons/react/24/outline";
-
-type Job = {
-  id: string;
-  posted_by: string;
-  title: string;
-  company: string;
-  company_logo?: string;
-  description: string;
-  requirements?: string;
-  location?: string;
-  work_type: string;
-  remote_policy: string;
-  experience_level?: string;
-  salary_min?: number;
-  salary_max?: number;
-  salary_currency: string;
-  skills: string[];
-  application_url?: string;
-  application_email?: string;
-  is_active: boolean;
-  created_at: string;
-};
-
-type Portfolio = {
-  id: string;
-  name: string;
-  job_title: string;
-  title: string;
-  description: string;
-  skills: string[];
-  projects: Array<{
-    title: string;
-    description: string;
-    url: string;
-    techStack: string[];
-  }>;
-  location?: string;
-  experience_level?: string;
-  preferred_work_type?: string[];
-  languages?: string;
-};
-
-type JobMatch = {
-  score: number;
-  verdict: string;
-  summary: string;
-  matchingSkills: string[];
-  missingSkills: string[];
-  shouldApply: boolean;
-  tip: string;
-};
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -424,6 +379,9 @@ export default function JobsPage() {
               const match = matches[job.id];
               const isExpanded = expandedJob === job.id;
               const isMatching = matchingJobId === job.id;
+              const ghost = detectGhostJob(job);
+              const timing = getTimingSignal(job);
+              const eligibility = checkEligibility(job, portfolio);
 
               return (
                 <div
@@ -466,10 +424,64 @@ export default function JobsPage() {
                                 Skip
                               </span>
                             )}
+                            {eligibility.level === "eligible" && portfolio && (
+                              <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-md text-xs font-medium" title={eligibility.reason}>
+                                <CheckCircleIcon className="w-3 h-3 inline mr-0.5" />
+                                Eligible
+                              </span>
+                            )}
                             <span className="text-gray-500 text-xs whitespace-nowrap">
                               {timeAgo(job.created_at)}
                             </span>
                           </div>
+                        </div>
+
+                        {/* Intelligence Badges */}
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          {/* Timing Signal */}
+                          {timing.signal === "hot" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-500/15 text-orange-300 rounded-md text-xs font-bold border border-orange-500/30" title={timing.detail}>
+                              <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></span>
+                              {timing.label}
+                            </span>
+                          )}
+                          {timing.signal === "warm" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-500/15 text-yellow-300 rounded-md text-xs font-medium border border-yellow-500/30" title={timing.detail}>
+                              {timing.label}
+                            </span>
+                          )}
+                          {timing.signal === "cold" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-500/15 text-gray-400 rounded-md text-xs font-medium border border-gray-500/30" title={timing.detail}>
+                              {timing.label}
+                            </span>
+                          )}
+
+                          {/* Eligibility */}
+                          {eligibility.level === "restricted" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/15 text-amber-300 rounded-md text-xs font-medium border border-amber-500/30" title={eligibility.reason}>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                              Location restricted
+                            </span>
+                          )}
+                          {eligibility.level === "unlikely" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded-md text-xs font-medium border border-rose-500/30" title={eligibility.reason}>
+                              <XCircleIcon className="w-3 h-3" />
+                              Location mismatch
+                            </span>
+                          )}
+
+                          {/* Ghost Job Warning */}
+                          {ghost.risk === "high" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-500/15 text-gray-400 rounded-md text-xs font-medium border border-gray-500/30" title={ghost.reasons.join(". ")}>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                              May be inactive
+                            </span>
+                          )}
+                          {ghost.risk === "medium" && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-500/10 text-gray-500 rounded-md text-xs font-medium border border-gray-500/20" title={ghost.reasons.join(". ")}>
+                              Possibly stale
+                            </span>
+                          )}
                         </div>
 
                         {/* Tags */}

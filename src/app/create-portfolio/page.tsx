@@ -1,83 +1,19 @@
 "use client";
 
-import { useEffect, useState, Fragment, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { supabase } from "@/utils/supabase";
 import { User, PostgrestResponse } from "@supabase/supabase-js";
-import { Combobox, Transition } from "@headlessui/react";
 import {
-  CheckIcon,
-  ChevronUpDownIcon,
-  XMarkIcon,
   SparklesIcon,
 } from "@heroicons/react/20/solid";
-import dynamic from "next/dynamic";
-import PrivacyToggle from "@/components/PrivacyToggle";
 import { useToast } from "@/components/Toast";
-
-// Lazy load heavy components
-const ProjectCards = dynamic(() => import("@/components/ProjectCards"), {
-  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-32"></div>,
-  ssr: false
-});
-
-const CollaborationManager = dynamic(() => import("@/components/CollaborationManager"), {
-  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-48"></div>,
-  ssr: false
-});
-
-type Project = {
-  title: string;
-  description: string;
-  url: string;
-  techStack: string[];
-  stars?: number;
-  forks?: number;
-  language?: string;
-  lastUpdated: string;
-};
-
-type Collaboration = {
-  id: string;
-  collaborator_name: string;
-  collaborator_email: string;
-  project_title: string;
-  project_description?: string;
-  role: string;
-  status: 'pending' | 'accepted' | 'declined';
-  verified_at?: string;
-  created_at: string;
-};
-
-type Portfolio = {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  website_url: string;
-  website_screenshot: string;
-  profile_image?: string;
-  hero_image?: string;
-  github_url: string;
-  linkedin_url: string;
-  location?: string;
-  experience_level?: string;
-  preferred_work_type?: string[];
-  languages?: string;
-  additional_links: Array<{label: string, url: string}>;
-  skills: string[];
-  projects: Project[];
-  job_title: string;
-  created_at: string;
-  name: string;
-};
-
-type Skill = {
-  id: string;
-  name: string;
-  category: string;
-};
+import StepRoleResume from "./steps/StepRoleResume";
+import StepPersonalInfo from "./steps/StepPersonalInfo";
+import StepProfessional from "./steps/StepProfessional";
+import StepSkillsLinks from "./steps/StepSkillsLinks";
+import StepReview from "./steps/StepReview";
+import { Portfolio, Project, Collaboration, Skill } from "@/types";
 
 export default function CreatePortfolioPage() {
   const router = useRouter();
@@ -134,6 +70,8 @@ export default function CreatePortfolioPage() {
   const [existingPortfolio, setExistingPortfolio] = useState<Portfolio | null>(
     null
   );
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 5;
 
   // Debounced AI analysis function
   const analyzeField = useCallback(
@@ -417,6 +355,7 @@ export default function CreatePortfolioPage() {
           setTimeout(() => {
             // Batch all state updates for better performance
             setExistingPortfolio(portfolioData);
+            setCurrentStep(5); // Edit mode: start at Review
             setFormData({
               title: portfolioData.title || "",
               name: portfolioData.name || "",
@@ -819,78 +758,6 @@ export default function CreatePortfolioPage() {
     }
   };
 
-  // Separate modal component to prevent form nesting
-  const AddSkillModal = () => (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div
-        className="bg-slate-800 rounded-xl p-6 w-full max-w-md shadow-xl border border-slate-600"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-xl font-semibold text-white mb-4">Add New Skill</h3>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-white text-sm font-medium mb-2">
-              Skill Name
-            </label>
-            <input
-              type="text"
-              value={newSkill.name}
-              onChange={(e) =>
-                setNewSkill({ ...newSkill, name: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
-              placeholder="Enter skill name"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-white text-sm font-medium mb-2">
-              Category
-            </label>
-            <select
-              value={newSkill.category}
-              onChange={(e) =>
-                setNewSkill({ ...newSkill, category: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10"
-              required
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={() => {
-                setIsAddingSkill(false);
-                setNewSkill({ name: "", category: "" });
-              }}
-              className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleAddNewSkill}
-              disabled={loading || !newSkill.name || !newSkill.category}
-              className="px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors duration-200 disabled:opacity-50"
-            >
-              {loading ? "Adding..." : "Add Skill"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   if (!user) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-slate-900">
@@ -921,6 +788,12 @@ export default function CreatePortfolioPage() {
     );
   }
 
+  const stepLabels = ["Role & Resume", "Personal Info", "Professional", "Skills & Links", "Review"];
+
+  const goToStep = (step: number) => {
+    setCurrentStep(step);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* Form Loading Overlay */}
@@ -932,1075 +805,186 @@ export default function CreatePortfolioPage() {
           </div>
         </div>
       )}
-      {/* Animated Background Elements */}
+
+      {/* Subtle Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Gradient Waves */}
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-brand-400/20 to-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-brand-400/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        
-        {/* Floating Dots */}
-        <div className="absolute top-20 left-20 w-2 h-2 bg-brand-400/30 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-        <div className="absolute top-40 right-32 w-1.5 h-1.5 bg-emerald-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-32 left-32 w-2.5 h-2.5 bg-purple-400/30 rounded-full animate-bounce" style={{animationDelay: '3s'}}></div>
-        
-        {/* Network Lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <defs>
-            <pattern id="network" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 10 0 L 10 20 M 0 10 L 20 10" stroke="currentColor" strokeWidth="0.5" fill="none"/>
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#network)" className="text-brand-400"/>
-        </svg>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-500/10 rounded-full blur-3xl animate-pulse"></div>
       </div>
 
-      <div className="relative max-w-6xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
-        {/* Hero Section */}
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs sm:text-sm font-medium mb-4 sm:mb-6 shadow-lg">
+      <div className="relative max-w-3xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs sm:text-sm font-medium mb-4 shadow-lg">
             <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             AI-Powered Portfolio Builder
           </div>
-          
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 sm:mb-6 leading-tight">
-            {existingPortfolio ? "Edit Your" : "Create Your"}
-            <br />
-            <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">
-              Portfolio
-            </span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-2 leading-tight">
+            {existingPortfolio ? "Edit Your" : "Create Your"}{" "}
+            <span className="animate-gradient-text">Portfolio</span>
           </h1>
-          
-          <p className="text-base sm:text-lg lg:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8">
-            Showcase your skills, projects, and collaborations in a beautiful, professional portfolio that stands out
-          </p>
-          
-          {/* Feature Highlights */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8">
-            <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs sm:text-sm text-white shadow-lg">
-              <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-brand-600" />
-              AI-Powered Analysis
-            </div>
-            <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs sm:text-sm text-white shadow-lg">
-              <svg className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              Auto Skill Detection
-            </div>
-            <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs sm:text-sm text-white shadow-lg">
-              <svg className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-              Project Integration
-            </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-gray-400 font-medium">
+              Step {currentStep} of {totalSteps}: {stepLabels[currentStep - 1]}
+            </span>
+            <span className="text-xs text-gray-500">{Math.round((currentStep / totalSteps) * 100)}%</span>
+          </div>
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-brand-500 to-emerald-500 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            />
+          </div>
+          {/* Step indicators */}
+          <div className="flex justify-between mt-2">
+            {stepLabels.map((label, i) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => goToStep(i + 1)}
+                className={`text-xs transition-colors ${
+                  i + 1 === currentStep
+                    ? "text-brand-300 font-semibold"
+                    : i + 1 < currentStep
+                    ? "text-emerald-400 cursor-pointer hover:text-emerald-300"
+                    : "text-gray-600"
+                }`}
+              >
+                {i + 1 <= currentStep ? (i + 1 < currentStep ? "\u2713" : "\u25CF") : "\u25CB"}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Form Section */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
-              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-500/10 border border-blue-400/30 rounded-lg">
-                <p className="text-xs sm:text-sm text-blue-200">
-                  <span className="text-red-400 font-semibold">*</span> Required fields must be filled out to create your portfolio.
-                </p>
-                <p className="text-xs text-blue-300 mt-1">
-                  AI Analysis: {MAX_AI_CALLS - aiCallCount} calls remaining
-                </p>
-              </div>
-              {/* Role Selector */}
-              {!existingPortfolio && (
-                <div className="mb-8">
-                  <p className="text-sm font-medium text-gray-300 mb-3">I am a...</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setFormData((prev) => ({ ...prev, user_role: "candidate" }))}
-                      className={`p-4 rounded-xl border text-left transition-all ${
-                        formData.user_role === "candidate"
-                          ? "bg-brand-600/15 border-brand-500/50 text-white"
-                          : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                      }`}
-                    >
-                      <div className="text-lg mb-1">
-                        <svg className="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
-                      <p className="font-heading font-semibold text-sm">Candidate</p>
-                      <p className="text-xs text-gray-500 mt-1">Looking for jobs, showcase my work</p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormData((prev) => ({ ...prev, user_role: "recruiter" }))}
-                      className={`p-4 rounded-xl border text-left transition-all ${
-                        formData.user_role === "recruiter"
-                          ? "bg-brand-600/15 border-brand-500/50 text-white"
-                          : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                      }`}
-                    >
-                      <div className="text-lg mb-1">
-                        <svg className="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                      </div>
-                      <p className="font-heading font-semibold text-sm">Recruiter / Company</p>
-                      <p className="text-xs text-gray-500 mt-1">Hiring talent, posting jobs</p>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Company Fields (recruiter only) */}
-              {formData.user_role === "recruiter" && (
-                <div className="mb-8 bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
-                  <h3 className="text-sm font-heading font-semibold text-white">Company Details</h3>
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1.5">Company Name</label>
-                    <input
-                      type="text"
-                      name="company_name"
-                      value={formData.company_name}
-                      onChange={handleChange}
-                      placeholder="Acme Corp"
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1.5">Company Logo URL</label>
-                    <input
-                      type="url"
-                      name="company_logo"
-                      value={formData.company_logo}
-                      onChange={handleChange}
-                      placeholder="https://example.com/logo.png"
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Resume Import Section */}
-              {!existingPortfolio && formData.user_role === "candidate" && (
-                <div className="mb-8">
-                  {!showResumeImport ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowResumeImport(true)}
-                      className="w-full py-4 bg-gradient-to-r from-brand-500/20 to-emerald-500/20 hover:from-brand-500/30 hover:to-emerald-500/30 border-2 border-dashed border-brand-500/40 hover:border-brand-500/60 rounded-2xl text-white font-heading font-bold transition-all duration-300 flex items-center justify-center gap-3"
-                    >
-                      <svg className="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
-                      Import from Resume — Fill your profile in 30 seconds
-                    </button>
-                  ) : (
-                    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-                          <SparklesIcon className="w-5 h-5 text-brand-400" />
-                          Import from Resume
-                        </h3>
-                        <button
-                          type="button"
-                          onClick={() => setShowResumeImport(false)}
-                          className="text-gray-400 hover:text-white transition-colors"
-                        >
-                          <XMarkIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <p className="text-gray-400 text-sm mb-4">
-                        Upload a file or paste your resume text. AI will extract your info and fill the form automatically.
-                      </p>
-                      <div className="space-y-4">
-                        <textarea
-                          value={resumeText}
-                          onChange={(e) => setResumeText(e.target.value)}
-                          placeholder="Paste your resume text here..."
-                          rows={6}
-                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
-                          disabled={resumeParsing}
-                        />
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <button
-                            type="button"
-                            onClick={() => handleResumeImport('text')}
-                            disabled={resumeParsing || resumeText.trim().length < 50}
-                            className="flex-1 py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
-                          >
-                            {resumeParsing ? (
-                              <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                Parsing with AI...
-                              </>
-                            ) : (
-                              <>
-                                <SparklesIcon className="w-4 h-4" />
-                                Parse Resume Text
-                              </>
-                            )}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleResumeImport('file')}
-                            disabled={resumeParsing}
-                            className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-all duration-300 border border-white/20 flex items-center justify-center gap-2"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            Upload File (.txt, .md)
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                <div className="space-y-3 sm:space-y-4">
-                  <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-white">
-                    Your Full Name <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
-                      !formData.name ? 'border-red-400/50' : 'border-white/20'
-                    }`}
-                    placeholder="John Doe"
-                  />
-                  {!formData.name && (
-                    <p className="text-red-400 text-xs mt-1">This field is required</p>
-                  )}
-                </div>
-
-                {/* Username / Vanity URL */}
-                <div className="space-y-1">
-                  <label htmlFor="username" className="block text-xs sm:text-sm font-semibold text-white">
-                    Username <span className="text-gray-500 font-normal">(vanity URL)</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">portfoliohub.com/</span>
-                    <input
-                      type="text"
-                      id="username"
-                      name="username"
-                      value={formData.username}
-                      onChange={(e) => {
-                        const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
-                        setFormData((prev) => ({ ...prev, username: val }));
-                        setUsernameAvailable(null);
-                        // Debounce check
-                        if (debounceTimers.current['username']) clearTimeout(debounceTimers.current['username']);
-                        debounceTimers.current['username'] = setTimeout(() => checkUsername(val), 500);
-                      }}
-                      className="w-full pl-[140px] pr-10 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm sm:text-base"
-                      placeholder="your-name"
-                    />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      {checkingUsername && (
-                        <div className="w-4 h-4 border-2 border-brand-400 border-t-transparent rounded-full animate-spin"></div>
-                      )}
-                      {!checkingUsername && usernameAvailable === true && formData.username.length >= 3 && (
-                        <CheckIcon className="w-5 h-5 text-emerald-400" />
-                      )}
-                      {!checkingUsername && usernameAvailable === false && (
-                        <XMarkIcon className="w-5 h-5 text-red-400" />
-                      )}
-                    </div>
-                  </div>
-                  {usernameAvailable === false && (
-                    <p className="text-red-400 text-xs">This username is taken</p>
-                  )}
-                  {usernameAvailable === true && formData.username.length >= 3 && (
-                    <p className="text-emerald-400 text-xs">Username available!</p>
-                  )}
-                </div>
-
-                {/* Profile Image Upload */}
-                <div className="space-y-3 sm:space-y-4">
-                  <label htmlFor="profile_image" className="block text-xs sm:text-sm font-semibold text-white">
-                    Profile Image
-                  </label>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    {/* Image Preview */}
-                    <div className="flex-shrink-0">
-                      {profileImagePreview ? (
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gray-200">
-                          <Image
-                            src={profileImagePreview}
-                            alt="Profile preview"
-                            width={80}
-                            height={80}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-lg sm:rounded-xl border-2 border-gray-200 flex items-center justify-center">
-                          <svg className="w-6 h-6 sm:w-8 sm:h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Upload Button */}
-                    <div className="flex-1 w-full sm:w-auto">
-                      <input
-                        type="file"
-                        id="profile_image"
-                        accept="image/*"
-                        onChange={handleProfileImageChange}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="profile_image"
-                        className="inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg sm:rounded-xl text-white cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm"
-                      >
-                        <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        {profileImagePreview ? 'Change Image' : 'Upload Image'}
-                      </label>
-                      <p className="text-xs text-gray-300 mt-1">
-                        Recommended: Square image, max 2MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hero Image Upload */}
-                <div className="space-y-3 sm:space-y-4">
-                  <label htmlFor="hero_image" className="block text-xs sm:text-sm font-semibold text-white">
-                    Portfolio Hero Image
-                    <span className="ml-1 sm:ml-2 text-xs text-gray-300 font-normal">(Banner image for portfolio cards)</span>
-                  </label>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    {/* Image Preview */}
-                    <div className="flex-shrink-0">
-                      {heroImagePreview ? (
-                        <div className="w-24 h-15 sm:w-32 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gray-200">
-                          <Image
-                            src={heroImagePreview}
-                            alt="Hero image preview"
-                            width={128}
-                            height={80}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-24 h-15 sm:w-32 sm:h-20 bg-gradient-to-br from-brand-100 to-brand-200 rounded-lg sm:rounded-xl border-2 border-gray-200 flex items-center justify-center">
-                          <svg className="w-6 h-6 sm:w-8 sm:h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Upload Button */}
-                    <div className="flex-1 w-full sm:w-auto">
-                      <input
-                        type="file"
-                        id="hero_image"
-                        accept="image/*"
-                        onChange={handleHeroImageChange}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="hero_image"
-                        className="inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg sm:rounded-xl text-white cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm"
-                      >
-                        <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        {heroImagePreview ? 'Change Hero Image' : 'Upload Hero Image'}
-                      </label>
-                      <p className="text-xs text-gray-300 mt-1">
-                        Recommended: 16:9 aspect ratio, max 5MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3 sm:space-y-4">
-                  <label htmlFor="title" className="block text-xs sm:text-sm font-semibold text-white">
-                    Portfolio Title <span className="text-red-400">*</span>
-                      <span className="ml-2 sm:ml-3 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
-                      <SparklesIcon className="h-3 w-3 mr-1" />
-                      AI Analysis
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={(e) => {
-                      handleChange(e);
-                      debouncedAnalyze('title', e.target.value, 'title');
-                    }}
-                    required
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base ${
-                      !formData.title ? 'border-red-400/50' : 'border-white/20'
-                    }`}
-                    placeholder="Front-end Developer with 5 years experience"
-                  />
-                  {!formData.title && (
-                    <p className="text-red-400 text-xs mt-1">This field is required</p>
-                  )}
-            
-                  {/* AI Suggestions for Title */}
-                  {(aiSuggestions.title?.length > 0 || analyzingField === 'title') && (
-                    <div className="mt-4 p-4 bg-brand-500/10 border border-brand-400/30 rounded-xl backdrop-blur-sm">
-                      <div className="flex items-center gap-2 mb-3">
-                        <SparklesIcon className="h-4 w-4 text-brand-300" />
-                        <span className="text-sm font-semibold text-brand-200">AI Suggestions</span>
-                        {analyzingField === 'title' && (
-                          <div className="h-3 w-3 border border-brand-300 border-t-transparent rounded-full animate-spin"></div>
-                        )}
-                      </div>
-                      {aiSuggestions.title?.map((suggestion, index) => (
-                        <p key={index} className="text-sm text-white mb-1 font-medium">
-                          • {suggestion}
-                        </p>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-          <div className="space-y-3">
-            <label
-              htmlFor="job_title"
-              className="block text-sm font-medium text-white"
-            >
-              Job Title <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              id="job_title"
-              name="job_title"
-              value={formData.job_title}
-              onChange={handleChange}
-              required
-              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base ${
-                !formData.job_title ? 'border-red-400/50' : 'border-white/20'
-              }`}
-              placeholder="Senior Front-end Developer"
-            />
-            {!formData.job_title && (
-              <p className="text-red-400 text-xs mt-1">This field is required</p>
-            )}
-          </div>
-
-          {/* Location and Experience Level Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-white"
-                >
-                  Location
-                </label>
-                <PrivacyToggle
-                  fieldName="location"
-                  isPrivate={formData.private_fields.includes("location")}
-                  onToggle={togglePrivateField}
-                />
-              </div>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-                placeholder="San Francisco, CA or Remote"
+        {/* Step Content */}
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6">
+          <form onSubmit={handleSubmit}>
+            {currentStep === 1 && (
+              <StepRoleResume
+                formData={formData}
+                setFormData={setFormData}
+                handleChange={handleChange}
+                existingPortfolio={existingPortfolio}
+                showResumeImport={showResumeImport}
+                setShowResumeImport={setShowResumeImport}
+                resumeText={resumeText}
+                setResumeText={setResumeText}
+                resumeParsing={resumeParsing}
+                handleResumeImport={handleResumeImport}
               />
-            </div>
+            )}
 
-            <div className="space-y-2 sm:space-y-3">
-              <label
-                htmlFor="experience_level"
-                className="block text-xs sm:text-sm font-medium text-white"
-              >
-                Experience Level
-              </label>
-              <select
-                id="experience_level"
-                name="experience_level"
-                value={formData.experience_level}
-                onChange={handleChange}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-              >
-                <option value="">Select experience level</option>
-                <option value="Entry Level">Entry Level (0-2 years)</option>
-                <option value="Mid Level">Mid Level (3-5 years)</option>
-                <option value="Senior Level">Senior Level (6+ years)</option>
-                <option value="Lead Level">Lead Level (8+ years)</option>
-                <option value="Student">Student/Intern</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Work Type and Languages Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-2 sm:space-y-3">
-              <label
-                htmlFor="preferred_work_type"
-                className="block text-xs sm:text-sm font-medium text-white"
-              >
-                Preferred Work Type
-              </label>
-              <div className="space-y-2">
-                {["Full-time", "Part-time", "Contract", "Freelance"].map((workType) => (
-                  <label key={workType} className="flex items-center space-x-2 sm:space-x-3 cursor-pointer py-1">
-                    <input
-                      type="checkbox"
-                      checked={formData.preferred_work_type.includes(workType)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setFormData(prev => ({
-                            ...prev,
-                            preferred_work_type: [...prev.preferred_work_type, workType]
-                          }));
-                        } else {
-                          setFormData(prev => ({
-                            ...prev,
-                            preferred_work_type: prev.preferred_work_type.filter(type => type !== workType)
-                          }));
-                        }
-                      }}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-brand-600 bg-white/10 border-white/20 rounded focus:ring-brand-500 focus:ring-2"
-                    />
-                    <span className="text-white text-xs sm:text-sm">{workType}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="languages"
-                  className="block text-xs sm:text-sm font-medium text-white"
-                >
-                  Languages
-                </label>
-                <PrivacyToggle
-                  fieldName="languages"
-                  isPrivate={formData.private_fields.includes("languages")}
-                  onToggle={togglePrivateField}
-                />
-              </div>
-              <input
-                type="text"
-                id="languages"
-                name="languages"
-                value={formData.languages}
-                onChange={handleChange}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-                placeholder="English, Spanish, French"
+            {currentStep === 2 && (
+              <StepPersonalInfo
+                formData={formData}
+                setFormData={setFormData}
+                handleChange={handleChange}
+                profileImagePreview={profileImagePreview}
+                heroImagePreview={heroImagePreview}
+                handleProfileImageChange={handleProfileImageChange}
+                handleHeroImageChange={handleHeroImageChange}
+                usernameAvailable={usernameAvailable}
+                checkingUsername={checkingUsername}
+                checkUsername={checkUsername}
+                togglePrivateField={togglePrivateField}
+                debounceTimers={debounceTimers}
               />
-            </div>
-          </div>
-
-          <div className="space-y-2 sm:space-y-3">
-            <label
-              htmlFor="description"
-              className="block text-xs sm:text-sm font-medium text-white"
-            >
-              About You / Description <span className="text-red-400">*</span>
-              <span className="ml-2 sm:ml-3 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
-                <SparklesIcon className="h-3 w-3 mr-1" />
-                AI Analysis
-              </span>
-              <span className="ml-1 sm:ml-2 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-green-500/20 text-green-300 border border-green-500/30">
-                <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                Auto Skills
-              </span>
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={(e) => {
-                handleChange(e);
-                debouncedAnalyze('description', e.target.value, 'description');
-                debouncedExtractSkills(e.target.value);
-              }}
-              required
-              rows={4}
-              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none bg-white/10 text-sm sm:text-base ${
-                !formData.description ? 'border-red-400/50' : 'border-white/20'
-              }`}
-              placeholder="A brief description about yourself, your experience, and what you're looking for"
-            ></textarea>
-            {!formData.description && (
-              <p className="text-red-400 text-xs mt-1">This field is required</p>
-            )}
-            <div className="flex justify-between items-center mt-2">
-              <p className="text-xs text-gray-300">
-                {formData.description.length > 2000 ? (
-                  <span className="text-amber-400">AI analysis disabled for long descriptions (2000+ chars)</span>
-                ) : (
-                  <span>{formData.description.length} characters</span>
-                )}
-              </p>
-              {formData.description.length > 1500 && (
-                <p className="text-xs text-gray-400">
-                  Consider shortening for better performance
-                </p>
-              )}
-            </div>
-            
-            {/* AI Suggestions for Description */}
-            {(aiSuggestions.description?.length > 0 || analyzingField === 'description') && (
-              <div className="mt-3 p-4 bg-brand-500/10 border border-brand-400/30 rounded-xl backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <SparklesIcon className="h-4 w-4 text-brand-300" />
-                  <span className="text-sm font-semibold text-brand-200">AI Suggestions</span>
-                  {analyzingField === 'description' && (
-                    <div className="h-3 w-3 border border-brand-300 border-t-transparent rounded-full animate-spin"></div>
-                  )}
-                </div>
-                {aiSuggestions.description?.map((suggestion, index) => (
-                  <p key={index} className="text-sm text-white mb-1 font-medium">
-                    • {suggestion}
-                  </p>
-                ))}
-              </div>
             )}
 
-            {/* Extracted Skills */}
-            {(extractedSkills.length > 0 || extractingSkills) && (
-              <div className="mt-3 p-4 bg-emerald-500/10 border border-emerald-400/30 rounded-xl backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <SparklesIcon className="h-4 w-4 text-emerald-300" />
-                  <span className="text-sm font-semibold text-emerald-200">Auto-detected Skills</span>
-                  {extractingSkills && (
-                    <div className="h-3 w-3 border border-emerald-300 border-t-transparent rounded-full animate-spin"></div>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {extractedSkills.map((skill, index) => (
-                    <button
-                      key={index}
-                      onClick={() => addExtractedSkill(skill)}
-                      disabled={selectedSkills.includes(skill)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm ${
-                        selectedSkills.includes(skill)
-                          ? 'bg-emerald-500/20 text-emerald-200 cursor-not-allowed shadow-md border border-emerald-400/30'
-                          : 'bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20 border border-emerald-400/30 hover:border-emerald-400/50 shadow-md hover:shadow-lg'
-                      }`}
-                    >
-                      {selectedSkills.includes(skill) ? '✓ ' : '+ '}{skill}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-emerald-300 mt-2">
-                  Click to add skills to your portfolio
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-white">Skills</label>
-            <div className="relative">
-              <Combobox
-                value={selectedSkills}
-                onChange={setSelectedSkills}
-                multiple
-              >
-                <div className="relative">
-                  <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white/10 border border-white/20 text-left focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500 transition-all duration-200">
-                    <div className="flex flex-wrap gap-2 p-3">
-                      {selectedSkills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="inline-flex items-center px-3 py-1.5 rounded bg-white/10 text-white text-sm font-medium border border-white/20 hover:bg-white/20 transition-colors duration-200"
-                        >
-                          {skill}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedSkills(
-                                selectedSkills.filter((s) => s !== skill)
-                              );
-                            }}
-                            className="ml-2 hover:text-gray-300 focus:outline-none"
-                          >
-                            <XMarkIcon className="h-4 w-4" />
-                          </button>
-                        </span>
-                      ))}
-                      <Combobox.Input
-                        className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-white bg-transparent focus:ring-0 focus:outline-none placeholder-white"
-                        displayValue={(skill: string) => skill}
-                        onChange={(event) => setQuery(event.target.value)}
-                        placeholder="Search or add skills..."
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5 text-gray-300"
-                          aria-hidden="true"
-                        />
-                      </Combobox.Button>
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0"
-                      afterLeave={() => setQuery("")}
-                    >
-                      <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-slate-800 border border-white/20 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {filteredSkills.length === 0 && query !== "" ? (
-                          <div className="px-4 py-3 border-b border-white/20">
-                            <p className="text-gray-300 mb-2">
-                              No matching skills found.
-                            </p>
-                            <button
-                              type="button"
-                              onClick={() => setIsAddingSkill(true)}
-                              className="px-3 py-1 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm"
-                            >
-                              Add &quot;{query}&quot; as new skill
-                            </button>
-                          </div>
-                        ) : (
-                          Object.entries(
-                            filteredSkills.reduce((acc, skill) => {
-                              if (!acc[skill.category]) {
-                                acc[skill.category] = [];
-                              }
-                              acc[skill.category].push(skill);
-                              return acc;
-                            }, {} as Record<string, typeof filteredSkills>)
-                          ).map(([category, skills]) => (
-                            <div key={category}>
-                              <div className="sticky top-0 bg-slate-700 px-4 py-2 text-sm font-semibold text-white border-b border-white/20">
-                                {category}
-                              </div>
-                              {skills.map((skill) => (
-                                <Combobox.Option
-                                  key={skill.id}
-                                  className={({ active }) =>
-                                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                    active
-                                      ? "bg-white/20 text-white"
-                                      : "text-white"
-                                    }`
-                                  }
-                                  value={skill.name}
-                                >
-                                  {({ selected, active }) => (
-                                    <>
-                                      <span
-                                        className={`block truncate ${
-                                          selected ? "font-medium" : "font-normal"
-                                        }`}
-                                      >
-                                        {skill.name}
-                                      </span>
-                                      {selected ? (
-                                        <span
-                                          className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                            active
-                                              ? "text-blue-300"
-                                              : "text-blue-500"
-                                          }`}
-                                        >
-                                          <CheckIcon
-                                            className="h-5 w-5"
-                                            aria-hidden="true"
-                                          />
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </Combobox.Option>
-                              ))}
-                            </div>
-                          ))
-                        )}
-                      </Combobox.Options>
-                    </Transition>
-                  </div>
-                </div>
-              </Combobox>
-            </div>
-            <p className="text-sm text-gray-300 mt-1">
-              Select multiple skills from the predefined list or add your own.
-            </p>
-          </div>
-
-          {/* Replace the existing modal with the new component */}
-          {isAddingSkill && <AddSkillModal />}
-
-          <div className="space-y-2">
-            <label
-              htmlFor="website_url"
-              className="block text-xs sm:text-sm font-medium text-white"
-            >
-              Website URL
-              <span className="ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
-                <SparklesIcon className="h-3 w-3 mr-1" />
-                Auto Projects
-              </span>
-            </label>
-            <input
-              type="url"
-              id="website_url"
-              name="website_url"
-              value={formData.website_url}
-              onChange={(e) => {
-                handleChange(e);
-                debouncedDetectProjects(formData.github_url, e.target.value);
-                debouncedGenerateScreenshot(e.target.value);
-              }}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-              placeholder="https://yourwebsite.com"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="github_url"
-              className="block text-xs sm:text-sm font-medium text-white"
-            >
-              GitHub URL
-              <span className="ml-1 sm:ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-brand-500/20 text-brand-300 border border-brand-400/30">
-                <SparklesIcon className="h-3 w-3 mr-1" />
-                Auto Projects
-              </span>
-            </label>
-            <input
-              type="url"
-              id="github_url"
-              name="github_url"
-              value={formData.github_url}
-              onChange={(e) => {
-                handleChange(e);
-                debouncedDetectProjects(e.target.value, formData.website_url);
-              }}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white/10 text-sm sm:text-base"
-              placeholder="https://github.com/yourusername"
-            />
-          </div>
-
-                <div className="space-y-2 sm:space-y-4">
-                  <label
-                    htmlFor="linkedin_url"
-                    className="block text-xs sm:text-sm font-semibold text-white"
-                  >
-                    LinkedIn URL
-                  </label>
-                  <input
-                    type="url"
-                    id="linkedin_url"
-                    name="linkedin_url"
-                    value={formData.linkedin_url}
-                    onChange={handleChange}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
-                    placeholder="https://linkedin.com/in/yourprofile"
-                  />
-                </div>
-
-                {/* Additional Links Section */}
-                <div className="space-y-3 sm:space-y-4">
-                  <label className="block text-xs sm:text-sm font-semibold text-white">
-                    Additional Links
-                    <span className="ml-1 sm:ml-2 text-xs sm:text-sm font-normal text-gray-300">
-                      (Dribbble, Behance, Bestfolios, etc.)
-                    </span>
-                  </label>
-                  
-                  <div className="space-y-3">
-                    {formData.additional_links.map((link, index) => (
-                      <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <input
-                          type="text"
-                          placeholder="Label (e.g., Dribbble)"
-                          value={link.label}
-                          onChange={(e) => {
-                            const newLinks = [...formData.additional_links];
-                            newLinks[index].label = e.target.value;
-                            setFormData({ ...formData, additional_links: newLinks });
-                          }}
-                          className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
-                        />
-                        <input
-                          type="url"
-                          placeholder="https://..."
-                          value={link.url}
-                          onChange={(e) => {
-                            const newLinks = [...formData.additional_links];
-                            newLinks[index].url = e.target.value;
-                            setFormData({ ...formData, additional_links: newLinks });
-                          }}
-                          className="flex-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newLinks = formData.additional_links.filter((_, i) => i !== index);
-                            setFormData({ ...formData, additional_links: newLinks });
-                          }}
-                          className="px-3 py-2 sm:py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg sm:rounded-xl transition-colors duration-200 flex items-center justify-center"
-                        >
-                          <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </button>
-                      </div>
-                    ))}
-                    
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormData({
-                          ...formData,
-                          additional_links: [...formData.additional_links, { label: "", url: "" }]
-                        });
-                      }}
-                      className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-gray-300 hover:text-white hover:bg-white/20 transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm w-full sm:w-auto"
-                    >
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      Add Link
-                    </button>
-                  </div>
-                </div>
-
-
-          {/* Project Auto-Detection */}
-          {(detectedProjects.length > 0 || detectingProjects) && (
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex items-center gap-2">
-                <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 text-brand-300" />
-                <h3 className="text-base sm:text-lg font-medium text-white">Auto-Detected Projects</h3>
-                {detectingProjects && (
-                  <div className="h-3 w-3 sm:h-4 sm:w-4 border border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                )}
-              </div>
-              <ProjectCards 
-                projects={detectedProjects} 
-                onRemoveProject={removeProject}
-                editable={true}
+            {currentStep === 3 && (
+              <StepProfessional
+                formData={formData}
+                setFormData={setFormData}
+                handleChange={handleChange}
+                debouncedAnalyze={debouncedAnalyze}
+                debouncedExtractSkills={debouncedExtractSkills}
+                aiSuggestions={aiSuggestions}
+                analyzingField={analyzingField}
+                extractedSkills={extractedSkills}
+                extractingSkills={extractingSkills}
+                selectedSkills={selectedSkills}
+                addExtractedSkill={addExtractedSkill}
+                aiCallCount={aiCallCount}
+                MAX_AI_CALLS={MAX_AI_CALLS}
               />
-            </div>
-          )}
+            )}
 
-          {/* Collaboration Manager */}
-          <CollaborationManager
-            portfolioId={existingPortfolio?.id || ''}
-            collaborations={collaborations}
-            onCollaborationsChange={setCollaborations}
-          />
+            {currentStep === 4 && (
+              <StepSkillsLinks
+                formData={formData}
+                setFormData={setFormData}
+                handleChange={handleChange}
+                selectedSkills={selectedSkills}
+                setSelectedSkills={setSelectedSkills}
+                query={query}
+                setQuery={setQuery}
+                filteredSkills={filteredSkills}
+                isAddingSkill={isAddingSkill}
+                setIsAddingSkill={setIsAddingSkill}
+                newSkill={newSkill}
+                setNewSkill={setNewSkill}
+                categories={categories}
+                handleAddNewSkill={handleAddNewSkill}
+                loading={loading}
+                debouncedDetectProjects={debouncedDetectProjects}
+                debouncedGenerateScreenshot={debouncedGenerateScreenshot}
+                detectedProjects={detectedProjects}
+                detectingProjects={detectingProjects}
+                removeProject={removeProject}
+                existingPortfolio={existingPortfolio}
+                collaborations={collaborations}
+                setCollaborations={setCollaborations}
+              />
+            )}
 
-                <div className="flex justify-center pt-6 sm:pt-8">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-6 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white rounded-lg sm:rounded-xl font-display font-semibold backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0 text-sm sm:text-base w-full sm:w-auto"
-                  >
-                    {loading
-                      ? "Saving..."
-                      : existingPortfolio
-                      ? "Update Portfolio"
-                      : "Create Portfolio"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+            {currentStep === 5 && (
+              <StepReview
+                formData={formData}
+                selectedSkills={selectedSkills}
+                profileImagePreview={profileImagePreview}
+                heroImagePreview={heroImagePreview}
+                detectedProjects={detectedProjects}
+                existingPortfolio={existingPortfolio}
+                loading={loading}
+                goToStep={goToStep}
+              />
+            )}
+          </form>
+        </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-4 sm:top-8 space-y-4 sm:space-y-6">
-              {/* AI Features Card */}
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl">
-                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-lg sm:rounded-xl flex items-center justify-center">
-                    <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 text-brand-700" />
-                  </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white">AI Features</h3>
-                </div>
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-brand-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Smart Analysis</p>
-                      <p className="text-xs text-gray-300">Real-time content suggestions</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Auto Skills</p>
-                      <p className="text-xs text-gray-300">Detect skills from description</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Project Detection</p>
-                      <p className="text-xs text-gray-300">Fetch GitHub projects</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
+            disabled={currentStep === 1}
+            className="px-5 py-2.5 text-sm font-medium text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            Back
+          </button>
 
-              {/* Progress Card */}
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-                <h3 className="text-lg font-semibold text-white mb-4">Progress</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Basic Info</span>
-                    <span className="text-sm font-medium text-white">
-                      {formData.name && formData.title && formData.job_title ? '✓' : '○'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Location & Experience</span>
-                    <span className="text-sm font-medium text-white">
-                      {formData.location && formData.experience_level ? '✓' : '○'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Work Type & Languages</span>
-                    <span className="text-sm font-medium text-white">
-                      {formData.preferred_work_type.length > 0 && formData.languages ? '✓' : '○'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Description</span>
-                    <span className="text-sm font-medium text-white">
-                      {formData.description ? '✓' : '○'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Skills</span>
-                    <span className="text-sm font-medium text-white">
-                      {selectedSkills.length > 0 ? '✓' : '○'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Links</span>
-                    <span className="text-sm font-medium text-white">
-                      {formData.website_url || formData.github_url || formData.linkedin_url ? '✓' : '○'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex gap-3">
+            {currentStep >= 2 && currentStep <= 4 && (
+              <button
+                type="button"
+                onClick={() => setCurrentStep((prev) => Math.min(totalSteps, prev + 1))}
+                className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+              >
+                Skip
+              </button>
+            )}
+            {currentStep < totalSteps && (
+              <button
+                type="button"
+                onClick={() => setCurrentStep((prev) => Math.min(totalSteps, prev + 1))}
+                className="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                Next
+              </button>
+            )}
           </div>
         </div>
       </div>

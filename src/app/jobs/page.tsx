@@ -9,6 +9,8 @@ import {
   detectGhostJob,
   getTimingSignal,
   checkEligibility,
+  estimateCompetition,
+  detectVisaSponsorship,
 } from "@/utils/jobIntelligence";
 import {
   BriefcaseIcon,
@@ -43,6 +45,11 @@ export default function JobsPage() {
   const [filterEligibleOnly, setFilterEligibleOnly] = useState(false);
   const [filterHideGhostJobs, setFilterHideGhostJobs] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [reportedJobs, setReportedJobs] = useState<Set<string>>(new Set());
+  const [qualityMode, setQualityMode] = useState(false);
+  const [dailyApplyCount, setDailyApplyCount] = useState(0);
+  const [appliedJobs, setAppliedJobs] = useState<Set<string>>(new Set());
+  const DAILY_APPLY_LIMIT = 5;
 
   useEffect(() => {
     const init = async () => {
@@ -74,6 +81,17 @@ export default function JobsPage() {
 
       setLoading(false);
 
+      // Load user's applied jobs
+      if (user) {
+        supabase
+          .from("job_applications")
+          .select("job_id")
+          .eq("user_id", user.id)
+          .then(({ data }) => {
+            if (data) setAppliedJobs(new Set((data as Array<{ job_id: string }>).map((a) => a.job_id)));
+          });
+      }
+
       // Fetch external jobs in background
       setLoadingExternal(true);
       fetch('/api/fetchJobs?query=software+developer')
@@ -87,6 +105,25 @@ export default function JobsPage() {
 
     init();
   }, []);
+
+  const trackApplication = async (job: Job) => {
+    if (!supabase || !user) return;
+    const match = matches[job.id];
+    try {
+      await supabase.from("job_applications").insert({
+        user_id: user.id,
+        job_id: job.id,
+        job_title: job.title,
+        job_company: job.company,
+        status: "applied",
+        fit_score: match?.score || null,
+        applied_at: new Date().toISOString(),
+      });
+      setAppliedJobs((prev) => new Set(prev).add(job.id));
+    } catch {
+      // Silent — don't block the apply action
+    }
+  };
 
   const getAIMatch = async (job: Job) => {
     if (!portfolio || matchingJobId) return;
@@ -354,6 +391,20 @@ export default function JobsPage() {
 
         {/* Smart Filters */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          {/* Quality Mode Toggle */}
+          {portfolio && (
+            <button
+              onClick={() => setQualityMode(!qualityMode)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 border ${
+                qualityMode
+                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                  : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+              }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              Quality Mode {qualityMode ? `(${DAILY_APPLY_LIMIT - dailyApplyCount} left today)` : ""}
+            </button>
+          )}
           <span className="text-gray-500 text-xs font-medium mr-1">Smart:</span>
           <button
             onClick={() => setFilterGlobalRemote(!filterGlobalRemote)}
@@ -440,6 +491,8 @@ export default function JobsPage() {
               const ghost = detectGhostJob(job);
               const timing = getTimingSignal(job);
               const eligibility = checkEligibility(job, portfolio);
+              const competition = estimateCompetition(job, portfolio);
+              const visa = detectVisaSponsorship(job);
 
               return (
                 <div
@@ -538,6 +591,44 @@ export default function JobsPage() {
                           {ghost.risk === "medium" && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-500/10 text-gray-500 rounded-md text-xs font-medium border border-gray-500/20" title={ghost.reasons.join(". ")}>
                               Possibly stale
+                            </span>
+                          )}
+
+                          {/* Competition Score */}
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${
+                            competition.label === "Low competition"
+                              ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                              : competition.label === "Moderate"
+                              ? "bg-yellow-500/15 text-yellow-300 border-yellow-500/30"
+                              : competition.label === "Competitive"
+                              ? "bg-orange-500/15 text-orange-300 border-orange-500/30"
+                              : "bg-rose-500/15 text-rose-300 border-rose-500/30"
+                          }`} title={`Est. ${competition.estimatedApplicants} applicants`}>
+                            {competition.estimatedApplicants} applicants
+                          </span>
+
+                          {/* User Percentile */}
+                          {competition.userPercentile !== null && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-500/15 text-brand-300 rounded-md text-xs font-bold border border-brand-500/30" title="Based on your skill match vs job requirements">
+                              Top {100 - competition.userPercentile}%
+                            </span>
+                          )}
+
+                          {/* Visa/Global Signals */}
+                          {visa.sponsorsVisa === true && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/15 text-blue-300 rounded-md text-xs font-medium border border-blue-500/30">
+                              Sponsors visa
+                            </span>
+                          )}
+                          {visa.sponsorsVisa === false && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-500/10 text-gray-500 rounded-md text-xs font-medium border border-gray-500/20">
+                              No sponsorship
+                            </span>
+                          )}
+                          {visa.hiresGlobally && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/15 text-emerald-300 rounded-md text-xs font-medium border border-emerald-500/30">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              Hires globally{visa.eorCompany ? ` via ${visa.eorCompany}` : ''}
                             </span>
                           )}
                         </div>
@@ -646,16 +737,47 @@ export default function JobsPage() {
                             </button>
                           )}
                           {(job.application_url || job.application_email) && (
-                            <a
-                              href={job.application_url || `mailto:${job.application_email}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-all duration-300 border border-white/20"
-                            >
-                              Apply
-                              <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                            </a>
+                            appliedJobs.has(job.id) ? (
+                              <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-bold border border-emerald-500/30">
+                                <CheckCircleIcon className="w-4 h-4" />
+                                Applied
+                              </span>
+                            ) : qualityMode && dailyApplyCount >= DAILY_APPLY_LIMIT ? (
+                              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 text-gray-500 rounded-xl text-sm font-bold border border-white/10 cursor-not-allowed" title="Daily apply limit reached — Quality Mode keeps you focused on your best matches">
+                                Limit reached
+                              </span>
+                            ) : (
+                              <a
+                                href={job.application_url || `mailto:${job.application_email}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => {
+                                  trackApplication(job);
+                                  if (qualityMode) setDailyApplyCount((c) => c + 1);
+                                }}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold transition-all duration-300 border border-white/20"
+                              >
+                                Apply
+                                <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                              </a>
+                            )
                           )}
+                          {/* Report Button */}
+                          <button
+                            onClick={() => {
+                              setReportedJobs((prev) => new Set(prev).add(job.id));
+                              // In the future: POST to /api/reportJob
+                            }}
+                            disabled={reportedJobs.has(job.id)}
+                            className={`ml-auto p-2 rounded-lg transition-all text-xs ${
+                              reportedJobs.has(job.id)
+                                ? "text-gray-600 cursor-not-allowed"
+                                : "text-gray-500 hover:text-rose-400 hover:bg-rose-500/10"
+                            }`}
+                            title={reportedJobs.has(job.id) ? "Reported — thanks for flagging" : "Report suspicious listing"}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>
+                          </button>
                         </div>
                       </div>
                     </div>

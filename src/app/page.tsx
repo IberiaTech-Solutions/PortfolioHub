@@ -611,6 +611,69 @@ function HomeContent() {
         </div>
       </div>
 
+      {/* Why TalentAgent Section */}
+      <div className="bg-white py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+          <div className="text-center mb-14 sm:mb-20">
+            <p className="text-rose-500 font-heading font-bold text-sm uppercase tracking-widest mb-3">The problem</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-gray-900 mb-4">
+              The Job Market is Broken
+            </h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+              Job seekers waste hours on dead-end applications. Recruiters drown in unqualified resumes. Everyone loses.
+            </p>
+          </div>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <FadeIn delay={0}>
+            <div className="text-center p-6 rounded-2xl border border-gray-100 bg-gray-50/50">
+              <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900 mb-2">250</p>
+              <p className="text-sm font-heading font-bold text-gray-500 mb-3">applicants per job posting</p>
+              <p className="text-xs text-gray-400 leading-relaxed">Average applications per role. Entry-level sees 400+. Only 2.4% reach the interview.</p>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-xs font-bold text-brand-600">TalentAgent: AI scores your fit so you only apply where you match.</p>
+              </div>
+            </div>
+            </FadeIn>
+
+            <FadeIn delay={100}>
+            <div className="text-center p-6 rounded-2xl border border-gray-100 bg-gray-50/50">
+              <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900 mb-2">27%</p>
+              <p className="text-sm font-heading font-bold text-gray-500 mb-3">of job postings are ghost jobs</p>
+              <p className="text-xs text-gray-400 leading-relaxed">Companies post fake listings to look like they&apos;re growing. 93% of HR admit to it.</p>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-xs font-bold text-brand-600">TalentAgent: Ghost job detection flags stale and suspicious listings.</p>
+              </div>
+            </div>
+            </FadeIn>
+
+            <FadeIn delay={200}>
+            <div className="text-center p-6 rounded-2xl border border-gray-100 bg-gray-50/50">
+              <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900 mb-2">71%</p>
+              <p className="text-sm font-heading font-bold text-gray-500 mb-3">of recruiters see fake candidates</p>
+              <p className="text-xs text-gray-400 leading-relaxed">AI-generated resumes and synthetic identities are flooding pipelines.</p>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-xs font-bold text-brand-600">TalentAgent: Verified profiles with GitHub scoring and real collaboration proof.</p>
+              </div>
+            </div>
+            </FadeIn>
+
+            <FadeIn delay={300}>
+            <div className="text-center p-6 rounded-2xl border border-gray-100 bg-gray-50/50">
+              <p className="text-4xl sm:text-5xl font-display font-bold text-gray-900 mb-2">0.1%</p>
+              <p className="text-sm font-heading font-bold text-gray-500 mb-3">of applications lead to offers</p>
+              <p className="text-xs text-gray-400 leading-relaxed">You need ~42 applications to land one interview. Most are wasted on bad matches.</p>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-xs font-bold text-brand-600">TalentAgent: Honest &quot;Don&apos;t Apply&quot; signals save you from dead ends.</p>
+              </div>
+            </div>
+            </FadeIn>
+          </div>
+        </div>
+      </div>
+
       {/* CTA Section */}
       <div className="bg-gradient-to-br from-brand-600 via-brand-700 to-purple-800 py-16 sm:py-20">
         <FadeIn>

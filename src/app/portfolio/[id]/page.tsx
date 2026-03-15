@@ -14,7 +14,12 @@ import {
 } from "@heroicons/react/24/outline";
 import PortfolioChat from "@/components/PortfolioChat";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import MessageButton from "@/components/MessageButton";
+import TrustBadge from "@/components/TrustBadge";
+import CollaborationGraph from "@/components/CollaborationGraph";
+import SkillChallenge from "@/components/SkillChallenge";
 import { Portfolio } from "@/types";
+import { computeTrustScore, TrustScore } from "@/utils/trustScore";
 
 export default function PortfolioDetailPage() {
   const params = useParams();
@@ -23,7 +28,9 @@ export default function PortfolioDetailPage() {
   const [loading, setLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [githubScore, setGithubScore] = useState<{ score: number; level: string; topLanguages: Array<{ language: string; repos: number }> } | null>(null);
+  const [trustScore, setTrustScore] = useState<TrustScore | null>(null);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -73,11 +80,17 @@ export default function PortfolioDetailPage() {
 
       // Check if current user is the owner
       const { data: { user } } = await supabase.auth.getUser();
-      if (user && portfolioData.user_id === user.id) {
-        setIsOwner(true);
+      if (user) {
+        setCurrentUserId(user.id);
+        if (portfolioData.user_id === user.id) {
+          setIsOwner(true);
+        }
       }
 
       setLoading(false);
+
+      // Compute initial trust score (updated after GitHub score loads)
+      setTrustScore(computeTrustScore(portfolioData as unknown as Portfolio));
 
       // Fetch GitHub score if they have a GitHub URL
       if (portfolioData.github_url) {
@@ -87,7 +100,12 @@ export default function PortfolioDetailPage() {
           body: JSON.stringify({ githubUrl: portfolioData.github_url }),
         })
           .then(r => r.json())
-          .then(data => { if (!data.error) setGithubScore(data); })
+          .then(data => {
+            if (!data.error) {
+              setGithubScore(data);
+              setTrustScore(computeTrustScore(portfolioData as unknown as Portfolio, data));
+            }
+          })
           .catch(() => {});
       }
 
@@ -229,11 +247,16 @@ export default function PortfolioDetailPage() {
           <p className="text-xl text-gray-300 mb-4">
             {portfolio.title}
           </p>
-          <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
+          <div className="flex items-center justify-center space-x-4 text-sm text-gray-400 mb-3">
             <span>Portfolio created {new Date(portfolio.created_at).toLocaleDateString()}</span>
             <span>•</span>
             {portfolio.updated_at && <span>Last updated {new Date(portfolio.updated_at).toLocaleDateString()}</span>}
           </div>
+          {trustScore && (
+            <div className="flex justify-center">
+              <TrustBadge trust={trustScore} />
+            </div>
+          )}
         </div>
 
         {/* Main Content */}
@@ -503,6 +526,15 @@ export default function PortfolioDetailPage() {
                     </p>
                   </div>
                 )}
+                {/* Message Button */}
+                {currentUserId && !isOwner && (
+                  <MessageButton
+                    currentUserId={currentUserId}
+                    targetUserId={portfolio.user_id}
+                    targetName={portfolio.name}
+                    className="block w-full px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-center text-sm font-medium transition-colors border border-white/20 justify-center"
+                  />
+                )}
                 <button
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -542,6 +574,32 @@ export default function PortfolioDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Collaboration Graph */}
+            {portfolio.collaborations && portfolio.collaborations.length > 0 && (
+              <CollaborationGraph
+                ownerName={portfolio.name}
+                collaborations={portfolio.collaborations.map((c) => ({
+                  name: c.collaborator_name,
+                  role: c.role,
+                  status: c.status,
+                  project: c.project_title,
+                }))}
+              />
+            )}
+
+            {/* Skill Verification (owner only) */}
+            {isOwner && portfolio.skills && portfolio.skills.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h4 className="text-sm font-heading font-bold text-white mb-3">Verify Your Skills</h4>
+                <p className="text-xs text-gray-500 mb-3">Take AI-generated challenges to earn verified badges.</p>
+                <div className="space-y-2">
+                  {portfolio.skills.slice(0, 5).map((skill) => (
+                    <SkillChallenge key={skill} skill={skill} />
+                  ))}
+                </div>
+              </div>
+            )}
 
           </div>
         </div>

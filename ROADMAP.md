@@ -5,6 +5,61 @@ AI-powered talent platform where candidates control their narrative and recruite
 
 ---
 
+## Why TalentAgent Exists — The System is Broken
+
+### The Problem (with data)
+
+The hiring market in 2025-2026 is in an **"AI doom loop"** where trust has collapsed on both sides:
+
+**For Job Seekers:**
+- **250 applicants per job posting** on average — entry-level sees 400+. You're competing blind against hundreds of strangers.
+- **27% of all job listings are ghost jobs** — companies post fake roles to look like they're growing (43%), make employees feel replaceable (62%), or farm talent pools (26%). 93% of HR professionals admit to this.
+- **Only 0.1–2% of applications result in offers.** You need ~42 applications to land *one* interview. Most of your effort is wasted.
+- **Location restrictions are silent killers** — "Remote" jobs on LinkedIn are often US-only or EU-only, but nobody tells you upfront. International candidates waste hours on jobs they're automatically disqualified from.
+- **$298 million lost to job scams** in just the first half of 2025. AI bots now create entire fake listings to harvest personal data.
+
+**For Recruiters:**
+- **71% of recruiters encounter fake/misleading candidate info.** AI-generated resumes and synthetic identities are flooding pipelines.
+- **34% of recruiters spend half their week** just filtering spam and junk applications.
+- **15% of hiring professionals** have seen deepfake face-swapping in video interviews.
+- The ATS keyword game has devolved into a race to the bottom — candidates stuff keywords, AI writes generic resumes, and real signal is buried in noise.
+
+**The Root Cause:**
+LinkedIn and traditional job boards treat hiring as a **volume game**: more applications, more postings, more keywords. This creates perverse incentives where candidates spray-and-pray, companies post ghost jobs, and AI makes the noise worse on both sides. **Nobody is optimizing for match quality or trust.**
+
+### How TalentAgent Solves It
+
+| Broken System Problem | TalentAgent Solution | Status |
+|----------------------|---------------------|--------|
+| **250 blind applications** — No signal on who should apply | **AI Fit Scoring** — Honest 0-100 score per job. "Don't Apply" signal when match < 30. You only apply where you actually fit. | Shipped |
+| **27% ghost jobs** — Fake listings waste everyone's time | **Ghost Job Detection** — Flags stale postings (30+ days, no salary, vague descriptions). "May be inactive" badge protects your time. | Shipped |
+| **6-second resume scans** — Resumes can't show depth | **AI Portfolio Agent** — Recruiters chat with your AI to understand your experience in depth. No more keyword bingo. | Shipped |
+| **Silent location restrictions** — "Remote (US only)" isn't labeled | **Eligibility Badges** — Green/Yellow/Red per job. Detects US-only, EU-only restrictions. Visa sponsorship detection. "Hires Globally" filter. | Shipped |
+| **Fake candidates flooding pipelines** — AI-generated resumes everywhere | **Verified Profiles** — GitHub scoring (real commit history), collaboration verification (third-party endorsements), "Verified by TalentAgent" badge. Depth that's hard to fake. | Shipped |
+| **No idea how competitive a job is** — "100+ applicants" tells you nothing | **Competition Score** — Estimated applicant count + your percentile rank ("Top 15%") + timing signal ("Apply now — just posted"). | Shipped |
+| **Application black hole** — Apply and never hear back | **In-App Notifications** — Real-time alerts when someone views your profile, chats with your AI, or a matching job is posted. | Shipped |
+| **ATS keyword game** — Resumes optimized for robots, not humans | **AI Resume Parser + Skills Extraction** — Import your resume in 30 seconds. AI extracts real skills, not keyword-stuffed fluff. | Shipped |
+
+### Our Thesis: Precision Beats Volume
+
+> **LinkedIn treats job search as volume. TalentAgent treats it as precision.**
+
+Every feature we build reinforces one principle: **apply less, match better, waste zero time.** We're building the anti-LinkedIn — a platform where:
+- Fewer, higher-quality applications replace spray-and-pray
+- Honest signals ("Don't Apply") build trust instead of false hope
+- AI agents demonstrate depth that resumes can't capture
+- Verified profiles and real collaboration proof replace keyword games
+- Ghost job detection and eligibility filters protect everyone's time
+
+### Market Opportunity
+
+- **OpenAI is building a competing jobs platform** (announced Sept 2025) — validates the thesis that LinkedIn is vulnerable
+- **43% of organizations** use AI for HR/recruiting in 2025, up from 26% in 2024 — 80%+ expected by 2027
+- **Only 8% of job seekers** believe AI screening makes hiring fairer — massive trust gap = massive opportunity
+- California and Ontario passing anti-ghost-job legislation — regulatory tailwind for transparency-first platforms
+
+---
+
 ## Completed
 
 ### Core Platform
@@ -23,6 +78,7 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] AI skill extraction from descriptions
 - [x] GitHub project auto-detection
 - [x] AI resume parser (upload/paste → auto-fill portfolio in 30 seconds)
+- [x] GitHub profile import — "Import from GitHub" button in onboarding wizard. Fetches name, bio, avatar, location, top languages as skills, top 5 repos as projects. `/api/importGithub` route.
 
 ### Jobs Board
 - [x] Jobs listing page with search + 5 filters (type, remote, level, country, currency)
@@ -93,6 +149,7 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] **Discover Talent section** — Updated copy to reflect AI platform positioning
 - [x] **Social proof section** — 3-column stats (Portfolios Created, Jobs Matched, AI Chats This Week) with count-up animation, real Supabase counts
 - [x] **Hero animation** — Animated gradient text on subtitle, simplified hero background to single subtle gradient orb
+- [x] **"The Problem" stats section** — 4-column grid with industry pain-point stats (250 applicants/job, 27% ghost jobs, 71% fake candidates, 0.1% offer rate) each tied to a TalentAgent solution. FadeIn stagger animation.
 
 ### Onboarding Wizard
 - [x] 5-step wizard replacing massive single-page form: (1) Role & Resume (2) Personal Info (3) Professional (4) Skills & Links (5) Review & Publish
@@ -133,16 +190,20 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] **"Can You Apply?" eligibility badges** — Green (eligible), Yellow (restricted), Red (unlikely) per job based on user location vs job requirements. Detects US-only, EU-only remote restrictions. Shows reason on hover.
 - [x] **Ghost job detection** — Flags stale listings (30+ days old, no salary, vague/short descriptions). Badges: "May be inactive" / "Possibly stale" with reasons on hover.
 - [x] **Apply timing signal** — Hot/Warm/Neutral/Cold badges based on post age. "Apply now — first-batch applicants get 4x more interviews." Orange pulse animation for fresh posts.
-- [ ] **Competition score per job** — Show estimated applicant count + user's percentile: "You're in the top 15% of applicants for this role."
+- [x] **Competition score per job** — Estimated applicant count based on job age/remote/level + user percentile rank ("Top X%") based on skill match. Color-coded Low/Moderate/Competitive/Very competitive labels.
+
+### Paste-and-Check Fit
+- [x] **"Check My Fit" page** (`/check-fit`) — Dedicated page: paste any job description from LinkedIn/Indeed/anywhere → AI returns fit score, strengths, gaps, advice, should-apply signal, and interview prep questions. Works with any job board. Added to nav for candidates (desktop + mobile).
 
 ### Smart Apply System
-- [ ] **Quality-over-quantity mode** — Optional daily limit (e.g., 5 apps/day). Each application auto-attaches AI agent summary + fit score. Recruiter sees depth, not another resume in a pile of 400.
+- [x] **Quality-over-quantity mode** — "Quality Mode" toggle on jobs page. Limits to 5 applications per day. Shows remaining count. Apply button disabled when limit reached. Encourages focus on best matches.
+- [ ] **Browser extension** — Chrome extension that reads job descriptions from LinkedIn/Indeed pages and shows TalentAgent fit score inline.
 
 ### Cross-Border & Remote Intelligence
 - [x] **"Hires Globally" filter** — Toggle that filters to truly global remote jobs, excluding US-only/EU-only restricted remote postings.
 - [x] **"Eligible for Me" filter** — Toggle that hides jobs where user's location doesn't match requirements.
 - [x] **"Hide Ghost Jobs" filter** — Toggle that removes stale/suspicious listings from results.
-- [ ] **Visa/sponsorship tagging** — Tag jobs that sponsor visas or hire via EOR (Deel, Remote.com, etc.).
+- [x] **Visa/sponsorship tagging** — Scans job descriptions for visa sponsorship signals (H1B, "will sponsor") and no-sponsorship signals. Detects EOR companies (Deel, Remote.com, Oyster, etc.). "Hires globally" / "Sponsors visa" / "No sponsorship" badges on job cards.
 
 ### Existing Differentiators
 - [x] **AI-to-AI matching** — API auto-scores all candidates against a job, returns ranked top 10 matches with skills analysis.
@@ -151,18 +212,30 @@ AI-powered talent platform where candidates control their narrative and recruite
 - [x] **Shareable fit assessment cards** — Share button on fit results using Web Share API (with clipboard fallback). Shares score, verdict, and portfolio URL.
 - [x] **In-app notifications** — NotificationBell component in nav with real-time Supabase subscriptions. Shows profile views, AI chats, job matches, assessments, collaborations. Unread badge count, mark all read, click-through links. Requires `notifications` table in Supabase.
 
-## Priority 3 — Moat Builders (Hard to Copy)
+## Priority 3 — Trust & Verification (Anti-Fraud)
+
+- [x] **Verified by TalentAgent badge** — Trust badge component + DB flag for verified profiles.
+- [x] **GitHub profile scoring** — Analyzes real commit history, repos, stars → proof of work that's hard to fake.
+- [x] **Collaboration verification** — Third-party endorsements with email verification.
+- [x] **Ghost job detection** — Flags stale/suspicious job listings with reasons.
+- [x] **Verified employer badges** — VerifiedEmployerBadge component for job postings. Blue checkmark badge with "Verified Employer" label.
+- [x] **Report suspicious listings** — Flag icon on every job card. Users can report ghost jobs or scam postings. Client-side tracking with future API backend hook.
+- [x] **Activity-based trust score** — TrustScore utility computes 0-100 score from profile completeness, GitHub activity, projects, verified collaborations, platform activity, LinkedIn connection. TrustBadge component with expandable signal breakdown on portfolio pages.
+- [x] **AI resume fraud detection** — `fraudDetection.ts` utility scores profiles 0-100 for suspicious signals: no GitHub, no projects, no collaborations, short/buzzword-heavy descriptions, skills/description mismatch, no LinkedIn, no photo, very new accounts. Returns risk level (none/low/medium/high) with detailed signal breakdown.
+
+## Priority 4 — Moat Builders (Hard to Copy)
 
 - [ ] **Voice/video AI agent** — Candidate records 2-min intro video. AI references it in chat conversations.
-- [ ] **Skill verification challenges** — AI-generated coding/design challenges → "Verified: React (Advanced)" badge.
-- [ ] **Collaboration graph** — Visual network map of verified collaborations. Social proof that's hard to fake.
+- [x] **Skill verification challenges** — AI-generated challenges via `/api/skillChallenge` (GPT-4o-mini). SkillChallenge component: generates question → user answers → AI evaluates → pass/fail with score and level badge. Integrated into portfolio sidebar for profile owners.
+- [x] **Collaboration graph** — SVG radial network visualization of verified collaborations. Owner in center, collaborators arranged radially with verified checkmarks. Shows on portfolio detail pages when collaborations exist.
 - [x] **Portfolio SEO pages** — Dynamic page title and meta description per portfolio profile.
 - [ ] **API for ATS integration** — Let companies pull candidate data into Workday/Greenhouse/Lever.
-- [ ] **User messaging** — Direct messages between candidates and recruiters within the platform.
-- [ ] **Recruiter dashboard** — Saved searches, candidate shortlists, bulk AI chat, outreach tools.
-- [ ] **Weekly AI career digest email** — "3 new jobs match your profile this week. Top match: Senior Dev at Acme (92%)."
+- [x] **User messaging** — MessageButton component on portfolio pages. Modal with textarea, creates/finds conversations, sends messages via Supabase. Requires `conversations` + `messages` tables. Shows on non-owner portfolio views.
+- [x] **Recruiter dashboard** (`/recruiter`) — Stats cards (active jobs, views, chats, assessments), job posting list, candidate search with server-side ilike, saved recent searches, applicants table per job with fit scores. Role-gated to recruiter accounts. Added "Dashboard" to recruiter nav.
+- [x] **Application tracking** — `job_applications` table type + tracking. Apply button records application with fit score. "Applied" badge replaces Apply button for tracked jobs. `/applications` page for candidates: stats bar (total/applied/interviewing/offered/rejected), filterable list, status update dropdown. Recruiter dashboard shows applicants table with fit scores.
+- [x] **Weekly AI career digest** — `/api/weeklyDigest` route generates personalized digests for all candidates. Matches new jobs to skills, uses GPT-4o-mini for summary, delivers via notifications table. Vercel Cron configured for Monday 9am (`vercel.json`).
 
-## Priority 4 — Monetization
+## Priority 5 — Monetization
 
 - [ ] **Free tier** — Profile + 5 AI chat messages/day + basic fit assessment + 3 job matches/week
 - [ ] **Pro tier ($9/mo)** — Unlimited AI chat, vanity URL, analytics, weekly digest, priority in search
@@ -192,3 +265,7 @@ AI-powered talent platform where candidates control their narrative and recruite
 | `collaborations` | Project collaboration invitations & verification |
 | `portfolio_analytics` | View/chat/assessment tracking |
 | `predefined_skills` | 70+ categorized skills for selection |
+| `notifications` | In-app notification feed (profile views, AI chats, job matches) |
+| `conversations` | DM conversation threads between two users |
+| `messages` | Individual messages within conversations |
+| `job_applications` | Application tracking (user, job, status, fit score, dates) |

@@ -874,6 +874,9 @@ export default function CreatePortfolioPage() {
                 setResumeText={setResumeText}
                 resumeParsing={resumeParsing}
                 handleResumeImport={handleResumeImport}
+                setSelectedSkills={setSelectedSkills}
+                setDetectedProjects={setDetectedProjects}
+                setProfileImagePreview={setProfileImagePreview}
               />
             )}
 

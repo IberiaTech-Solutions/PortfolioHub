@@ -169,6 +169,130 @@ export function checkEligibility(
   return { level: "eligible", reason: "Add your location for better eligibility info" };
 }
 
+// --- Competition Score ---
+
+export function estimateCompetition(
+  job: Job,
+  portfolio: Portfolio | null
+): {
+  estimatedApplicants: string;
+  userPercentile: number | null;
+  label: string;
+} {
+  // Estimate based on job age, remote policy, and experience level
+  const now = Date.now();
+  const posted = new Date(job.created_at).getTime();
+  const hoursOld = (now - posted) / (1000 * 60 * 60);
+
+  // Base estimate: ~10 applicants per hour for first 24h, then slows
+  let estimate = 0;
+  if (hoursOld < 24) {
+    estimate = Math.floor(hoursOld * 8);
+  } else if (hoursOld < 72) {
+    estimate = 192 + Math.floor((hoursOld - 24) * 4);
+  } else if (hoursOld < 168) {
+    estimate = 384 + Math.floor((hoursOld - 72) * 2);
+  } else {
+    estimate = 576 + Math.floor((hoursOld - 168) * 0.5);
+  }
+
+  // Remote jobs get 3x more applicants
+  if (job.remote_policy === "remote") {
+    estimate = Math.floor(estimate * 2.5);
+  }
+
+  // Junior roles get more applicants
+  if (job.experience_level === "junior") {
+    estimate = Math.floor(estimate * 1.8);
+  }
+
+  // Format the estimate
+  let estimatedApplicants: string;
+  if (estimate < 10) estimatedApplicants = "< 10";
+  else if (estimate < 50) estimatedApplicants = `~${Math.round(estimate / 10) * 10}`;
+  else if (estimate < 200) estimatedApplicants = `~${Math.round(estimate / 25) * 25}`;
+  else estimatedApplicants = `${Math.round(estimate / 50) * 50}+`;
+
+  // Calculate user's percentile based on skill match
+  let userPercentile: number | null = null;
+  if (portfolio && job.skills && job.skills.length > 0) {
+    const matchingSkills = job.skills.filter((s) =>
+      portfolio.skills?.some((ps) => ps.toLowerCase() === s.toLowerCase())
+    );
+    const matchRatio = matchingSkills.length / job.skills.length;
+    // Higher skill match = higher percentile (top %)
+    userPercentile = Math.min(95, Math.max(5, Math.round((matchRatio * 80) + 10)));
+  }
+
+  // Label
+  let label: string;
+  if (estimate < 25) label = "Low competition";
+  else if (estimate < 100) label = "Moderate";
+  else if (estimate < 300) label = "Competitive";
+  else label = "Very competitive";
+
+  return { estimatedApplicants, userPercentile, label };
+}
+
+// --- Visa/Sponsorship Detection ---
+
+export function detectVisaSponsorship(job: Job): {
+  sponsorsVisa: boolean | null;
+  hiresGlobally: boolean;
+  eorCompany: string | null;
+} {
+  const desc = (job.description || "").toLowerCase();
+  const title = (job.title || "").toLowerCase();
+  const loc = (job.location || "").toLowerCase();
+  const combined = `${desc} ${title} ${loc}`;
+
+  // Check for visa sponsorship signals
+  const sponsorSignals = [
+    "visa sponsorship", "sponsor visa", "work authorization provided",
+    "will sponsor", "h1b", "h-1b", "sponsorship available",
+    "immigration support", "relocation assistance",
+  ];
+  const noSponsorSignals = [
+    "no visa sponsorship", "no sponsorship", "must be authorized",
+    "must be eligible to work", "no h1b", "us citizens only",
+    "permanent resident", "without sponsorship",
+  ];
+
+  const hasNoSponsor = noSponsorSignals.some((s) => combined.includes(s));
+  const hasSponsor = sponsorSignals.some((s) => combined.includes(s));
+
+  let sponsorsVisa: boolean | null = null;
+  if (hasNoSponsor) sponsorsVisa = false;
+  else if (hasSponsor) sponsorsVisa = true;
+
+  // Check for EOR/global remote companies
+  const eorSignals: Record<string, string> = {
+    "deel": "Deel",
+    "remote.com": "Remote.com",
+    "oyster hr": "Oyster",
+    "omnipresent": "Omnipresent",
+    "papaya global": "Papaya Global",
+    "velocity global": "Velocity Global",
+  };
+
+  let eorCompany: string | null = null;
+  for (const [signal, name] of Object.entries(eorSignals)) {
+    if (combined.includes(signal)) {
+      eorCompany = name;
+      break;
+    }
+  }
+
+  // Check for global remote signals
+  const globalSignals = [
+    "work from anywhere", "globally distributed", "remote worldwide",
+    "remote - global", "global remote", "any location", "location independent",
+  ];
+  const hiresGlobally = globalSignals.some((s) => combined.includes(s)) || !!eorCompany;
+
+  return { sponsorsVisa, hiresGlobally, eorCompany };
+}
+
 function isUserInUS(location: string): boolean {
   const usStates = [
     "alabama", "alaska", "arizona", "arkansas", "california", "colorado",

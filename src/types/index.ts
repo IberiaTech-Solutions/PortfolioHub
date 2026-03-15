@@ -151,6 +151,24 @@ export type ChatMessage = {
   content: string;
 };
 
+export type JobApplication = {
+  id: string;
+  user_id: string;
+  job_id: string;
+  job_title: string;
+  job_company: string;
+  status: "applied" | "viewed" | "interviewing" | "offered" | "rejected" | "withdrawn";
+  fit_score?: number;
+  notes?: string;
+  applied_at: string;
+  updated_at?: string;
+  // Joined fields (for recruiter view)
+  applicant_name?: string;
+  applicant_job_title?: string;
+  applicant_profile_image?: string;
+  applicant_portfolio_id?: string;
+};
+
 export type GitHubRepo = {
   name: string;
   description: string | null;

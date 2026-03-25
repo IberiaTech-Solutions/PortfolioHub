@@ -34,34 +34,28 @@ export default function ProfilePage() {
 
       setUser(user);
 
-      // Fetch user's portfolio
-      const { data: portfolioData, error: portfolioError } = await supabase
-        .from("portfolios")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      // Fetch portfolio and analytics in parallel
+      const { data: { session } } = await supabase.auth.getSession();
+      const [portfolioResult, analyticsResult] = await Promise.all([
+        supabase
+          .from("portfolios")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+        session?.access_token
+          ? fetch('/api/analytics', {
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            }).then(r => r.json()).catch(() => null)
+          : Promise.resolve(null),
+      ]);
 
-      if (portfolioError) {
-        console.error('Error fetching portfolio:', portfolioError);
+      if (portfolioResult.data) {
+        setPortfolio(portfolioResult.data as Portfolio);
       }
-
-      setPortfolio(portfolioData as Portfolio);
+      if (analyticsResult && !analyticsResult.error) {
+        setAnalytics(analyticsResult);
+      }
       setLoading(false);
-
-      // Fetch analytics
-      if (supabase) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) {
-          fetch('/api/analytics', {
-            headers: { Authorization: `Bearer ${session.access_token}` },
-          })
-            .then(r => r.json())
-            .then(data => {
-              if (!data.error) setAnalytics(data);
-            })
-            .catch(() => {});
-        }
-      }
     };
 
     getUser();

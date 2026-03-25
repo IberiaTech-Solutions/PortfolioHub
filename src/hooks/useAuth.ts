@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
 
-export type UserRole = "candidate" | "recruiter" | "admin";
+export type UserRole = "candidate" | "admin";
 
 interface AuthState {
   user: User | null;
@@ -38,7 +38,7 @@ export function useAuth(): AuthState {
           if (authRole === "admin") {
             setRole("admin");
           } else {
-            // Check portfolio for candidate/recruiter role
+            // Check portfolio for candidate role
             const { data: portfolio } = await supabase!
               .from("portfolios")
               .select("id, user_role")

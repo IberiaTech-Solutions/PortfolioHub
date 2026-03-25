@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthUser } from "@/utils/authCheck";
 
 // Attempts to extract job description from a URL
 // Works best with public job pages; LinkedIn may block some requests
 export async function POST(request: NextRequest) {
   try {
-    // Basic auth check - verify request has auth cookie
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("sb-")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { url } = await request.json();
     if (!url) {

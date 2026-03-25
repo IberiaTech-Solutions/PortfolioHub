@@ -12,7 +12,7 @@ export default function Footer() {
               <LogoFull />
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              AI-powered talent platform where depth beats keywords. Let your AI agent represent your work.
+              AI-powered job fit tool. Paste any job, know if you should apply in 10 seconds. Ghost job detection, honest fit scores, and interview prep.
             </p>
           </div>
 
@@ -36,13 +36,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#discover-talent" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
-                  Browse Talent
+                <Link href="/check-fit" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
+                  Check My Fit
                 </Link>
               </li>
               <li>
-                <Link href="/collaborations" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
-                  Collaborations
+                <Link href="/pricing" className="text-gray-300 hover:text-brand-300 hover:underline transition-all duration-200 text-sm">
+                  Pricing
                 </Link>
               </li>
             </ul>

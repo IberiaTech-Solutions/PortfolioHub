@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         const plan = session.metadata?.plan;
 
         if (userId && plan) {
-          const tier = plan.startsWith("pro") ? "pro" : plan.startsWith("recruiter") ? "recruiter" : "free";
+          const tier = plan.startsWith("pro") ? "pro" : "free";
 
           if (plan === "featured_weekly") {
             // Enable featured profile for 7 days

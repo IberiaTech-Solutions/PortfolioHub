@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser } from '@/utils/authCheck';
 
 type GitHubRepo = {
   name: string;
@@ -22,6 +23,9 @@ type GitHubUser = {
 
 export async function POST(request: NextRequest) {
   try {
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { githubUrl } = await request.json();
 
     if (!githubUrl) {

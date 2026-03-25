@@ -15,8 +15,6 @@ export function getStripe(): Stripe {
 export const PRICE_IDS = {
   pro_monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || "",
   pro_annual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID || "",
-  recruiter_monthly: process.env.STRIPE_RECRUITER_MONTHLY_PRICE_ID || "",
-  recruiter_annual: process.env.STRIPE_RECRUITER_ANNUAL_PRICE_ID || "",
   featured_weekly: process.env.STRIPE_FEATURED_WEEKLY_PRICE_ID || "",
 };
 

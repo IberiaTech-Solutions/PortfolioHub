@@ -6,7 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/utils/supabase";
 
 const RESERVED_PATHS = [
-  "auth", "jobs", "profile", "create-portfolio", "collaborations",
+  "auth", "jobs", "profile", "create-portfolio", "check-fit",
   "search", "privacy", "terms", "cookies", "api", "_next",
   "portfolio", "images", "favicon.ico",
 ];

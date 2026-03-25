@@ -11,28 +11,6 @@ export type Project = {
   lastUpdated?: string;
 };
 
-export type CollaborationSummary = {
-  id: string;
-  collaborator_name: string;
-  project_title: string;
-  role: string;
-  status: string;
-};
-
-export type Collaboration = {
-  id: string;
-  portfolio_id?: string;
-  collaborator_user_id?: string;
-  collaborator_name: string;
-  collaborator_email: string;
-  project_title: string;
-  project_description?: string;
-  role: string;
-  status: "pending" | "accepted" | "declined";
-  verified_at?: string;
-  created_at: string;
-};
-
 export type Portfolio = {
   id: string;
   user_id: string;
@@ -58,11 +36,10 @@ export type Portfolio = {
   additional_links?: Array<{ label: string; url: string }>;
   skills: string[];
   projects?: Project[];
-  collaborations?: CollaborationSummary[];
   created_at: string;
   updated_at?: string;
-  plan_tier?: "free" | "pro" | "recruiter";
-  user_role?: "candidate" | "recruiter" | "admin";
+  plan_tier?: "free" | "pro";
+  user_role?: "candidate" | "admin";
   is_featured?: boolean;
   featured_skills?: string[];
   video_intro_url?: string;
@@ -87,7 +64,6 @@ export type PortfolioData = {
   website_url?: string;
   github_url?: string;
   linkedin_url?: string;
-  collaborations?: CollaborationSummary[];
 };
 
 export type Skill = {
@@ -166,7 +142,6 @@ export type JobApplication = {
   notes?: string;
   applied_at: string;
   updated_at?: string;
-  // Joined fields (for recruiter view)
   applicant_name?: string;
   applicant_job_title?: string;
   applicant_profile_image?: string;

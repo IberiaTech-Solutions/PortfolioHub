@@ -57,7 +57,7 @@ TalentAgent is a **completed portfolio project** demonstrating full-stack engine
 ## What Was Removed (Platform Features)
 
 Built but removed in the tool-first pivot. Code exists in git history:
-- Recruiter dashboard, job posting page
+- Recruiter dashboard, job posting page, recruiter signup path
 - User messaging system
 - Collaboration system (invite, verify, track)
 - Application tracking page
@@ -67,6 +67,8 @@ Built but removed in the tool-first pivot. Code exists in git history:
 - Trust score + fraud detection
 - Verified badges, privacy toggles
 - Weekly digest cron job
+
+**Note:** All recruiter code removed (March 2026). App is candidate-only — all users sign up as candidates. Pricing is Free + Pro (two tiers).
 
 ---
 

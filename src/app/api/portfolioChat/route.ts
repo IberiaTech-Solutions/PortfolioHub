@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { getAuthUser } from '@/utils/authCheck';
+import { checkRateLimit } from '@/utils/rateLimit';
 
 type PortfolioData = {
   name: string;
@@ -20,12 +22,6 @@ type PortfolioData = {
   website_url?: string;
   github_url?: string;
   linkedin_url?: string;
-  collaborations?: Array<{
-    collaborator_name: string;
-    project_title: string;
-    role: string;
-    status: string;
-  }>;
 };
 
 type Message = {
@@ -38,14 +34,9 @@ function buildSystemPrompt(portfolio: PortfolioData): string {
     ?.map(p => `- ${p.title}: ${p.description} (Tech: ${p.techStack?.join(', ') || 'N/A'})`)
     .join('\n') || 'No projects listed';
 
-  const collabsList = portfolio.collaborations
-    ?.filter(c => c.status === 'accepted')
-    .map(c => `- ${c.project_title} with ${c.collaborator_name} (Role: ${c.role})`)
-    .join('\n') || 'No collaborations listed';
-
   return `You are an AI assistant representing ${portfolio.name}'s professional portfolio on TalentAgent. You speak in third person about ${portfolio.name} — you are NOT ${portfolio.name}, you are their portfolio AI agent.
 
-Your job is to help anyone (recruiters, hiring managers, potential collaborators, or ${portfolio.name} themselves) learn about ${portfolio.name}'s skills, experience, and work. Be helpful, professional, and honest. If you don't have information about something, say so clearly rather than making things up.
+Your job is to help anyone (hiring managers, potential collaborators, or ${portfolio.name} themselves) learn about ${portfolio.name}'s skills, experience, and work. Be helpful, professional, and honest. If you don't have information about something, say so clearly rather than making things up.
 
 Here is everything you know about ${portfolio.name}:
 
@@ -66,9 +57,6 @@ ${portfolio.skills?.join(', ') || 'No skills listed'}
 
 **Projects:**
 ${projectsList}
-
-**Collaborations:**
-${collabsList}
 
 **Links:**
 - Website: ${portfolio.website_url || 'N/A'}
@@ -93,10 +81,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Basic auth check - verify request has auth cookie
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("sb-")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // Rate limit check
+    const rateCheck = await checkRateLimit(authUser.id, "chat");
+    if (!rateCheck.allowed) {
+      return NextResponse.json({ error: rateCheck.error, remaining: 0, limit: rateCheck.limit }, { status: 429 });
     }
 
     const openai = new OpenAI({

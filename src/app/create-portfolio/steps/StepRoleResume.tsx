@@ -4,14 +4,8 @@ import { useState } from "react";
 import { SparklesIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 interface StepRoleResumeProps {
-  formData: {
-    user_role: string;
-    company_name: string;
-    company_logo: string;
-  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setFormData: (fn: (prev: any) => any) => void;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   existingPortfolio: any;
   showResumeImport: boolean;
@@ -26,9 +20,7 @@ interface StepRoleResumeProps {
 }
 
 export default function StepRoleResume({
-  formData,
   setFormData,
-  handleChange,
   existingPortfolio,
   showResumeImport,
   setShowResumeImport,
@@ -88,59 +80,23 @@ export default function StepRoleResume({
 
   return (
     <div className="space-y-8">
-      {/* Role badge — shows which role they signed up as, no need to re-select */}
+      {/* Role badge */}
       {!existingPortfolio && (
         <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl">
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-            formData.user_role === "recruiter" ? "bg-purple-500/20" : "bg-brand-500/20"
-          }`}>
-            <svg className={`w-5 h-5 ${formData.user_role === "recruiter" ? "text-purple-400" : "text-brand-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {formData.user_role === "recruiter"
-                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              }
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-brand-500/20">
+            <svg className="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
           <div>
-            <p className="text-sm font-heading font-bold text-white capitalize">{formData.user_role} Account</p>
-            <p className="text-xs text-gray-500">
-              {formData.user_role === "recruiter" ? "Set up your company profile to start hiring" : "Build your portfolio and let AI represent you"}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Company Fields (recruiter only) */}
-      {formData.user_role === "recruiter" && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
-          <h3 className="text-sm font-heading font-semibold text-white">Company Details</h3>
-          <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Company Name</label>
-            <input
-              type="text"
-              name="company_name"
-              value={formData.company_name}
-              onChange={handleChange}
-              placeholder="Acme Corp"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Company Logo URL</label>
-            <input
-              type="url"
-              name="company_logo"
-              value={formData.company_logo}
-              onChange={handleChange}
-              placeholder="https://example.com/logo.png"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
+            <p className="text-sm font-heading font-bold text-white">Candidate Account</p>
+            <p className="text-xs text-gray-500">Build your portfolio and let AI represent you</p>
           </div>
         </div>
       )}
 
       {/* Resume Import Section */}
-      {!existingPortfolio && formData.user_role === "candidate" && (
+      {!existingPortfolio && (
         <div>
           {!showResumeImport ? (
             <button
@@ -218,7 +174,7 @@ export default function StepRoleResume({
       )}
 
       {/* GitHub Import Section */}
-      {!existingPortfolio && formData.user_role === "candidate" && (
+      {!existingPortfolio && (
         <div>
           {!showGithubImport ? (
             <button

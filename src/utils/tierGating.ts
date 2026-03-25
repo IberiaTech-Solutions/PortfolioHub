@@ -1,4 +1,4 @@
-export type PlanTier = "free" | "pro" | "recruiter";
+export type PlanTier = "free" | "pro";
 
 export interface TierLimits {
   aiChatsPerDay: number;
@@ -9,10 +9,7 @@ export interface TierLimits {
   canUseWeeklyDigest: boolean;
   priorityInSearch: boolean;
   canVerifySkills: boolean;
-  canPostJobs: boolean | number; // false, true, or limit
-  canUseAtsApi: boolean;
   canFeatureProfile: boolean;
-  canBulkChat: boolean;
 }
 
 export const TIER_LIMITS: Record<PlanTier, TierLimits> = {
@@ -25,38 +22,18 @@ export const TIER_LIMITS: Record<PlanTier, TierLimits> = {
     canUseWeeklyDigest: false,
     priorityInSearch: false,
     canVerifySkills: false,
-    canPostJobs: false,
-    canUseAtsApi: false,
     canFeatureProfile: false,
-    canBulkChat: false,
   },
   pro: {
-    aiChatsPerDay: Infinity,
-    fitAssessmentsPerDay: Infinity,
+    aiChatsPerDay: 50,
+    fitAssessmentsPerDay: 25,
     jobMatchesPerWeek: Infinity,
     canUseVanityUrl: true,
     canViewAnalytics: true,
     canUseWeeklyDigest: true,
     priorityInSearch: true,
     canVerifySkills: true,
-    canPostJobs: false,
-    canUseAtsApi: false,
     canFeatureProfile: true,
-    canBulkChat: false,
-  },
-  recruiter: {
-    aiChatsPerDay: Infinity,
-    fitAssessmentsPerDay: Infinity,
-    jobMatchesPerWeek: Infinity,
-    canUseVanityUrl: true,
-    canViewAnalytics: true,
-    canUseWeeklyDigest: true,
-    priorityInSearch: true,
-    canVerifySkills: true,
-    canPostJobs: true,
-    canUseAtsApi: true,
-    canFeatureProfile: true,
-    canBulkChat: true,
   },
 };
 
@@ -74,13 +51,10 @@ export function canPerformAction(
 
   if (typeof limit === "boolean") {
     if (!limit) {
-      const requiredPlan = action === "canUseAtsApi" || action === "canBulkChat" || action === "canPostJobs"
-        ? "recruiter"
-        : "pro";
       return {
         allowed: false,
-        reason: `This feature requires the ${requiredPlan.charAt(0).toUpperCase() + requiredPlan.slice(1)} plan`,
-        upgradeRequired: requiredPlan,
+        reason: "This feature requires the Pro plan",
+        upgradeRequired: "pro",
       };
     }
     return { allowed: true };

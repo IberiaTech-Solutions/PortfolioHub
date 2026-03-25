@@ -39,7 +39,7 @@ const tiers = [
     badge: "Most Popular",
     features: [
       "Everything in Free, plus:",
-      "Unlimited AI chat",
+      "50 AI chats/day (10x Free)",
       "Vanity URL (talentagent.com/you)",
       "Profile analytics dashboard",
       "Weekly AI career digest",
@@ -48,26 +48,6 @@ const tiers = [
       "Competition score per job",
       "Visa sponsorship alerts",
       "Remove TalentAgent branding",
-    ],
-  },
-  {
-    name: "Recruiter",
-    price: 49,
-    description: "Find and evaluate top talent at scale",
-    cta: "Start Recruiting",
-    ctaHref: "/auth?mode=signup&plan=recruiter",
-    highlighted: false,
-    features: [
-      "Everything in Pro, plus:",
-      "Recruiter dashboard",
-      "Bulk AI candidate chat",
-      "Candidate shortlists",
-      "AI-to-AI matching (top 10)",
-      "Job posting (unlimited)",
-      "Applicant tracking",
-      "Candidate search & filters",
-      "API access (ATS integration)",
-      "Priority support",
     ],
   },
 ];
@@ -177,7 +157,7 @@ function PricingContent() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
           {tiers.map((tier) => {
             const displayPrice = annual ? Math.round(tier.price * 0.8) : tier.price;
             return (
@@ -228,9 +208,7 @@ function PricingContent() {
                 ) : (
                   <button
                     onClick={() => {
-                      const planKey = tier.name === "Pro"
-                        ? (annual ? "pro_annual" : "pro_monthly")
-                        : (annual ? "recruiter_annual" : "recruiter_monthly");
+                      const planKey = annual ? "pro_annual" : "pro_monthly";
                       handleCheckout(planKey);
                     }}
                     disabled={checkingOut !== null}
@@ -273,7 +251,7 @@ function PricingContent() {
               <span className="text-gray-500 text-sm">/week</span>
             </div>
             <p className="text-xs text-gray-500">
-              Available for Pro and Recruiter tier members. Select which skills to boost.
+              Available for Pro tier members. Select which skills to boost.
             </p>
           </div>
         </div>
@@ -287,7 +265,7 @@ function PricingContent() {
             {[
               {
                 q: "Is TalentAgent really free for candidates?",
-                a: "Yes. Core features — portfolio, AI chat (5/day), fit assessment, ghost job detection, eligibility badges — are free forever. Pro unlocks unlimited AI, analytics, and priority placement.",
+                a: "Yes. Core features — portfolio, AI chat (5/day), fit assessment (3/day), ghost job detection, eligibility badges — are free forever. Pro gives you 10x the limits, analytics, and priority placement.",
               },
               {
                 q: "Can I cancel anytime?",
@@ -299,7 +277,7 @@ function PricingContent() {
               },
               {
                 q: "How does Featured Profile work?",
-                a: "Your profile appears at the top of search results when recruiters search for your selected skills. Average featured profiles get 10x more views.",
+                a: "Your profile appears at the top of search results for your selected skills. Average featured profiles get 10x more views.",
               },
             ].map((faq, i) => (
               <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5">

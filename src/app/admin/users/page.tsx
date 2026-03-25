@@ -138,7 +138,6 @@ function UsersContent() {
           >
             <option value="" className="bg-slate-800">All Roles</option>
             <option value="candidate" className="bg-slate-800">Candidates</option>
-            <option value="recruiter" className="bg-slate-800">Recruiters</option>
             <option value="admin" className="bg-slate-800">Admins</option>
           </select>
           <button
@@ -188,7 +187,6 @@ function UsersContent() {
                         className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-white text-xs focus:outline-none"
                       >
                         <option value="candidate" className="bg-slate-800">Candidate</option>
-                        <option value="recruiter" className="bg-slate-800">Recruiter</option>
                         <option value="admin" className="bg-slate-800">Admin</option>
                       </select>
                     </td>

@@ -35,7 +35,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<"candidate" | "recruiter">("candidate");
+  const selectedRole = "candidate";
   const [authMode, setAuthMode] = useState<AuthMode>("signin");
   const { toast } = useToast();
   const [showPasswordChecks, setShowPasswordChecks] = useState(false);
@@ -255,44 +255,6 @@ export default function Auth() {
             </p>
           </div>
 
-          {/* Role selector (signup only) */}
-          {authMode === "signup" && (
-            <div className="mb-6">
-              <div className="flex bg-gray-100 rounded-lg p-1">
-                <button
-                  type="button"
-                  onClick={() => setSelectedRole("candidate")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                    selectedRole === "candidate"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  Candidate
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedRole("recruiter")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                    selectedRole === "recruiter"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  Recruiter
-                </button>
-              </div>
-              <p className="text-xs text-gray-400 text-center mt-2">
-                {selectedRole === "candidate" ? "Check fit scores, detect ghost jobs, get interview prep" : "Search candidates, post jobs, evaluate talent with AI"}
-              </p>
-            </div>
-          )}
 
           <form
             onSubmit={

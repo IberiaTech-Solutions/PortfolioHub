@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Multi-source job aggregator: Adzuna + RemoteOK + Arbeitnow
+// Multi-source job aggregator: Adzuna + RemoteOK + Arbeitnow + Findwork + Jobicy + The Muse
 // All free APIs — no paid subscriptions required
 
 // In-memory cache
@@ -243,6 +243,159 @@ async function fetchJSearch(query: string, location: string, remote: string): Pr
   }
 }
 
+// --- Findwork.dev ---
+async function fetchFindwork(query: string): Promise<Array<Record<string, unknown>>> {
+  try {
+    const params = new URLSearchParams({ search: query, order_by: '-date_posted' });
+    const res = await fetch(`https://findwork.dev/api/jobs/?${params}`, {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return (data.results || []).slice(0, 20).map((job: {
+      id: number;
+      role: string;
+      company_name: string;
+      company_logo: string | null;
+      text: string;
+      location: string;
+      remote: boolean;
+      url: string;
+      keywords: string[];
+      date_posted: string;
+    }) => ({
+      id: `findwork-${job.id}`,
+      title: job.role || 'Untitled',
+      company: job.company_name || 'Unknown',
+      company_logo: job.company_logo || null,
+      description: (job.text || '').replace(/<[^>]+>/g, '').slice(0, 500),
+      location: job.location || (job.remote ? 'Remote' : 'Not specified'),
+      work_type: 'full-time',
+      remote_policy: job.remote ? 'remote' : 'onsite',
+      experience_level: estimateLevelFromTitle(job.role || ''),
+      salary_min: null,
+      salary_max: null,
+      salary_currency: 'USD',
+      skills: (job.keywords || []).slice(0, 8).map((k: string) => k.charAt(0).toUpperCase() + k.slice(1)),
+      application_url: job.url,
+      is_active: true,
+      created_at: job.date_posted || new Date().toISOString(),
+      source: 'findwork',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// --- Jobicy ---
+async function fetchJobicy(query: string): Promise<Array<Record<string, unknown>>> {
+  try {
+    const params = new URLSearchParams({
+      count: '20',
+      tag: query,
+    });
+    const res = await fetch(`https://jobicy.com/api/v2/remote-jobs?${params}`);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return (data.jobs || []).map((job: {
+      id: number;
+      jobTitle: string;
+      companyName: string;
+      companyLogo: string | null;
+      jobDescription: string;
+      jobGeo: string;
+      url: string;
+      jobType: string[];
+      annualSalaryMin: number | null;
+      annualSalaryMax: number | null;
+      salaryCurrency: string | null;
+      pubDate: string;
+    }) => ({
+      id: `jobicy-${job.id}`,
+      title: job.jobTitle || 'Untitled',
+      company: job.companyName || 'Unknown',
+      company_logo: job.companyLogo || null,
+      description: (job.jobDescription || '').replace(/<[^>]+>/g, '').slice(0, 500),
+      location: job.jobGeo || 'Remote',
+      work_type: (job.jobType || []).includes('part-time') ? 'part-time' : 'full-time',
+      remote_policy: 'remote',
+      experience_level: estimateLevelFromTitle(job.jobTitle || ''),
+      salary_min: job.annualSalaryMin || null,
+      salary_max: job.annualSalaryMax || null,
+      salary_currency: job.salaryCurrency || 'USD',
+      skills: extractSkills(job.jobTitle + ' ' + job.jobDescription),
+      application_url: job.url,
+      is_active: true,
+      created_at: job.pubDate || new Date().toISOString(),
+      source: 'jobicy',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// --- The Muse ---
+async function fetchTheMuse(query: string): Promise<Array<Record<string, unknown>>> {
+  const apiKey = process.env.THEMUSE_API_KEY;
+  if (!apiKey) return [];
+
+  try {
+    const params = new URLSearchParams({
+      api_key: apiKey,
+      page: '0',
+      descending: 'true',
+    });
+    if (query) params.set('category', query);
+
+    const res = await fetch(`https://www.themuse.com/api/public/jobs?${params}`);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return (data.results || []).slice(0, 20).map((job: {
+      id: number;
+      name: string;
+      company: { name: string; id: number };
+      contents: string;
+      locations: Array<{ name: string }>;
+      refs: { landing_page: string };
+      levels: Array<{ name: string; short_name: string }>;
+      categories: Array<{ name: string }>;
+      publication_date: string;
+    }) => {
+      const locationStr = (job.locations || []).map((l) => l.name).join(', ') || 'Not specified';
+      const isRemote = locationStr.toLowerCase().includes('remote') || locationStr.toLowerCase().includes('flexible');
+      const level = (job.levels || [])[0]?.short_name || '';
+      let expLevel = 'mid';
+      if (level === 'entry' || level === 'internship') expLevel = 'junior';
+      else if (level === 'senior' || level === 'management') expLevel = 'senior';
+
+      return {
+        id: `muse-${job.id}`,
+        title: job.name || 'Untitled',
+        company: job.company?.name || 'Unknown',
+        company_logo: null,
+        description: (job.contents || '').replace(/<[^>]+>/g, '').slice(0, 500),
+        location: locationStr,
+        work_type: 'full-time',
+        remote_policy: isRemote ? 'remote' : 'onsite',
+        experience_level: expLevel,
+        salary_min: null,
+        salary_max: null,
+        salary_currency: 'USD',
+        skills: extractSkills(job.name + ' ' + job.contents),
+        application_url: job.refs?.landing_page || '',
+        is_active: true,
+        created_at: job.publication_date || new Date().toISOString(),
+        source: 'themuse',
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -258,18 +411,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch from ALL sources in parallel
-    const [adzunaJobs, remoteOKJobs, arbeitnowJobs, jsearchJobs] = await Promise.all([
+    const [adzunaJobs, remoteOKJobs, arbeitnowJobs, jsearchJobs, findworkJobs, jobicyJobs, museJobs] = await Promise.all([
       fetchAdzuna(query, location),
       fetchRemoteOK(),
       fetchArbeitnow(),
       fetchJSearch(query, location, remote),
+      fetchFindwork(query),
+      fetchJobicy(query),
+      fetchTheMuse(query),
     ]);
 
     // Combine and deduplicate (by title + company)
     const seen = new Set<string>();
     const allJobs: Array<Record<string, unknown>> = [];
 
-    for (const job of [...adzunaJobs, ...jsearchJobs, ...remoteOKJobs, ...arbeitnowJobs]) {
+    for (const job of [...adzunaJobs, ...jsearchJobs, ...remoteOKJobs, ...arbeitnowJobs, ...findworkJobs, ...jobicyJobs, ...museJobs]) {
       const key = `${(job.title as string).toLowerCase()}-${(job.company as string).toLowerCase()}`;
       if (!seen.has(key)) {
         seen.add(key);
@@ -285,6 +441,9 @@ export async function GET(request: NextRequest) {
         remoteok: remoteOKJobs.length,
         arbeitnow: arbeitnowJobs.length,
         jsearch: jsearchJobs.length,
+        findwork: findworkJobs.length,
+        jobicy: jobicyJobs.length,
+        themuse: museJobs.length,
       },
     };
 

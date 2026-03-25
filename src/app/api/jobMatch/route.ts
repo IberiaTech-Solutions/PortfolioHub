@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { getAuthUser } from '@/utils/authCheck';
+import { checkRateLimit } from '@/utils/rateLimit';
 
 type PortfolioData = {
   name: string;
@@ -39,10 +41,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Basic auth check - verify request has auth cookie
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("sb-")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // Rate limit check
+    const rateCheck = await checkRateLimit(authUser.id, "job_match");
+    if (!rateCheck.allowed) {
+      return NextResponse.json({ error: rateCheck.error, remaining: 0, limit: rateCheck.limit }, { status: 429 });
     }
 
     const openai = new OpenAI({

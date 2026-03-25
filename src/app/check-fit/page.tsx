@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/utils/supabase";
 import { Portfolio, FitAssessment, InterviewQuestion } from "@/types";
@@ -12,6 +13,15 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function CheckFitPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <CheckFitContent />
+    </Suspense>
+  );
+}
+
+function CheckFitContent() {
+  const searchParams = useSearchParams();
   const [jobDescription, setJobDescription] = useState("");
   const [jobUrl, setJobUrl] = useState("");
   const [scraping, setScraping] = useState(false);
@@ -23,6 +33,7 @@ export default function CheckFitPage() {
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [inputMode, setInputMode] = useState<"text" | "url">("text");
+  const [urlHandled, setUrlHandled] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -34,7 +45,7 @@ export default function CheckFitPage() {
       if (user) {
         const { data } = await supabase
           .from("portfolios")
-          .select("*, collaborations(*)")
+          .select("*")
           .eq("user_id", user.id)
           .maybeSingle();
         if (data) setPortfolio(data as unknown as Portfolio);
@@ -43,6 +54,17 @@ export default function CheckFitPage() {
     };
     init();
   }, []);
+
+  // Handle ?url= param from Chrome extension
+  useEffect(() => {
+    if (urlHandled || authLoading || !portfolio) return;
+    const urlParam = searchParams.get("url");
+    if (urlParam) {
+      setJobUrl(urlParam);
+      setInputMode("url");
+      setUrlHandled(true);
+    }
+  }, [searchParams, authLoading, portfolio, urlHandled]);
 
   const scrapeUrl = async () => {
     if (!jobUrl.trim()) return;

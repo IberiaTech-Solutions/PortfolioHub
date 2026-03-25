@@ -11,7 +11,6 @@ import {
   Cog6ToothIcon,
   ArrowRightEndOnRectangleIcon,
   SparklesIcon,
-  BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { LogoFull, LogoIcon } from "@/components/Logo";
 
@@ -43,7 +42,7 @@ export default function Navigation() {
         } = await supabase.auth.getUser();
         setUser(user);
         
-        // Check role: admin from auth metadata, candidate/recruiter from portfolio
+        // Check role: admin from auth metadata, candidate from portfolio
         if (user) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const authRole = (user as any).app_metadata?.role;
@@ -87,7 +86,7 @@ export default function Navigation() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
       
       // Check role when user changes
@@ -255,16 +254,8 @@ export default function Navigation() {
                         >
                           Jobs
                         </Link>
-                        <Link
-                          href="/admin/reports"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/admin/reports" ? "bg-rose-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          Reports
-                        </Link>
                       </>
-                    ) : userRole === "candidate" ? (
+                    ) : (
                       <>
                         <Link
                           href="/check-fit"
@@ -289,41 +280,6 @@ export default function Navigation() {
                           }`}
                         >
                           {hasPortfolio ? "My Profile" : "Profile"}
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <Link
-                          href="/recruiter"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/recruiter" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          Dashboard
-                        </Link>
-                        <Link
-                          href="/#discover-talent"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          Browse Talent
-                        </Link>
-                        <Link
-                          href="/jobs/post"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/jobs/post" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          Post a Job
-                        </Link>
-                        <Link
-                          href="/jobs"
-                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            pathname === "/jobs" ? "bg-brand-600 text-white" : "text-gray-300 hover:text-white hover:bg-slate-800"
-                          }`}
-                        >
-                          My Jobs
                         </Link>
                       </>
                     )}
@@ -369,8 +325,6 @@ export default function Navigation() {
                             <span className={`inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                               userRole === "admin"
                                 ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                                : userRole === "recruiter"
-                                ? "bg-purple-500/15 text-purple-400 border border-purple-500/30"
                                 : "bg-brand-500/15 text-brand-400 border border-brand-500/30"
                             }`}>
                               {userRole}
@@ -499,20 +453,6 @@ export default function Navigation() {
             {mounted && !loading && user && (
               <div className="space-y-1">
                 <Link
-                  href="/#discover-talent"
-                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                    pathname === "/"
-                      ? "bg-brand-600 text-white"
-                      : "text-gray-300 hover:text-white hover:bg-slate-800"
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  Browse Portfolios
-                </Link>
-                <Link
                   href="/create-portfolio"
                   className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
                     pathname === "/create-portfolio"
@@ -551,32 +491,6 @@ export default function Navigation() {
                 >
                   <SparklesIcon className="w-4 h-4 mr-3" />
                   Check Fit
-                </Link>
-                <Link
-                  href="/applications"
-                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                    pathname === "/applications"
-                      ? "bg-brand-600 text-white"
-                      : "text-gray-300 hover:text-white hover:bg-slate-800"
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <BriefcaseIcon className="w-4 h-4 mr-3" />
-                  Applications
-                </Link>
-                <Link
-                  href="/collaborations"
-                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                    pathname === "/collaborations"
-                      ? "bg-brand-600 text-white"
-                      : "text-gray-300 hover:text-white hover:bg-slate-800"
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Collaborations
                 </Link>
                 <Link
                   href="/profile"

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { Portfolio, Job, JobMatch } from "@/types";
@@ -81,6 +82,7 @@ const timeAgo = (date: string) => {
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [externalJobs, setExternalJobs] = useState<Job[]>([]);
+  const [sourceCounts, setSourceCounts] = useState<Record<string, number>>({});
   const [loadingExternal, setLoadingExternal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeSource, setActiveSource] = useState<"all" | "posted" | "external">("all");
@@ -124,7 +126,7 @@ export default function JobsPage() {
       if (user) {
         const { data: portfolioData } = await supabase
           .from("portfolios")
-          .select("*, collaborations(*)")
+          .select("*")
           .eq("user_id", user.id)
           .maybeSingle();
 
@@ -152,6 +154,7 @@ export default function JobsPage() {
         .then((r) => r.json())
         .then((data) => {
           if (data.jobs) setExternalJobs(data.jobs);
+          if (data.sources) setSourceCounts(data.sources);
         })
         .catch(() => {})
         .finally(() => setLoadingExternal(false));
@@ -294,9 +297,25 @@ export default function JobsPage() {
               ? "Browse jobs and let AI tell you honestly which ones are worth your time."
               : "Create a portfolio first to unlock AI-powered job matching."}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            Aggregated from multiple sources{externalJobs.length > 0 ? ` — ${externalJobs.length} jobs from Adzuna, RemoteOK, Arbeitnow` : ""}
-          </p>
+          {externalJobs.length > 0 && (
+            <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-2">
+              <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Powered by</span>
+              {[
+                { key: "adzuna", label: "Adzuna", color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+                { key: "remoteok", label: "RemoteOK", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+                { key: "arbeitnow", label: "Arbeitnow", color: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
+                { key: "jsearch", label: "JSearch", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+                { key: "findwork", label: "Findwork", color: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+                { key: "jobicy", label: "Jobicy", color: "bg-pink-500/10 text-pink-400 border-pink-500/20" },
+                { key: "themuse", label: "The Muse", color: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+              ].filter(s => (sourceCounts[s.key] || 0) > 0).map(s => (
+                <span key={s.key} className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${s.color}`}>
+                  {s.label} ({sourceCounts[s.key]})
+                </span>
+              ))}
+              <span className="text-[10px] text-gray-600">{externalJobs.length} total</span>
+            </div>
+          )}
           {!user && (
             <Link
               href="/auth?mode=signin"
@@ -514,7 +533,7 @@ export default function JobsPage() {
                       <div className="relative flex-shrink-0">
                         <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
                           {job.company_logo ? (
-                            <img src={job.company_logo} alt={job.company} className="w-8 h-8 rounded-lg object-cover" />
+                            <Image src={job.company_logo} alt={job.company} width={32} height={32} className="w-8 h-8 rounded-lg object-cover" />
                           ) : (
                             <BuildingOfficeIcon className="w-6 h-6 text-gray-400" />
                           )}
@@ -541,12 +560,18 @@ export default function JobsPage() {
                                   String(job.source) === "remoteok" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                                   String(job.source) === "arbeitnow" ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
                                   String(job.source) === "jsearch" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
+                                  String(job.source) === "findwork" ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" :
+                                  String(job.source) === "jobicy" ? "bg-pink-500/10 text-pink-400 border-pink-500/20" :
+                                  String(job.source) === "themuse" ? "bg-orange-500/10 text-orange-400 border-orange-500/20" :
                                   "bg-brand-500/10 text-brand-400 border-brand-500/20"
                                 }`}>
                                   {String(job.source) === "adzuna" ? "Adzuna" :
                                    String(job.source) === "remoteok" ? "RemoteOK" :
                                    String(job.source) === "arbeitnow" ? "Arbeitnow" :
                                    String(job.source) === "jsearch" ? "JSearch" :
+                                   String(job.source) === "findwork" ? "Findwork" :
+                                   String(job.source) === "jobicy" ? "Jobicy" :
+                                   String(job.source) === "themuse" ? "The Muse" :
                                    "TalentAgent"}
                                 </span>
                               )}

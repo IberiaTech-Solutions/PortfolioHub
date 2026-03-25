@@ -17,14 +17,12 @@ interface PlatformStats {
   totalPortfolios: number;
   totalJobs: number;
   totalCandidates: number;
-  totalRecruiters: number;
   totalAdmins: number;
   recentSignups: number;
   aiChats7d: number;
   aiAssessments7d: number;
   freeTier: number;
   proTier: number;
-  recruiterTier: number;
 }
 
 
@@ -51,11 +49,10 @@ export default function AdminDashboard() {
       setAuthorized(true);
 
       // Fetch platform stats
-      const [portfolioRes, jobsRes, candidatesRes, recruitersRes, adminsRes] = await Promise.all([
+      const [portfolioRes, jobsRes, candidatesRes, adminsRes] = await Promise.all([
         supabase.from("portfolios").select("*", { count: "exact", head: true }),
         supabase.from("jobs").select("*", { count: "exact", head: true }),
         supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("user_role", "candidate"),
-        supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("user_role", "recruiter"),
         supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("user_role", "admin"),
       ]);
 
@@ -68,12 +65,11 @@ export default function AdminDashboard() {
 
       // AI usage (last 7 days)
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const [chats7d, assessments7d, freeCount, proCount, recruiterCount] = await Promise.all([
+      const [chats7d, assessments7d, freeCount, proCount] = await Promise.all([
         supabase.from("portfolio_analytics").select("*", { count: "exact", head: true }).eq("event_type", "chat").gte("created_at", sevenDaysAgo),
         supabase.from("portfolio_analytics").select("*", { count: "exact", head: true }).eq("event_type", "fit_assessment").gte("created_at", sevenDaysAgo),
         supabase.from("portfolios").select("*", { count: "exact", head: true }).or("plan_tier.is.null,plan_tier.eq.free"),
         supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("plan_tier", "pro"),
-        supabase.from("portfolios").select("*", { count: "exact", head: true }).eq("plan_tier", "recruiter"),
       ]);
 
       // Audit log removed in tool-first pivot
@@ -83,14 +79,12 @@ export default function AdminDashboard() {
         totalPortfolios: portfolioRes.count ?? 0,
         totalJobs: jobsRes.count ?? 0,
         totalCandidates: candidatesRes.count ?? 0,
-        totalRecruiters: recruitersRes.count ?? 0,
         totalAdmins: adminsRes.count ?? 0,
         recentSignups: recentSignups ?? 0,
         aiChats7d: chats7d.count ?? 0,
         aiAssessments7d: assessments7d.count ?? 0,
         freeTier: freeCount.count ?? 0,
         proTier: proCount.count ?? 0,
-        recruiterTier: recruiterCount.count ?? 0,
       });
 
       setLoading(false);
@@ -109,7 +103,6 @@ export default function AdminDashboard() {
   const cards = [
     { label: "Total Users", value: stats?.totalUsers ?? 0, icon: UserGroupIcon, color: "brand", href: "/admin/users" },
     { label: "Candidates", value: stats?.totalCandidates ?? 0, icon: UserGroupIcon, color: "emerald", href: "/admin/users?role=candidate" },
-    { label: "Recruiters", value: stats?.totalRecruiters ?? 0, icon: BriefcaseIcon, color: "purple", href: "/admin/users?role=recruiter" },
     { label: "Active Jobs", value: stats?.totalJobs ?? 0, icon: BriefcaseIcon, color: "amber", href: "/admin/jobs" },
     { label: "Signups (7d)", value: stats?.recentSignups ?? 0, icon: ChartBarIcon, color: "blue", href: "/admin/users" },
     { label: "Admins", value: stats?.totalAdmins ?? 0, icon: ShieldCheckIcon, color: "rose", href: "/admin/users?role=admin" },
@@ -142,7 +135,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
           {cards.map((card) => (
             <Link
               key={card.label}
@@ -211,7 +204,7 @@ export default function AdminDashboard() {
               <ChartBarIcon className="w-4 h-4 text-emerald-400" />
               Plan Distribution
             </h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-2xl font-bold text-white">{stats?.freeTier ?? 0}</p>
                 <p className="text-[10px] text-gray-500 uppercase">Free</p>
@@ -220,13 +213,9 @@ export default function AdminDashboard() {
                 <p className="text-2xl font-bold text-brand-400">{stats?.proTier ?? 0}</p>
                 <p className="text-[10px] text-gray-500 uppercase">Pro</p>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-purple-400">{stats?.recruiterTier ?? 0}</p>
-                <p className="text-[10px] text-gray-500 uppercase">Recruiter</p>
-              </div>
             </div>
             <p className="text-[10px] text-gray-600 mt-3">
-              MRR: ${((stats?.proTier ?? 0) * 9 + (stats?.recruiterTier ?? 0) * 49).toLocaleString()}/mo
+              MRR: ${((stats?.proTier ?? 0) * 9).toLocaleString()}/mo
             </p>
           </div>
         </div>

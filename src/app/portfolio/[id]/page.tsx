@@ -44,12 +44,7 @@ export default function PortfolioDetailPage() {
 
       const { data: portfolioData, error } = await supabase
         .from("portfolios")
-        .select(
-          `
-          *,
-          collaborations(*)
-        `
-        )
+        .select("*")
         .eq("id", params.id)
         .single();
 
@@ -324,33 +319,6 @@ export default function PortfolioDetailPage() {
                         View Project
                         <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
                       </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Collaborations Section */}
-            {portfolio.collaborations && portfolio.collaborations.length > 0 && (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
-                <h2 className="text-lg font-heading font-semibold text-white mb-5">Collaborations</h2>
-                <div className="grid gap-3">
-                  {portfolio.collaborations.map((collaboration, index) => (
-                    <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/8 transition-colors duration-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-medium text-white">{collaboration.collaborator_name}</h3>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          collaboration.status === 'accepted'
-                            ? 'bg-emerald-500/15 text-emerald-400'
-                            : collaboration.status === 'declined'
-                            ? 'bg-red-500/15 text-red-400'
-                            : 'bg-amber-500/15 text-amber-400'
-                        }`}>
-                          {collaboration.status}
-                        </span>
-                      </div>
-                      <p className="text-gray-300 text-sm">{collaboration.project_title}</p>
-                      <p className="text-gray-500 text-xs mt-1">Role: {collaboration.role}</p>
                     </div>
                   ))}
                 </div>

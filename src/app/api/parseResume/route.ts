@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { getAuthUser } from '@/utils/authCheck';
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,11 +8,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'AI not configured' }, { status: 503 });
     }
 
-    // Basic auth check - verify request has auth cookie
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("sb-")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user: authUser, error: authError } = await getAuthUser(request);
+    if (authError || !authUser) return authError || NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

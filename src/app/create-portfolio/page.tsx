@@ -325,12 +325,8 @@ export default function CreatePortfolioPage() {
           return;
         }
 
-        // Auto-set role from signup metadata
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const signupRole = (user as any).user_metadata?.role;
-        if (signupRole === "candidate" || signupRole === "recruiter") {
-          setFormData((prev) => ({ ...prev, user_role: signupRole }));
-        }
+        // All users are candidates (recruiter path removed)
+        setFormData((prev) => ({ ...prev, user_role: "candidate" }));
 
         setUser(user);
 
@@ -888,9 +884,7 @@ export default function CreatePortfolioPage() {
           <form onSubmit={handleSubmit}>
             {currentStep === 1 && (
               <StepRoleResume
-                formData={formData}
                 setFormData={setFormData}
-                handleChange={handleChange}
                 existingPortfolio={existingPortfolio}
                 showResumeImport={showResumeImport}
                 setShowResumeImport={setShowResumeImport}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
+import { authFetch } from "@/utils/authFetch";
 import { User } from "@supabase/supabase-js";
 import { Portfolio, Job, JobMatch } from "@/types";
 import {
@@ -208,7 +209,7 @@ export default function JobsPage() {
     setExpandedJob(job.id);
 
     try {
-      const res = await fetch("/api/jobMatch", {
+      const res = await authFetch("/api/jobMatch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ job, portfolio }),

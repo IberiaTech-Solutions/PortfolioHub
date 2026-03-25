@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { authFetch } from "@/utils/authFetch";
 import { supabase } from "@/utils/supabase";
 import { Portfolio, FitAssessment, InterviewQuestion } from "@/types";
 import {
@@ -71,7 +72,7 @@ function CheckFitContent() {
     setScraping(true);
     setScrapeError("");
     try {
-      const res = await fetch("/api/scrapeJob", {
+      const res = await authFetch("/api/scrapeJob", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: jobUrl.trim() }),
@@ -97,7 +98,7 @@ function CheckFitContent() {
     setInterviewQuestions([]);
 
     try {
-      const res = await fetch("/api/fitAssessment", {
+      const res = await authFetch("/api/fitAssessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -130,7 +131,7 @@ function CheckFitContent() {
     if (!assessment) return;
     setLoadingQuestions(true);
     try {
-      const res = await fetch("/api/interviewQuestions", {
+      const res = await authFetch("/api/interviewQuestions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

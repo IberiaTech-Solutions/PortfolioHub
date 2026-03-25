@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { authFetch } from "@/utils/authFetch";
 import Image from "next/image";
 import { supabase } from "@/utils/supabase";
 import {
@@ -78,7 +79,7 @@ export default function PortfolioDetailPage() {
 
       // Fetch GitHub score if they have a GitHub URL
       if (portfolioData.github_url) {
-        fetch('/api/githubScore', {
+        authFetch('/api/githubScore', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ githubUrl: portfolioData.github_url }),

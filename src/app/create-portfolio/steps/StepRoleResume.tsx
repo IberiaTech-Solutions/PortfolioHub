@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { authFetch } from "@/utils/authFetch";
 import { SparklesIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 interface StepRoleResumeProps {
@@ -40,7 +41,7 @@ export default function StepRoleResume({
     if (!githubUrl.trim()) return;
     setGithubImporting(true);
     try {
-      const res = await fetch("/api/importGithub", {
+      const res = await authFetch("/api/importGithub", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ githubUrl: githubUrl.trim() }),

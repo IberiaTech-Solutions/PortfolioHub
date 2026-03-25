@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { authFetch } from "@/utils/authFetch";
 import {
   ChatBubbleLeftRightIcon,
   XMarkIcon,
@@ -63,7 +64,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/portfolioChat", {
+      const res = await authFetch("/api/portfolioChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -103,7 +104,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
     setAssessment(null);
 
     try {
-      const res = await fetch("/api/fitAssessment", {
+      const res = await authFetch("/api/fitAssessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -546,7 +547,7 @@ export default function PortfolioChat({ portfolio }: { portfolio: PortfolioData 
                       onClick={async () => {
                         setLoadingQuestions(true);
                         try {
-                          const res = await fetch('/api/interviewQuestions', {
+                          const res = await authFetch('/api/interviewQuestions', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({

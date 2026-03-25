@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabase";
+import { authFetch } from "@/utils/authFetch";
 import { User, PostgrestResponse } from "@supabase/supabase-js";
 import {
   SparklesIcon,
@@ -90,7 +91,7 @@ export default function CreatePortfolioPage() {
       setAiCallCount(prev => prev + 1);
       
       try {
-        const response = await fetch('/api/analyzePortfolio', {
+        const response = await authFetch('/api/analyzePortfolio', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -129,7 +130,7 @@ export default function CreatePortfolioPage() {
       setAiCallCount(prev => prev + 1);
       
       try {
-        const response = await fetch('/api/analyzePortfolio', {
+        const response = await authFetch('/api/analyzePortfolio', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -172,7 +173,7 @@ export default function CreatePortfolioPage() {
 
       setDetectingProjects(true);
       try {
-        const response = await fetch('/api/detectProjects', {
+        const response = await authFetch('/api/detectProjects', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -207,7 +208,7 @@ export default function CreatePortfolioPage() {
       }
 
       try {
-        const response = await fetch('/api/generateScreenshot', {
+        const response = await authFetch('/api/generateScreenshot', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -432,7 +433,7 @@ export default function CreatePortfolioPage() {
             formDataPayload.append('text', text);
           }
 
-          const res = await fetch('/api/parseResume', {
+          const res = await authFetch('/api/parseResume', {
             method: 'POST',
             body: formDataPayload,
           });
@@ -464,7 +465,7 @@ export default function CreatePortfolioPage() {
       const formDataPayload = new FormData();
       formDataPayload.append('text', text);
 
-      const res = await fetch('/api/parseResume', {
+      const res = await authFetch('/api/parseResume', {
         method: 'POST',
         body: formDataPayload,
       });

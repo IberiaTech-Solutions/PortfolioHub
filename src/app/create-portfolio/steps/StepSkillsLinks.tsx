@@ -47,6 +47,7 @@ interface StepSkillsLinksProps {
 
 export default function StepSkillsLinks({
   formData,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setFormData,
   handleChange,
   selectedSkills,

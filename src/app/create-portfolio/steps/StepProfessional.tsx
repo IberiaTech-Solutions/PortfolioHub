@@ -180,7 +180,7 @@ export default function StepProfessional({
             debouncedExtractSkills(e.target.value);
           }}
           required
-          rows={4}
+          rows={8}
           className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none bg-white/10 text-sm sm:text-base ${
             !formData.description ? "border-red-400/50" : "border-white/20"
           }`}

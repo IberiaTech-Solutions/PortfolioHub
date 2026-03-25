@@ -62,6 +62,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Pre-extract URLs from raw text (PDF hyperlinks often get stripped)
+    const urlMatches = resumeText.match(/https?:\/\/[^\s,)>]+/gi) || [];
+    const detectedGithub = urlMatches.find(u => u.includes('github.com')) || '';
+    const detectedLinkedin = urlMatches.find(u => u.includes('linkedin.com')) || '';
+    const detectedWebsite = urlMatches.find(u => !u.includes('github.com') && !u.includes('linkedin.com')) || '';
+
     // Truncate to avoid token limits (10k chars ≈ 2.5k tokens input)
     const truncated = resumeText.slice(0, 10000);
 
@@ -125,6 +131,12 @@ Rules:
 
     try {
       const parsed = JSON.parse(cleaned);
+
+      // Merge regex-detected URLs as fallback (AI often misses hyperlinks in PDFs)
+      if (!parsed.github_url && detectedGithub) parsed.github_url = detectedGithub;
+      if (!parsed.linkedin_url && detectedLinkedin) parsed.linkedin_url = detectedLinkedin;
+      if (!parsed.website_url && detectedWebsite) parsed.website_url = detectedWebsite;
+
       return NextResponse.json({ data: parsed });
     } catch {
       return NextResponse.json(

@@ -34,6 +34,7 @@ export default function CreatePortfolioPage() {
   const [detectedProjects, setDetectedProjects] = useState<Project[]>([]);
   const [detectingProjects, setDetectingProjects] = useState(false);
   const [websiteScreenshot, setWebsiteScreenshot] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   
   // AI call tracking

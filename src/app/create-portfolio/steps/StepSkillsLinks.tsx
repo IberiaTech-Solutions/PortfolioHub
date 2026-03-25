@@ -22,7 +22,6 @@ interface StepSkillsLinksProps {
     website_url: string;
     github_url: string;
     linkedin_url: string;
-    additional_links: Array<{ label: string; url: string }>;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setFormData: (fn: (prev: any) => any) => void;
@@ -243,66 +242,6 @@ export default function StepSkillsLinks({
           className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
           placeholder="LinkedIn profile (optional)"
         />
-      </div>
-
-      {/* Additional Links */}
-      <div className="space-y-3 sm:space-y-4">
-        <label className="block text-xs sm:text-sm font-semibold text-white">
-          Additional Links
-          <span className="ml-1 sm:ml-2 text-xs sm:text-sm font-normal text-gray-300">(Dribbble, Behance, Bestfolios, etc.)</span>
-        </label>
-        <div className="space-y-3">
-          {formData.additional_links.map((link, index) => (
-            <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <input
-                type="text"
-                placeholder="Label (e.g., Dribbble)"
-                value={link.label}
-                onChange={(e) => {
-                  const newLinks = [...formData.additional_links];
-                  newLinks[index].label = e.target.value;
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  setFormData((prev: any) => ({ ...prev, additional_links: newLinks }));
-                }}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
-              />
-              <input
-                type="url"
-                placeholder="https://..."
-                value={link.url}
-                onChange={(e) => {
-                  const newLinks = [...formData.additional_links];
-                  newLinks[index].url = e.target.value;
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  setFormData((prev: any) => ({ ...prev, additional_links: newLinks }));
-                }}
-                className="flex-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const newLinks = formData.additional_links.filter((_, i) => i !== index);
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  setFormData((prev: any) => ({ ...prev, additional_links: newLinks }));
-                }}
-                className="px-3 py-2 sm:py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg sm:rounded-xl transition-colors duration-200 flex items-center justify-center"
-              >
-                <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClick={() => setFormData((prev: any) => ({ ...prev, additional_links: [...prev.additional_links, { label: "", url: "" }] }))}
-            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl text-gray-300 hover:text-white hover:bg-white/20 transition-all duration-200 shadow-sm hover:shadow-md text-xs sm:text-sm w-full sm:w-auto"
-          >
-            <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add Link
-          </button>
-        </div>
       </div>
 
       {/* Auto-Detected Projects */}

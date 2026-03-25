@@ -10,7 +10,6 @@ import {
 } from "@heroicons/react/20/solid";
 import { useToast } from "@/components/Toast";
 import StepRoleResume from "./steps/StepRoleResume";
-import StepPersonalInfo from "./steps/StepPersonalInfo";
 import StepProfessional from "./steps/StepProfessional";
 import StepSkillsLinks from "./steps/StepSkillsLinks";
 import StepReview from "./steps/StepReview";
@@ -36,34 +35,23 @@ export default function CreatePortfolioPage() {
   const [detectingProjects, setDetectingProjects] = useState(false);
   const [websiteScreenshot, setWebsiteScreenshot] = useState<string>("");
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
-  const [heroImagePreview, setHeroImagePreview] = useState<string>("");
   
   // AI call tracking
   const [aiCallCount, setAiCallCount] = useState(0);
   const MAX_AI_CALLS = 5;
   const [formData, setFormData] = useState({
-    title: "",
     name: "",
-    username: "",
     job_title: "",
     description: "",
     website_url: "",
-    profile_image: "",
-    hero_image: "",
     github_url: "",
     linkedin_url: "",
     location: "",
     experience_level: "",
     preferred_work_type: [] as string[],
-    languages: "",
-    additional_links: [] as Array<{label: string, url: string}>,
     private_fields: [] as string[],
     user_role: "candidate" as string,
-    company_name: "",
-    company_logo: "",
   });
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
-  const [checkingUsername, setCheckingUsername] = useState(false);
   const [resumeParsing, setResumeParsing] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const [showResumeImport, setShowResumeImport] = useState(false);
@@ -71,7 +59,7 @@ export default function CreatePortfolioPage() {
     null
   );
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 4;
 
   // Debounced AI analysis function
   const analyzeField = useCallback(
@@ -358,41 +346,24 @@ export default function CreatePortfolioPage() {
           setTimeout(() => {
             // Batch all state updates for better performance
             setExistingPortfolio(portfolioData);
-            setCurrentStep(5); // Edit mode: start at Review
+            setCurrentStep(4); // Edit mode: start at Review
             setFormData({
-              title: portfolioData.title || "",
               name: portfolioData.name || "",
-              username: (portfolioData as unknown as { username?: string }).username || "",
               job_title: portfolioData.job_title || "",
               description: portfolioData.description || "",
               website_url: portfolioData.website_url || "",
-              profile_image: portfolioData.profile_image || "",
-              hero_image: portfolioData.hero_image || "",
               github_url: portfolioData.github_url || "",
               linkedin_url: portfolioData.linkedin_url || "",
               location: portfolioData.location || "",
               experience_level: portfolioData.experience_level || "",
               preferred_work_type: portfolioData.preferred_work_type || [],
-              languages: portfolioData.languages || "",
-              additional_links: portfolioData.additional_links || [],
               private_fields: (portfolioData as unknown as { private_fields?: string[] }).private_fields || [],
               user_role: (portfolioData as unknown as { user_role?: string }).user_role || "candidate",
-              company_name: (portfolioData as unknown as { company_name?: string }).company_name || "",
-              company_logo: (portfolioData as unknown as { company_logo?: string }).company_logo || "",
             });
-            
-            // Set other states in a single batch
+
             setSelectedSkills(portfolioData.skills || []);
             setWebsiteScreenshot(portfolioData.website_screenshot || "");
             setDetectedProjects(portfolioData.projects || []);
-            
-            // Set image previews if they exist
-            if (portfolioData.profile_image) {
-              setProfileImagePreview(portfolioData.profile_image);
-            }
-            if (portfolioData.hero_image) {
-              setHeroImagePreview(portfolioData.hero_image);
-            }
             
             setFormLoading(false);
           }, 100);
@@ -504,12 +475,10 @@ export default function CreatePortfolioPage() {
       ...prev,
       name: data.name || prev.name,
       job_title: data.job_title || prev.job_title,
-      title: data.title || prev.title,
       description: fullDescription || prev.description,
       location: data.location || prev.location,
       experience_level: data.experience_level || prev.experience_level,
       preferred_work_type: data.preferred_work_type?.length ? data.preferred_work_type : prev.preferred_work_type,
-      languages: data.languages || prev.languages,
       website_url: data.website_url || prev.website_url,
       github_url: data.github_url || prev.github_url,
       linkedin_url: data.linkedin_url || prev.linkedin_url,
@@ -530,7 +499,7 @@ export default function CreatePortfolioPage() {
     setResumeText('');
 
     // Count what was extracted
-    const filled = [data.name, data.job_title, data.title, data.description, data.location].filter(Boolean).length;
+    const filled = [data.name, data.job_title, data.description, data.location].filter(Boolean).length;
     const skillCount = data.skills?.length || 0;
     const projectCount = data.projects?.length || 0;
     const linksFound = [data.website_url, data.github_url, data.linkedin_url].filter(Boolean).length;
@@ -544,69 +513,12 @@ export default function CreatePortfolioPage() {
     setTimeout(() => setCurrentStep(2), 500);
   };
 
-  // Username availability check
-  const checkUsername = useCallback(async (username: string) => {
-    if (!username || username.length < 3 || !supabase) {
-      setUsernameAvailable(null);
-      return;
-    }
-    setCheckingUsername(true);
-    try {
-      const { data, error } = await supabase
-        .from("portfolios")
-        .select("id")
-        .eq("username", username)
-        .maybeSingle();
-      if (error) {
-        setUsernameAvailable(true); // Assume available if query fails
-      } else {
-        setUsernameAvailable(!data || data.id === existingPortfolio?.id);
-      }
-    } catch {
-      setUsernameAvailable(true); // Assume available on error
-    } finally {
-      setCheckingUsername(false);
-    }
-  }, [existingPortfolio?.id]);
-
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Auto-suggest username when name changes
-    if (name === "name" && !formData.username) {
-      const suggested = value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-      setFormData((prev) => ({ ...prev, [name]: value, username: suggested }));
-    }
-  };
-
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setProfileImagePreview(result);
-        setFormData((prev) => ({ ...prev, profile_image: result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setHeroImagePreview(result);
-        setFormData((prev) => ({ ...prev, hero_image: result }));
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const filteredSkills =
@@ -638,7 +550,7 @@ export default function CreatePortfolioPage() {
 
       const portfolioData = {
         ...formData,
-        username: formData.username && formData.username.length >= 3 ? formData.username : null,
+        title: formData.job_title, // Use job title as portfolio title
         private_fields: formData.private_fields.length > 0 ? formData.private_fields : [],
         skills: selectedSkills,
         projects: detectedProjects,
@@ -647,8 +559,8 @@ export default function CreatePortfolioPage() {
       };
 
       // Validate required fields
-      if (!portfolioData.title || !portfolioData.name || !portfolioData.job_title || !portfolioData.description) {
-        throw new Error("Missing required fields: title, name, job_title, or description");
+      if (!portfolioData.name || !portfolioData.job_title || !portfolioData.description) {
+        throw new Error("Missing required fields: name, job_title, or description");
       }
       
       if (existingPortfolio) {
@@ -809,7 +721,7 @@ export default function CreatePortfolioPage() {
     );
   }
 
-  const stepLabels = ["Role & Resume", "Personal Info", "Professional", "Skills & Links", "Review"];
+  const stepLabels = ["Import", "About You", "Skills & Projects", "Review"];
 
   const goToStep = (step: number) => {
     setCurrentStep(step);
@@ -900,22 +812,6 @@ export default function CreatePortfolioPage() {
             )}
 
             {currentStep === 2 && (
-              <StepPersonalInfo
-                formData={formData}
-                setFormData={setFormData}
-                handleChange={handleChange}
-                profileImagePreview={profileImagePreview}
-                heroImagePreview={heroImagePreview}
-                handleProfileImageChange={handleProfileImageChange}
-                handleHeroImageChange={handleHeroImageChange}
-                usernameAvailable={usernameAvailable}
-                checkingUsername={checkingUsername}
-                checkUsername={checkUsername}
-                debounceTimers={debounceTimers}
-              />
-            )}
-
-            {currentStep === 3 && (
               <StepProfessional
                 formData={formData}
                 setFormData={setFormData}
@@ -933,7 +829,7 @@ export default function CreatePortfolioPage() {
               />
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 3 && (
               <StepSkillsLinks
                 formData={formData}
                 setFormData={setFormData}
@@ -958,12 +854,10 @@ export default function CreatePortfolioPage() {
               />
             )}
 
-            {currentStep === 5 && (
+            {currentStep === 4 && (
               <StepReview
                 formData={formData}
                 selectedSkills={selectedSkills}
-                profileImagePreview={profileImagePreview}
-                heroImagePreview={heroImagePreview}
                 detectedProjects={detectedProjects}
                 existingPortfolio={existingPortfolio}
                 loading={loading}
@@ -985,7 +879,7 @@ export default function CreatePortfolioPage() {
           </button>
 
           <div className="flex gap-3">
-            {currentStep >= 2 && currentStep <= 4 && (
+            {currentStep >= 2 && currentStep <= 3 && (
               <button
                 type="button"
                 onClick={() => setCurrentStep((prev) => Math.min(totalSteps, prev + 1))}
